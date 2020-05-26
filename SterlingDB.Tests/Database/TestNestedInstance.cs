@@ -80,7 +80,7 @@ namespace SterlingDB.Test.Database
     
     public class TestNestedInstance : TestBase
     {
-        private SterlingEngine _engine;
+        private readonly SterlingEngine _engine;
         private ISterlingDatabaseInstance _database;
 
         

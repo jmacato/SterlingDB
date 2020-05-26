@@ -12,7 +12,7 @@ namespace SterlingDB.Test.Database
 {
     public class TestPurge : TestBase
     {
-        private SterlingEngine _engine;
+        private readonly SterlingEngine _engine;
         private ISterlingDatabaseInstance _databaseInstance;
 
         public void TestInit()

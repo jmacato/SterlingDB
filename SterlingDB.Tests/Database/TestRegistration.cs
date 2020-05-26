@@ -1,14 +1,10 @@
-﻿#if SILVERLIGHT
-using Microsoft.Phone.Testing;
-#endif
-#if NETFX_CORE
-using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-#else
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-#endif
-using SterlingDB.Core;
-using SterlingDB.Core.Exceptions;
+﻿using SterlingDB.Core;
+using SterlingDB.Core.Database;
+using SterlingDB.Server.FileSystem;
 using SterlingDB.Test.Helpers;
+using Xunit;
+using SterlingDB.Core;
+using SterlingDB.Core.Database;
 
 namespace SterlingDB.Test.Database
 {

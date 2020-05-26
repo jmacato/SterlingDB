@@ -72,7 +72,7 @@ namespace SterlingDB.Test.Database
 
     public class TestByteStreamInterceptor : TestBase
     {
-        private SterlingEngine _engine;
+        private readonly SterlingEngine _engine;
         private ISterlingDatabaseInstance _databaseInstance;
 
         public TestByteStreamInterceptor()

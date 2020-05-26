@@ -166,7 +166,7 @@ namespace SterlingDB.Test.Serializer
     
     public class TestCustomSerializer : TestBase
     {
-        private SterlingEngine _engine;
+        private readonly SterlingEngine _engine;
         public static ISterlingDatabaseInstance DatabaseInstance;
 
         

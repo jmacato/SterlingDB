@@ -1,10 +1,6 @@
 using SterlingDB.Core;
 using SterlingDB.Core.Database;
-using SterlingDB.Server.FileSystem;
-using SterlingDB.Test.Helpers;
 using Xunit;
-using SterlingDB.Core;
-using SterlingDB.Core.Database;
 
 namespace SterlingDB.Test.Database
 {
@@ -25,71 +21,39 @@ namespace SterlingDB.Test.Database
         }
     }
 
-#if SILVERLIGHT
-    [Tag("Field")]
-    [Tag("Database")]
-#endif
-    
-    public class TestFieldAltDriver : TestField
-    {
-        protected override ISterlingDriver GetDriver()
-        {
-#if NETFX_CORE
-            return new WindowsStorageDriver();
-#elif SILVERLIGHT
-            return new IsolatedStorageDriver();
-#elif AZURE_DRIVER
-            return new SterlingDB.Server.Azure.TableStorage.Driver();
-#else
-            return new FileSystemDriver();
-#endif
-        }
-    }
-
-#if SILVERLIGHT 
-    [Tag("Field")]
-    [Tag("Database")]
-#endif
-    
     public class TestField : TestBase
     {
-        private SterlingEngine _engine;
+        private readonly SterlingEngine _engine;
         private ISterlingDatabaseInstance _databaseInstance;
 
-        
-
-        
-        public void TestInit()
-        {            
+        public TestField()
+        {
             _engine = Factory.NewEngine();
             _engine.Activate();
-            _databaseInstance = _engine.SterlingDatabase.RegisterDatabase<TestObjectFieldDatabase>( TestContext.TestName, GetDriver() );
+            _databaseInstance = _engine.SterlingDatabase.RegisterDatabase<TestObjectFieldDatabase>(TestContext.TestName, GetDriver());
             _databaseInstance.PurgeAsync().Wait();
         }
 
         [Fact]
         public void TestData()
         {
-            var testNull = new TestObjectField {Key = 1, Data = "data"};
+            var testNull = new TestObjectField { Key = 1, Data = "data" };
 
-            _databaseInstance.SaveAsync( testNull ).Wait();
+            _databaseInstance.SaveAsync(testNull).Wait();
 
-            var loadedTestNull = _databaseInstance.LoadAsync<TestObjectField>( 1 ).Result;
+            var loadedTestNull = _databaseInstance.LoadAsync<TestObjectField>(1).Result;
 
             // The values in the deserialized class should be populated.
             Assert.NotNull(loadedTestNull);
-            Assert.NotNull(loadedTestNull.Data);
-            Assert.NotNull(loadedTestNull.Key);
+            Assert.Equal("data", loadedTestNull.Data);
+            Assert.Equal(1, loadedTestNull.Key);
         }
 
-        
         public override void Cleanup()
         {
             _databaseInstance.PurgeAsync().Wait();
             _engine.Dispose();
-            _databaseInstance = null;            
+            _databaseInstance = null;
         }
-
     }
-
 }

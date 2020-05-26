@@ -30,41 +30,12 @@ namespace SterlingDB.Test.Database
                            };
         }
     }
-
-#if SILVERLIGHT
-    [Tag("Nullable")]
-    [Tag("Database")]
-#endif
-    
-    public class TestNullableAltDriver : TestNullable
-    {
-        protected override ISterlingDriver GetDriver()
-        {
-#if NETFX_CORE
-            return new WindowsStorageDriver();
-#elif SILVERLIGHT
-            return new IsolatedStorageDriver();
-#elif AZURE_DRIVER
-            return new SterlingDB.Server.Azure.TableStorage.Driver();
-#else
-            return new FileSystemDriver();
-#endif
-        }
-    }
-
-#if SILVERLIGHT
-    [Tag("Nullable")]
-    [Tag("Database")]
-#endif
-    
+ 
     public class TestNullable : TestBase
     {                
-        private SterlingEngine _engine;
+        private readonly SterlingEngine _engine;
         private ISterlingDatabaseInstance _databaseInstance;
 
-        
-
-        
         public void TestInit()
         {            
             _engine = Factory.NewEngine();

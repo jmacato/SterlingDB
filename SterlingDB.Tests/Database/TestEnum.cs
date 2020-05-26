@@ -1,13 +1,7 @@
 using SterlingDB.Core;
 using SterlingDB.Core.Database;
-using SterlingDB.Server.FileSystem;
-using SterlingDB.Test.Helpers;
 using Xunit;
-
 using System.Collections.Generic;
-
-using SterlingDB.Core;
-using SterlingDB.Core.Database;
 
 namespace SterlingDB.Test.Database
 {
@@ -45,42 +39,13 @@ namespace SterlingDB.Test.Database
                            };
         }
     }
-
-#if SILVERLIGHT
-    [Tag("Enum")]
-    [Tag("Database")]
-#endif
-    
-    public class TestEnumAltDriver : TestEnum
-    {
-        protected override ISterlingDriver GetDriver()
-        {
-#if NETFX_CORE
-            return new WindowsStorageDriver();
-#elif SILVERLIGHT
-            return new IsolatedStorageDriver();
-#elif AZURE_DRIVER
-            return new SterlingDB.Server.Azure.TableStorage.Driver();
-#else
-            return new FileSystemDriver();
-#endif
-        }
-    }
-
-#if SILVERLIGHT
-    [Tag("Enum")]
-    [Tag("Database")]
-#endif
     
     public class TestEnum : TestBase
     {
-        private SterlingEngine _engine;
+        private readonly SterlingEngine _engine;
         private ISterlingDatabaseInstance _databaseInstance;
-
         
-
-        
-        public void TestInit()
+        public TestEnum()
         {           
             _engine = Factory.NewEngine();
             _engine.Activate();
@@ -88,7 +53,6 @@ namespace SterlingDB.Test.Database
             _databaseInstance.PurgeAsync().Wait();
         }
 
-        
         public override void Cleanup()
         {
             _databaseInstance.PurgeAsync().Wait();
@@ -102,9 +66,9 @@ namespace SterlingDB.Test.Database
             var test = new EnumClass() { Id = 1, Value = TestEnums.Value2, ValueLong = TestEnumsLong.LongerValue };
             _databaseInstance.SaveAsync( test ).Wait();
             var actual = _databaseInstance.LoadAsync<EnumClass>( 1 ).Result;
-            Assert.Equal(test.Id, actual.Id, "Failed to load enum: key mismatch.");
-            Assert.Equal(test.Value, actual.Value, "Failed to load enum: value mismatch.");
-            Assert.Equal(test.ValueLong, actual.ValueLong, "Failed to load enum: value mismatch.");
+            Assert.Equal(test.Id, actual.Id); //Failed to load enum: key mismatch.");
+            Assert.Equal(test.Value, actual.Value); //Failed to load enum: value mismatch.");
+            Assert.Equal(test.ValueLong, actual.ValueLong); //Failed to load enum: value mismatch.");
         }
 
         [Fact]
@@ -119,14 +83,13 @@ namespace SterlingDB.Test.Database
             var actual1 = _databaseInstance.LoadAsync<EnumClass>( 1 ).Result;
             var actual2 = _databaseInstance.LoadAsync<EnumClass>( 2 ).Result;
 
-            Assert.Equal(test1.Id, actual1.Id, "Failed to load enum: key 1 mismatch.");
-            Assert.Equal(test1.Value, actual1.Value, "Failed to load enum: value 1 mismatch.");
-            Assert.Equal(test1.ValueLong, actual1.ValueLong, "Failed to load enum: value 1 mismatch.");
+            Assert.Equal(test1.Id, actual1.Id); //Failed to load enum: key 1 mismatch.");
+            Assert.Equal(test1.Value, actual1.Value); //Failed to load enum: value 1 mismatch.");
+            Assert.Equal(test1.ValueLong, actual1.ValueLong); //Failed to load enum: value 1 mismatch.");
 
-            Assert.Equal(test2.Id, actual2.Id, "Failed to load enum: key 2 mismatch.");
-            Assert.Equal(test2.Value, actual2.Value, "Failed to load enum: value 2 mismatch.");
-            Assert.Equal(test2.ValueLong, actual2.ValueLong, "Failed to load enum: value 2 mismatch.");
+            Assert.Equal(test2.Id, actual2.Id); //Failed to load enum: key 2 mismatch.");
+            Assert.Equal(test2.Value, actual2.Value); //Failed to load enum: value 2 mismatch.");
+            Assert.Equal(test2.ValueLong, actual2.ValueLong); //Failed to load enum: value 2 mismatch.");
         }
-
     }
 }

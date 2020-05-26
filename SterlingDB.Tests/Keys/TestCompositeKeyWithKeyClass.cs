@@ -45,7 +45,7 @@ namespace SterlingDB.Test.Keys
     
     public class TestCompositeKeyWithKeyClass : TestBase
     {
-        private SterlingEngine _engine;
+        private readonly SterlingEngine _engine;
         private ISterlingDatabaseInstance _databaseInstance;
 
         

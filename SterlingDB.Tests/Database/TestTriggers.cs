@@ -1,24 +1,13 @@
-
-#if NETFX_CORE
-using SterlingDB.WinRT.WindowsStorage;
-using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-#elif SILVERLIGHT
-using Microsoft.Phone.Testing;
-using SterlingDB.WP8.IsolatedStorage;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-#else
+using SterlingDB.Core;
 using SterlingDB.Server.FileSystem;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-#endif
-
+using SterlingDB.Test.Helpers;
+using Xunit;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
-
-using SterlingDB.Core;
-using SterlingDB.Core.Database;
+using System.Threading.Tasks;
 using SterlingDB.Core.Exceptions;
-using SterlingDB.Test.Helpers;
 
 namespace SterlingDB.Test.Database
 {    
@@ -140,7 +129,7 @@ namespace SterlingDB.Test.Database
     
     public class TestTriggers : TestBase
     {
-        private SterlingEngine _engine;
+        private readonly SterlingEngine _engine;
         private ISterlingDatabaseInstance _databaseInstance;
 
         

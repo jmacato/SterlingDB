@@ -71,7 +71,7 @@ namespace SterlingDB.Test.Database
     
     public class TestInterfaceProperty : TestBase
     {
-        private SterlingEngine _engine;
+        private readonly SterlingEngine _engine;
         private ISterlingDatabaseInstance _databaseInstance;
 
         

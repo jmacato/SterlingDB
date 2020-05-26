@@ -1,16 +1,12 @@
 ﻿using SterlingDB.Core;
-using SterlingDB.Core.Database;
-using SterlingDB.Server.FileSystem;
 using SterlingDB.Test.Helpers;
 using Xunit;
-using SterlingDB.Core;
-using SterlingDB.Test.Helpers;
 
 namespace SterlingDB.Test.Database
 {
     public class TestDictionary : TestBase
     {
-        private SterlingEngine _engine;
+        private readonly SterlingEngine _engine;
         private ISterlingDatabaseInstance _databaseInstance;
 
         public TestDictionary()
@@ -51,7 +47,7 @@ namespace SterlingDB.Test.Database
             Assert.NotNull(actual); //Save/load failed: model is null.");
             Assert.Equal(expected.ID, actual.ID); //Save/load failed: key mismatch.");
             Assert.NotNull(actual.DictionaryWithBaseClassAsValue); //Save/load failed: dictionary not initialized.");
-            Assert.Equal(0, actual.DictionaryWithBaseClassAsValue.Count); //Save/load failed: dictionary size mismatch.");
+            Assert.Empty(actual.DictionaryWithBaseClassAsValue); //Save/load failed: dictionary size mismatch.");
         }
 
         [Fact]

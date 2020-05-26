@@ -44,7 +44,7 @@
 //    
 //    public class TestWriteableBitmap : SilverlightTest
 //    {
-//        private SterlingEngine _engine;
+//        private readonly SterlingEngine _engine;
 //        private ISterlingDatabaseInstance _databaseInstance;
 
 //        
