@@ -9,4 +9,4 @@ env:
 mono: none
 dotnet: 3.1.102
 script:
-  - dotnet test SterlingDB.Tests/SterlingDB.Tests.csproj -v d
+  - dotnet test SterlingDB.Tests/SterlingDB.Tests.csproj
