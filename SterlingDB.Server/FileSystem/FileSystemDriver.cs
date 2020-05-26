@@ -237,8 +237,7 @@ namespace SterlingDB.Server.FileSystem
         ///     Publish the list of tables
         /// </summary>
         /// <param name="tables">The list of tables</param>
-        public override async void PublishTables(Dictionary<Type, ITableDefinition> tables,
-            Func<string, Type> resolveType)
+        public override async void PublishTables(Dictionary<Type, ITableDefinition> tables, Func<string, Type> resolveType)
         {
             _fileHelper.EnsureDirectory(_pathProvider.GetDatabasePath(_basePath, DatabaseInstanceName, this));
 
