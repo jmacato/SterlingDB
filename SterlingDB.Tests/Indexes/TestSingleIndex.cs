@@ -49,9 +49,9 @@ namespace SterlingDB.Test.Indexes
             Assert.False(_target.IsDirty); //Dirty flag set prematurely");
             _target.AddIndexAsync(_testModels[0], _testModels[0].Key).Wait();
             Assert.True(_target.IsDirty); //Dirty flag not set on add.");
-            Assert.Equal(_target.Query.Count(), 1); //Index count is incorrect.");
+            Assert.Single(_target.Query); //Index count is incorrect.");
             _target.AddIndexAsync(_testModels[0], _testModels[0].Key).Wait();
-            Assert.Equal(_target.Query.Count(), 1); //Index count is incorrect.");            
+            Assert.Single(_target.Query); //Index count is incorrect.");            
         }
 
         [Fact]
@@ -86,9 +86,9 @@ namespace SterlingDB.Test.Indexes
             Assert.False(_target.IsDirty); //Dirty flag set prematurely");
             _target.AddIndexAsync(_testModels[0], _testModels[0].Key).Wait();
             Assert.True(_target.IsDirty); //Dirty flag not set on add.");
-            Assert.Equal(1, _target.Query.Count()); //Index count is incorrect.");
+            Assert.Single(_target.Query); //Index count is incorrect.");
             _target.RemoveIndexAsync(_testModels[0].Key).Wait();
-            Assert.Equal(0, _target.Query.Count()); //Index was not removed.");
+            Assert.Empty(_target.Query); //Index was not removed.");
         }
 
         [Fact]

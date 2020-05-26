@@ -118,6 +118,7 @@ namespace SterlingDB.Database
         /// </summary>
         public abstract Task SerializeTypesAsync();
 
+#pragma warning disable
         /// <summary>
         ///     Deserialize the type master
         /// </summary>
@@ -126,14 +127,14 @@ namespace SterlingDB.Database
         {
             TypeIndex = new List<string>(types);
         }
-
+#pragma warning restore
         /// <summary>
         ///     Get the type master
         /// </summary>
         /// <returns></returns>
         public Task<IList<string>> GetTypesAsync()
         {
-            return Task.FromResult((IList<string>) new List<string>(TypeIndex));
+            return Task.FromResult((IList<string>)new List<string>(TypeIndex));
         }
 
         /// <summary>
@@ -145,7 +146,7 @@ namespace SterlingDB.Database
         {
             return Task.Factory.StartNew(() =>
             {
-                lock (((ICollection) TypeIndex).SyncRoot)
+                lock (((ICollection)TypeIndex).SyncRoot)
                 {
                     if (!TypeIndex.Contains(type)) TypeIndex.Add(type);
                     return TypeIndex.IndexOf(type);

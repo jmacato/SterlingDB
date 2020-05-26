@@ -107,7 +107,8 @@ namespace SterlingDB.Indexes
                 IsDirty = true;
             }
         }
-
+        
+#pragma warning disable
         /// <summary>
         ///     Update the index
         /// </summary>
@@ -125,6 +126,7 @@ namespace SterlingDB.Indexes
 
             IsDirty = true;
         }
+#pragma warning restore
 
         /// <summary>
         ///     Remove an index from the list

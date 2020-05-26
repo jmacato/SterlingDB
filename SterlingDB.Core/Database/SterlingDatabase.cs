@@ -138,7 +138,7 @@ namespace SterlingDB.Database
 
             for (var x = 0; x < count; x++) typeMaster.Add(reader.ReadString());
 
-            await database.Driver.DeserializeTypesAsync(typeMaster).ConfigureAwait(false);
+            await database.Driver.DeserializeTypes(typeMaster).ConfigureAwait(false);
 
             foreach (var table in ((BaseDatabaseInstance) database).TableDefinitions)
             {

@@ -18,7 +18,9 @@ namespace SterlingDB.Test
             return new MemoryDriver();
         }
 
+#pragma warning disable
         public abstract void Cleanup();
+#pragma warning restore
 
         protected virtual void Dispose(bool disposing)
         {

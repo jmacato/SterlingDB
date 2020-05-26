@@ -101,7 +101,7 @@ namespace SterlingDB
         ///     Deserialize the type master
         /// </summary>
         /// <param name="types">The list of types</param>
-        Task DeserializeTypesAsync(IList<string> types);
+        Task DeserializeTypes(IList<string> types);
 
         /// <summary>
         ///     Get the type master
