@@ -16,11 +16,10 @@ namespace Wintellect.Sterling.Server.FileSystem
 
             lock ( _pathLocks )
             {
-                AsyncLock aLock = null;
 
-                if ( _pathLocks.TryGetValue( hash, out aLock ) == false )
+                if (_pathLocks.TryGetValue(hash, out AsyncLock aLock) == false)
                 {
-                    aLock = _pathLocks[ hash ] = new AsyncLock();
+                    aLock = _pathLocks[hash] = new AsyncLock();
                 }
 
                 return aLock;
