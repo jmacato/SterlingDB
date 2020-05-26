@@ -3,6 +3,6 @@
     <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SterlingDB.Core\SterlingDB.Core.csproj"/>
+    <ProjectReference Include="..\SterlingDB\SterlingDB.csproj"/>
   </ItemGroup>
 </Project>

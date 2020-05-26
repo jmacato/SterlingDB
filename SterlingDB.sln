@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SterlingDB.Core", "SterlingDB.Core\SterlingDB.Core.csproj", "{3AB4D2F7-E418-4B74-A47E-79208404C539}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SterlingDB", "SterlingDB\SterlingDB.csproj", "{3AB4D2F7-E418-4B74-A47E-79208404C539}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SterlingDB.Server", "SterlingDB.Server\SterlingDB.Server.csproj", "{AB75640B-8C2D-4CC5-9C5F-405539FD40B1}"
 EndProject
