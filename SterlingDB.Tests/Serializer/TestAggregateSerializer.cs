@@ -39,7 +39,7 @@ namespace SterlingDB.Test.Serializer
 
         private TestStruct _testStruct = new TestStruct {Value = 5, Date = DateTime.Now};
 
-        [TestInitialize]
+        
         public void Init()
         {
             var serializer = new AggregateSerializer( new PlatformAdapter() );
@@ -51,21 +51,21 @@ namespace SterlingDB.Test.Serializer
         /// <summary>
         ///     Check that serialization checks are working
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void TestSerializationChecks()
         {
-            Assert.IsTrue(_target.CanSerialize<int>(), "Failed to recognize integer.");
-            Assert.IsTrue(_target.CanSerialize<double>(), "Failed to recognize double.");
-            Assert.IsTrue(_target.CanSerialize<string>(), "Failed to recognize string (generic).");
-            Assert.IsTrue(_target.CanSerialize(typeof(string)), "Failed to recognize string.");
-            Assert.IsTrue(_target.CanSerialize(typeof(TestStruct)), "Failed to recognize test structure.");                       
-            Assert.IsFalse(_target.CanSerialize(_date.GetType()), "Accepted data time.");
+            Assert.True(_target.CanSerialize<int>(), "Failed to recognize integer.");
+            Assert.True(_target.CanSerialize<double>(), "Failed to recognize double.");
+            Assert.True(_target.CanSerialize<string>(), "Failed to recognize string (generic).");
+            Assert.True(_target.CanSerialize(typeof(string)), "Failed to recognize string.");
+            Assert.True(_target.CanSerialize(typeof(TestStruct)), "Failed to recognize test structure.");                       
+            Assert.False(_target.CanSerialize(_date.GetType()), "Accepted data time.");
         }
 
         /// <summary>
         ///     Check it throws an exception when trying to serialize the wrong thing
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void TestSerializerException()
         {
             var exception = false;
@@ -83,7 +83,7 @@ namespace SterlingDB.Test.Serializer
                         exception = true;
                     }
 
-                    Assert.IsTrue(exception, "Sterling did not throw an exception when attemping to serialize the date.");
+                    Assert.True(exception, "Sterling did not throw an exception when attemping to serialize the date.");
                 }
             }
         }
@@ -91,7 +91,7 @@ namespace SterlingDB.Test.Serializer
         /// <summary>
         ///     Test the serialization and deserialization
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void TestSerialization()
         {
             var charArray = TEST_STRING.ToCharArray();
@@ -127,31 +127,31 @@ namespace SterlingDB.Test.Serializer
                 }
             }
 
-            Assert.AreEqual(FIVE, targetFive, "Integer did not deserialize correctly.");
-            Assert.AreEqual(PI, targetPi, "Double did not deserialize correctly.");
-            Assert.AreEqual(TEST_STRING, targetTestString, "String did not deserialize correctly.");
+            Assert.Equal(FIVE, targetFive, "Integer did not deserialize correctly.");
+            Assert.Equal(PI, targetPi, "Double did not deserialize correctly.");
+            Assert.Equal(TEST_STRING, targetTestString, "String did not deserialize correctly.");
 
-            Assert.AreEqual(charArray.Length, targetCharArray.Length, "Character array length mismatch.");
+            Assert.Equal(charArray.Length, targetCharArray.Length, "Character array length mismatch.");
             if (charArray.Length == targetCharArray.Length)
             {
                 for (var idx = 0; idx < charArray.Length; idx ++)
                 {
-                    Assert.AreEqual(charArray[idx], targetCharArray[idx],
+                    Assert.Equal(charArray[idx], targetCharArray[idx],
                                     "Character array did not deserialize correctly.");
                 }
             }
 
-            Assert.AreEqual(byteArray.Length, targetByteArray.Length, "Byte array length mismatch.");
+            Assert.Equal(byteArray.Length, targetByteArray.Length, "Byte array length mismatch.");
             if (byteArray.Length == targetByteArray.Length)
             {
                 for (var idx = 0; idx < byteArray.Length; idx++)
                 {
-                    Assert.AreEqual(byteArray[idx], targetByteArray[idx], "Byte array did not deserialize correctly.");
+                    Assert.Equal(byteArray[idx], targetByteArray[idx], "Byte array did not deserialize correctly.");
                 }
             }
 
-            Assert.AreEqual(_testStruct.Value, targetTestStruct.Value, "Test structure did not deserialize.");
-            Assert.AreEqual(_testStruct.Date, targetTestStruct.Date, "Test structure did not deserialize correctly.");
+            Assert.Equal(_testStruct.Value, targetTestStruct.Value, "Test structure did not deserialize.");
+            Assert.Equal(_testStruct.Date, targetTestStruct.Date, "Test structure did not deserialize correctly.");
         }
     }
 }

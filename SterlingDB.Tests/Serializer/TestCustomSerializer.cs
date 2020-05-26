@@ -174,7 +174,7 @@ namespace SterlingDB.Test.Serializer
         /// <summary>
         ///    Initialize the test
         /// </summary>
-        [TestInitialize]
+        
         public void TestInit()
         {
             _engine = Factory.NewEngine();
@@ -187,8 +187,8 @@ namespace SterlingDB.Test.Serializer
         /// <summary>
         ///     Clean up when done
         /// </summary>
-        [TestCleanup]
-        public void TestCleanup()
+        
+        public override void Cleanup()
         {
             DatabaseInstance.PurgeAsync().Wait();
             _engine.Dispose();
@@ -199,7 +199,7 @@ namespace SterlingDB.Test.Serializer
         ///     Test the serializer by creating a typically non-supported class and processing with
         ///     the custom serializer
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void TestCustomSaveAndLoad()
         {
             var expectedList = new[] {TestModel.MakeTestModel(), TestModel.MakeTestModel(), TestModel.MakeTestModel()};
@@ -211,16 +211,16 @@ namespace SterlingDB.Test.Serializer
             // confirm the test models were saved as "foreign keys" 
             var count = DatabaseInstance.Query<TestModel, int>().Count();
 
-            Assert.AreEqual(expectedList.Length, count, "Load failed: test models were not saved independently.");
+            Assert.Equal(expectedList.Length, count, "Load failed: test models were not saved independently.");
 
             var actual = DatabaseInstance.LoadAsync<NotSupportedClass>( key ).Result;
-            Assert.IsNotNull(actual, "Load failed: instance is null.");
-            Assert.AreEqual(expected.Id, actual.Id, "Load failed: key mismatch.");
+            Assert.NotNull(actual, "Load failed: instance is null.");
+            Assert.Equal(expected.Id, actual.Id, "Load failed: key mismatch.");
 
             // cast to list
             var actualList = new List<TestModel>(actual.InnerList);
 
-            Assert.AreEqual(expectedList.Length, actualList.Count, "Load failed: mismatch in list.");
+            Assert.Equal(expectedList.Length, actualList.Count, "Load failed: mismatch in list.");
 
             foreach (var matchingItem in
                 expectedList.Select(item => (from i in actualList where i.Key.Equals(item.Key) select i.Key).FirstOrDefault()).Where(matchingItem => matchingItem < 1))

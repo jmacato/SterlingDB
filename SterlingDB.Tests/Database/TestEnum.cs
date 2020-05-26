@@ -86,7 +86,7 @@ namespace SterlingDB.Test.Database
 
         public TestContext TestContext { get; set; }
 
-        [TestInitialize]
+        
         public void TestInit()
         {           
             _engine = Factory.NewEngine();
@@ -95,26 +95,26 @@ namespace SterlingDB.Test.Database
             _databaseInstance.PurgeAsync().Wait();
         }
 
-        [TestCleanup]
-        public void TestCleanup()
+        
+        public override void Cleanup()
         {
             _databaseInstance.PurgeAsync().Wait();
             _engine.Dispose();
             _databaseInstance = null;            
         }
 
-        [TestMethod]
+        [Fact]
         public void TestEnumSaveAndLoad()
         {
             var test = new EnumClass() { Id = 1, Value = TestEnums.Value2, ValueLong = TestEnumsLong.LongerValue };
             _databaseInstance.SaveAsync( test ).Wait();
             var actual = _databaseInstance.LoadAsync<EnumClass>( 1 ).Result;
-            Assert.AreEqual(test.Id, actual.Id, "Failed to load enum: key mismatch.");
-            Assert.AreEqual(test.Value, actual.Value, "Failed to load enum: value mismatch.");
-            Assert.AreEqual(test.ValueLong, actual.ValueLong, "Failed to load enum: value mismatch.");
+            Assert.Equal(test.Id, actual.Id, "Failed to load enum: key mismatch.");
+            Assert.Equal(test.Value, actual.Value, "Failed to load enum: value mismatch.");
+            Assert.Equal(test.ValueLong, actual.ValueLong, "Failed to load enum: value mismatch.");
         }
 
-        [TestMethod]
+        [Fact]
         public void TestMultipleEnumSaveAndLoad()
         {
             var test1 = new EnumClass { Id = 1, Value = TestEnums.Value1, ValueLong = TestEnumsLong.LongValue };
@@ -126,13 +126,13 @@ namespace SterlingDB.Test.Database
             var actual1 = _databaseInstance.LoadAsync<EnumClass>( 1 ).Result;
             var actual2 = _databaseInstance.LoadAsync<EnumClass>( 2 ).Result;
 
-            Assert.AreEqual(test1.Id, actual1.Id, "Failed to load enum: key 1 mismatch.");
-            Assert.AreEqual(test1.Value, actual1.Value, "Failed to load enum: value 1 mismatch.");
-            Assert.AreEqual(test1.ValueLong, actual1.ValueLong, "Failed to load enum: value 1 mismatch.");
+            Assert.Equal(test1.Id, actual1.Id, "Failed to load enum: key 1 mismatch.");
+            Assert.Equal(test1.Value, actual1.Value, "Failed to load enum: value 1 mismatch.");
+            Assert.Equal(test1.ValueLong, actual1.ValueLong, "Failed to load enum: value 1 mismatch.");
 
-            Assert.AreEqual(test2.Id, actual2.Id, "Failed to load enum: key 2 mismatch.");
-            Assert.AreEqual(test2.Value, actual2.Value, "Failed to load enum: value 2 mismatch.");
-            Assert.AreEqual(test2.ValueLong, actual2.ValueLong, "Failed to load enum: value 2 mismatch.");
+            Assert.Equal(test2.Id, actual2.Id, "Failed to load enum: key 2 mismatch.");
+            Assert.Equal(test2.Value, actual2.Value, "Failed to load enum: value 2 mismatch.");
+            Assert.Equal(test2.ValueLong, actual2.ValueLong, "Failed to load enum: value 2 mismatch.");
         }
 
     }

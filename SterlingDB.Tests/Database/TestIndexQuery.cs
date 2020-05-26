@@ -51,7 +51,7 @@ namespace SterlingDB.Test.Database
 
         public TestContext TestContext { get; set; }
 
-        [TestInitialize]
+        
         public void TestInit()
         {
             _engine = Factory.NewEngine();
@@ -65,15 +65,15 @@ namespace SterlingDB.Test.Database
             }
         }
 
-        [TestCleanup]
-        public void TestCleanup()
+        
+        public override void Cleanup()
         {
             _databaseInstance.PurgeAsync().Wait();
             _engine.Dispose();
             _databaseInstance = null;            
         }
 
-        [TestMethod]
+        [Fact]
         public void TestSequentialQuery()
         {
             // set up queries
@@ -84,12 +84,12 @@ namespace SterlingDB.Test.Database
             var idx = 0;
             foreach (var key in sequential)
             {
-                Assert.AreEqual(_modelList[idx++].Key, key, "Sequential query failed: key mismatch.");
+                Assert.Equal(_modelList[idx++].Key, key, "Sequential query failed: key mismatch.");
             }
-            Assert.AreEqual(idx, _modelList.Count, "Error in query: wrong number of rows.");
+            Assert.Equal(idx, _modelList.Count, "Error in query: wrong number of rows.");
         }
 
-        [TestMethod]
+        [Fact]
         public void TestDescendingQuery()
         {
             var descending = from k in _databaseInstance.Query<TestModel, string, int>(TestDatabaseInstance.DATAINDEX) orderby k.Index descending select k.Key;
@@ -99,12 +99,12 @@ namespace SterlingDB.Test.Database
             var idx = 0;
             foreach (var key in descending)
             {
-                Assert.AreEqual(_modelList[idx++].Key, key, "Descending query failed: key mismatch.");
+                Assert.Equal(_modelList[idx++].Key, key, "Descending query failed: key mismatch.");
             }
-            Assert.AreEqual(idx, _modelList.Count, "Error in query: wrong number of rows.");
+            Assert.Equal(idx, _modelList.Count, "Error in query: wrong number of rows.");
         }        
 
-        [TestMethod]
+        [Fact]
         public void TestUnrolledQuery()
         {
             _modelList.Sort((m1, m2) => m1.Date.CompareTo(m2.Date));
@@ -115,9 +115,9 @@ namespace SterlingDB.Test.Database
 
             foreach (var model in unrolled)
             {
-                Assert.AreEqual(_modelList[idx].Key, model.Key, "Unrolled query failed: key mismatch.");
-                Assert.AreEqual(_modelList[idx].Date, model.Date, "Unrolled query failed: date mismatch.");
-                Assert.AreEqual(_modelList[idx].Data, model.Data, "Unrolled query failed: data mismatch.");
+                Assert.Equal(_modelList[idx].Key, model.Key, "Unrolled query failed: key mismatch.");
+                Assert.Equal(_modelList[idx].Date, model.Date, "Unrolled query failed: date mismatch.");
+                Assert.Equal(_modelList[idx].Data, model.Data, "Unrolled query failed: data mismatch.");
                 idx++;
             }
         }

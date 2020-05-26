@@ -51,15 +51,15 @@ namespace SterlingDB.Test.Database
 
         public TestContext TestContext { get; set; }
 
-        [TestCleanup]
-        public void TestCleanup()
+        
+        public override void Cleanup()
         {
             _databaseInstance.PurgeAsync().Wait();
             _engine.Dispose();
             _databaseInstance = null;            
         }
 
-        [TestMethod]
+        [Fact]
         public void TestBackupAndRestore()
         {
             var driver = GetDriver();
@@ -92,7 +92,7 @@ namespace SterlingDB.Test.Database
             var actual = _databaseInstance.LoadAsync<TestModel>( expected.Key ).Result;
 
             // confirm the database is gone
-            Assert.IsNull(actual, "Purge failed, was able to load the test model.");
+            Assert.Null(actual, "Purge failed, was able to load the test model.");
 
             _databaseInstance = null;
 
@@ -122,18 +122,18 @@ namespace SterlingDB.Test.Database
 
             actual = _databaseInstance.LoadAsync<TestModel>(expected.Key).Result;
 
-            Assert.IsNotNull(actual, "Load failed.");
+            Assert.NotNull(actual, "Load failed.");
 
-            Assert.AreEqual(expected.Key, actual.Key, "Load failed: key mismatch.");
-            Assert.AreEqual(expected.Data, actual.Data, "Load failed: data mismatch.");
-            Assert.IsNull(actual.Data2, "Load failed: suppressed data property not valid on de-serialize.");
-            Assert.IsNotNull(actual.SubClass, "Load failed: sub class is null.");
-            Assert.IsNull(actual.SubClass2, "Load failed: supressed sub class should be null.");
-            Assert.AreEqual(expected.SubClass.NestedText, actual.SubClass.NestedText,
+            Assert.Equal(expected.Key, actual.Key, "Load failed: key mismatch.");
+            Assert.Equal(expected.Data, actual.Data, "Load failed: data mismatch.");
+            Assert.Null(actual.Data2, "Load failed: suppressed data property not valid on de-serialize.");
+            Assert.NotNull(actual.SubClass, "Load failed: sub class is null.");
+            Assert.Null(actual.SubClass2, "Load failed: supressed sub class should be null.");
+            Assert.Equal(expected.SubClass.NestedText, actual.SubClass.NestedText,
                             "Load failed: sub class text mismtach.");
-            Assert.AreEqual(expected.SubStruct.NestedId, actual.SubStruct.NestedId,
+            Assert.Equal(expected.SubStruct.NestedId, actual.SubStruct.NestedId,
                             "Load failed: sub struct id mismtach.");
-            Assert.AreEqual(expected.SubStruct.NestedString, actual.SubStruct.NestedString,
+            Assert.Equal(expected.SubStruct.NestedString, actual.SubStruct.NestedString,
                             "Load failed: sub class string mismtach.");
         }
     }

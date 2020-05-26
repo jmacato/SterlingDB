@@ -32,7 +32,7 @@ namespace SterlingDB.Test.Serializer
         const double PI = 3.14;
         const string TEST_STRING = "This string";
         
-        [TestInitialize]
+        
         public void Init()
         {
             _target = new DefaultSerializer();
@@ -41,19 +41,19 @@ namespace SterlingDB.Test.Serializer
         /// <summary>
         ///     Check that serialization checks are working
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void TestSerializationChecks()
         {
-            Assert.IsTrue(_target.CanSerialize<int>(), "Failed to recognize integer.");
-            Assert.IsTrue(_target.CanSerialize<double>(), "Failed to recognize double.");
-            Assert.IsTrue(_target.CanSerialize<string>(), "Failed to recognize string (generic).");
-            Assert.IsTrue(_target.CanSerialize(typeof(string)), "Failed to recognize string.");                       
+            Assert.True(_target.CanSerialize<int>(), "Failed to recognize integer.");
+            Assert.True(_target.CanSerialize<double>(), "Failed to recognize double.");
+            Assert.True(_target.CanSerialize<string>(), "Failed to recognize string (generic).");
+            Assert.True(_target.CanSerialize(typeof(string)), "Failed to recognize string.");                       
         }        
 
         /// <summary>
         ///     Test the serialization and deserialization
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void TestSerialization()
         {
             var charArray = TEST_STRING.ToCharArray();
@@ -86,25 +86,25 @@ namespace SterlingDB.Test.Serializer
                 }
             }
 
-            Assert.AreEqual(FIVE, targetFive, "Integer did not deserialize correctly.");
-            Assert.AreEqual(PI, targetPi, "Double did not deserialize correctly.");
-            Assert.AreEqual(TEST_STRING, targetTestString, "String did not deserialize correctly.");
+            Assert.Equal(FIVE, targetFive, "Integer did not deserialize correctly.");
+            Assert.Equal(PI, targetPi, "Double did not deserialize correctly.");
+            Assert.Equal(TEST_STRING, targetTestString, "String did not deserialize correctly.");
 
-            Assert.AreEqual(charArray.Length, targetCharArray.Length, "Character array length mismatch.");
+            Assert.Equal(charArray.Length, targetCharArray.Length, "Character array length mismatch.");
             if (charArray.Length == targetCharArray.Length)
             {
                 for (var idx = 0; idx < charArray.Length; idx ++)
                 {
-                    Assert.AreEqual(charArray[idx], targetCharArray[idx], "Character array did not deserialize correctly.");
+                    Assert.Equal(charArray[idx], targetCharArray[idx], "Character array did not deserialize correctly.");
                 }
             }
 
-            Assert.AreEqual(byteArray.Length, targetByteArray.Length, "Byte array length mismatch.");
+            Assert.Equal(byteArray.Length, targetByteArray.Length, "Byte array length mismatch.");
             if (byteArray.Length == targetByteArray.Length)
             {
                 for (var idx = 0; idx < byteArray.Length; idx++)
                 {
-                    Assert.AreEqual(byteArray[idx], targetByteArray[idx], "Byte array did not deserialize correctly.");
+                    Assert.Equal(byteArray[idx], targetByteArray[idx], "Byte array did not deserialize correctly.");
                 }
             }
         }

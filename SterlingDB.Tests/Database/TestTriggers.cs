@@ -145,7 +145,7 @@ namespace SterlingDB.Test.Database
 
         public TestContext TestContext { get; set; }
 
-        [TestInitialize]
+        
         public void TestInit()
         {            
             _engine = Factory.NewEngine();
@@ -161,25 +161,25 @@ namespace SterlingDB.Test.Database
             _databaseInstance.RegisterTrigger(new TriggerClassTestTrigger(nextKey));
         }
 
-        [TestCleanup]
-        public void TestCleanup()
+        
+        public override void Cleanup()
         {
             _databaseInstance.PurgeAsync().Wait();
             _engine.Dispose();
             _databaseInstance = null;            
         }
 
-        [TestMethod]
+        [Fact]
         public void TestTriggerBeforeSaveWithSuccess()
         {
             var key1 = _databaseInstance.SaveAsync<TriggerClass, int>( new TriggerClass { Data = Guid.NewGuid().ToString() } ).Result;
             var key2 = _databaseInstance.SaveAsync<TriggerClass, int>( new TriggerClass { Data = Guid.NewGuid().ToString() } ).Result;
-            Assert.IsTrue(key1 > 0, "Trigger failed: key is not greater than 0.");
-            Assert.IsTrue(key2 > 0, "Save failed: second key is not greater than 0.");
-            Assert.IsTrue(key2 - key1 == 1, "Save failed: second key isn't one greater than first key.");
+            Assert.True(key1 > 0, "Trigger failed: key is not greater than 0.");
+            Assert.True(key2 > 0, "Save failed: second key is not greater than 0.");
+            Assert.True(key2 - key1 == 1, "Save failed: second key isn't one greater than first key.");
         }
 
-        [TestMethod]
+        [Fact]
         public void TestTriggerBeforeSaveWithFailure()
         {
             var handled = false;
@@ -195,14 +195,14 @@ namespace SterlingDB.Test.Database
                 }
             }
 
-            Assert.IsTrue(handled, "Save failed: trigger did not throw exception");
+            Assert.True(handled, "Save failed: trigger did not throw exception");
 
             var actual = _databaseInstance.LoadAsync<TriggerClass>( TriggerClassTestTrigger.BADSAVE ).Result;
 
-            Assert.IsNull(actual, "Trigger failed: instance was saved.");
+            Assert.Null(actual, "Trigger failed: instance was saved.");
         }
 
-        [TestMethod]
+        [Fact]
         public void TestTriggerOnChildren()
         {
             var trigger = new TriggerListTestTrigger(100);
@@ -219,24 +219,24 @@ namespace SterlingDB.Test.Database
 
             var actual = _databaseInstance.LoadAsync<TestListModel>( key ).Result;
 
-            Assert.IsNotNull(actual.Children, "Trigger failed: child list is null.");
-            Assert.AreEqual(expected.Children.Count, actual.Children.Count, "Trigger failed: actual child count different.");
+            Assert.NotNull(actual.Children, "Trigger failed: child list is null.");
+            Assert.Equal(expected.Children.Count, actual.Children.Count, "Trigger failed: actual child count different.");
 
             var noKey = (from m in actual.Children where m == null || m.Key < 1 select m).Any();
 
-            Assert.IsFalse(noKey, "Trigger failed: children found without a key.");            
+            Assert.False(noKey, "Trigger failed: children found without a key.");            
             _databaseInstance.UnregisterTrigger(trigger);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestTriggerAfterSave()
         {
             var target = new TriggerClass {Data = Guid.NewGuid().ToString(), IsDirty = true};
             _databaseInstance.SaveAsync<TriggerClass, int>( target ).Wait();
-            Assert.IsFalse(target.IsDirty, "Trigger failed: is dirty flag was not reset.");
+            Assert.False(target.IsDirty, "Trigger failed: is dirty flag was not reset.");
         }
 
-        [TestMethod]
+        [Fact]
         public void TestTriggerBeforeDelete()
         {
             var instance1 = new TriggerClass {Data = Guid.NewGuid().ToString()};
@@ -259,7 +259,7 @@ namespace SterlingDB.Test.Database
                 }
             }
 
-            Assert.IsTrue(handled, "Trigger failed to throw exception for delete operation on key = 5.");
+            Assert.True(handled, "Trigger failed to throw exception for delete operation on key = 5.");
         }
     }
 #endif

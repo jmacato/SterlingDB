@@ -62,7 +62,7 @@ namespace SterlingDB.Test.Indexes
 
         public TestContext TestContext { get; set; }
 
-        [TestInitialize]
+        
         public void Init()
         {
             _driver = GetDriver();
@@ -78,91 +78,91 @@ namespace SterlingDB.Test.Indexes
                                                       tm => tm.Data , _GetTestModelByKey);
         }
 
-        [TestCleanup]
+        
         public void Cleanup()
         {
             _driver.PurgeAsync().Wait();
             _driver = null;
         }
 
-        [TestMethod]
+        [Fact]
         public void TestAddIndex()
         {
-            Assert.IsFalse(_target.IsDirty, "Dirty flag set prematurely");
+            Assert.False(_target.IsDirty, "Dirty flag set prematurely");
             _target.AddIndexAsync(_testModels[0], _testModels[0].Key).Wait();
-            Assert.IsTrue(_target.IsDirty, "Dirty flag not set on add.");            
+            Assert.True(_target.IsDirty, "Dirty flag not set on add.");            
         }
 
-        [TestMethod]
+        [Fact]
         public void TestAddDuplicateIndex()
         {
-            Assert.IsFalse(_target.IsDirty, "Dirty flag set prematurely");
+            Assert.False(_target.IsDirty, "Dirty flag set prematurely");
             _target.AddIndexAsync(_testModels[0], _testModels[0].Key).Wait();
-            Assert.IsTrue(_target.IsDirty, "Dirty flag not set on add.");
-            Assert.AreEqual(_target.Query.Count(),1, "Index count is incorrect.");
+            Assert.True(_target.IsDirty, "Dirty flag not set on add.");
+            Assert.Equal(_target.Query.Count(),1, "Index count is incorrect.");
             _target.AddIndexAsync(_testModels[0], _testModels[0].Key).Wait();
-            Assert.AreEqual(_target.Query.Count(), 1, "Index count is incorrect.");            
+            Assert.Equal(_target.Query.Count(), 1, "Index count is incorrect.");            
         }
 
-        [TestMethod]
+        [Fact]
         public void TestRemoveIndex()
         {
-            Assert.IsFalse(_target.IsDirty, "Dirty flag set prematurely");
+            Assert.False(_target.IsDirty, "Dirty flag set prematurely");
             _target.AddIndexAsync(_testModels[0], _testModels[0].Key).Wait();
-            Assert.IsTrue(_target.IsDirty, "Dirty flag not set on add.");
-            Assert.AreEqual(1, _target.Query.Count(), "Index count is incorrect.");
+            Assert.True(_target.IsDirty, "Dirty flag not set on add.");
+            Assert.Equal(1, _target.Query.Count(), "Index count is incorrect.");
             _target.RemoveIndexAsync(_testModels[0].Key).Wait();
-            Assert.AreEqual(0, _target.Query.Count(), "Index was not removed.");
+            Assert.Equal(0, _target.Query.Count(), "Index was not removed.");
         }
 
-        [TestMethod]
+        [Fact]
         public void TestQueryable()
         {
             _target.AddIndexAsync(_testModels[0],_testModels[0].Key).Wait();
             _target.AddIndexAsync(_testModels[1], _testModels[1].Key).Wait();
             _target.AddIndexAsync(_testModels[2], _testModels[2].Key).Wait();
-            Assert.AreEqual(3, _target.Query.Count(), "Key count is incorrect.");
-            Assert.AreEqual(0, _testAccessCount, "Lazy loader was accessed prematurely.");
+            Assert.Equal(3, _target.Query.Count(), "Key count is incorrect.");
+            Assert.Equal(0, _testAccessCount, "Lazy loader was accessed prematurely.");
             var testIndex = (from k in _target.Query where k.Index.Equals(_testModels[1].Data) select k).FirstOrDefault();
-            Assert.IsNotNull(testIndex, "Test key not retrieved.");
-            Assert.AreEqual(_testModels[1].Key, testIndex.Key, "Key mismatch.");
-            Assert.AreEqual(0, _testAccessCount, "Lazy loader was accessed prematurely.");
+            Assert.NotNull(testIndex, "Test key not retrieved.");
+            Assert.Equal(_testModels[1].Key, testIndex.Key, "Key mismatch.");
+            Assert.Equal(0, _testAccessCount, "Lazy loader was accessed prematurely.");
             var testModel = testIndex.Value.Result;
-            Assert.AreSame(_testModels[1], testModel, "Model does not match.");
-            Assert.AreEqual(1, _testAccessCount, "Lazy loader access count is incorrect.");
+            Assert.Same(_testModels[1], testModel, "Model does not match.");
+            Assert.Equal(1, _testAccessCount, "Lazy loader access count is incorrect.");
         }
 
-        [TestMethod]
+        [Fact]
         public void TestSerialization()
         {
             _target.AddIndexAsync(_testModels[0], _testModels[0].Key).Wait();
             _target.AddIndexAsync(_testModels[1], _testModels[1].Key).Wait();            
-            Assert.IsTrue(_target.IsDirty, "Dirty flag not set.");
+            Assert.True(_target.IsDirty, "Dirty flag not set.");
             _target.FlushAsync().Wait();
-            Assert.IsFalse(_target.IsDirty, "Dirty flag not reset on flush.");
+            Assert.False(_target.IsDirty, "Dirty flag not reset on flush.");
 
             var secondTarget = new IndexCollection<TestModel, string, int>("TestIndex", _driver,
                                                                  tm => tm.Data,
                                                                  _GetTestModelByKey);
 
             // are we able to grab things?
-            Assert.AreEqual(2, secondTarget.Query.Count(), "Key count is incorrect.");
-            Assert.AreEqual(0, _testAccessCount, "Lazy loader was accessed prematurely.");
+            Assert.Equal(2, secondTarget.Query.Count(), "Key count is incorrect.");
+            Assert.Equal(0, _testAccessCount, "Lazy loader was accessed prematurely.");
             var testIndex = (from k in secondTarget.Query where k.Index.Equals(_testModels[1].Data) select k).FirstOrDefault();
-            Assert.IsNotNull(testIndex, "Test index not retrieved.");
-            Assert.AreEqual(_testModels[1].Key, testIndex.Key, "Key mismatch.");
-            Assert.AreEqual(0, _testAccessCount, "Lazy loader was accessed prematurely.");
+            Assert.NotNull(testIndex, "Test index not retrieved.");
+            Assert.Equal(_testModels[1].Key, testIndex.Key, "Key mismatch.");
+            Assert.Equal(0, _testAccessCount, "Lazy loader was accessed prematurely.");
             var testModel = testIndex.Value.Result;
-            Assert.AreSame(_testModels[1], testModel, "Model does not match.");
-            Assert.AreEqual(1, _testAccessCount, "Lazy loader access count is incorrect.");
+            Assert.Same(_testModels[1], testModel, "Model does not match.");
+            Assert.Equal(1, _testAccessCount, "Lazy loader access count is incorrect.");
 
             // now let's test refresh
             secondTarget.AddIndexAsync(_testModels[2],_testModels[2].Key).Wait();
             secondTarget.FlushAsync().Wait();
 
-            Assert.AreEqual(2, _target.Query.Count(), "Unexpected key count in original collection.");
+            Assert.Equal(2, _target.Query.Count(), "Unexpected key count in original collection.");
             _target.RefreshAsync().Wait();
-            Assert.AreEqual(3, _target.Query.Count(), "Refresh failed.");
+            Assert.Equal(3, _target.Query.Count(), "Refresh failed.");
 
         }
     }

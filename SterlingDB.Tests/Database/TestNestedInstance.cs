@@ -93,7 +93,7 @@ namespace SterlingDB.Test.Database
 
         public TestContext TestContext { get; set; }
 
-        [TestInitialize]
+        
         public void Init()
         {
             _engine = Factory.NewEngine();
@@ -101,7 +101,7 @@ namespace SterlingDB.Test.Database
             _database = _engine.SterlingDatabase.RegisterDatabase<NestedInstancesDatabase>(TestContext.TestName, GetDriver());
         }
 
-        [TestCleanup]
+        
         public void Shutdown()
         {
             if (_engine == null) return;
@@ -111,7 +111,7 @@ namespace SterlingDB.Test.Database
             _database = null;
         }
 
-        [TestMethod]
+        [Fact]
         public void TestAddBill()
         {
             _database.PurgeAsync().Wait();
@@ -177,23 +177,23 @@ namespace SterlingDB.Test.Database
             
             var billKeys = _database.Query<Bill, Guid>();
 
-            Assert.IsTrue(billKeys.Count == 1);
-            Assert.AreEqual(billKeys[0].Key, bill.Id);
+            Assert.True(billKeys.Count == 1);
+            Assert.Equal(billKeys[0].Key, bill.Id);
 
             var freshBill = billKeys[0].LazyValue.Value;
 
-            Assert.IsTrue(freshBill.Partakers.Count == 3, "Bill should have exactly 3 partakers.");            
+            Assert.True(freshBill.Partakers.Count == 3, "Bill should have exactly 3 partakers.");            
 
             var personKeys = _database.Query<Person, Guid>();
 
-            Assert.IsTrue(personKeys.Count == 2, "Failed to save exactly 2 persons.");            
+            Assert.True(personKeys.Count == 2, "Failed to save exactly 2 persons.");            
             
             // Compare loaded instances and verify they are equal 
             var persons = (from p in freshBill.Partakers where p.Person.Id.Equals(person1.Id) select p.Person).ToList();
 
             // should be two of these
-            Assert.AreEqual(2, persons.Count, "Failed to grab two instances of the same person.");
-            Assert.AreEqual(persons[0], persons[1], "Instances were not equal.");
+            Assert.Equal(2, persons.Count, "Failed to grab two instances of the same person.");
+            Assert.Equal(persons[0], persons[1], "Instances were not equal.");
         }
     }
 }

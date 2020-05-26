@@ -39,7 +39,7 @@ namespace SterlingDB.Test.Serializer
         private readonly Guid _guid = Guid.NewGuid();
         private readonly TimeSpan _timeSpan = TimeSpan.FromSeconds(2);
 
-        [TestInitialize]
+        
         public void Init()
         {
             _target = new ExtendedSerializer( new PlatformAdapter() );
@@ -48,20 +48,20 @@ namespace SterlingDB.Test.Serializer
         /// <summary>
         ///     Check that serialization checks are working
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void TestSerializationChecks()
         {
-            Assert.IsTrue(_target.CanSerialize<decimal>(), "Failed to recognize decimal.");          
-            Assert.IsTrue(_target.CanSerialize<DateTime>(), "Failed to recognize date time.");
-            Assert.IsTrue(_target.CanSerialize<Uri>(), "Failed to recognize uri.");
-            Assert.IsTrue(_target.CanSerialize<Guid>(), "Failed to recognize guid.");
-            Assert.IsTrue(_target.CanSerialize<TimeSpan>(), "Failed to recognize timespan.");
+            Assert.True(_target.CanSerialize<decimal>(), "Failed to recognize decimal.");          
+            Assert.True(_target.CanSerialize<DateTime>(), "Failed to recognize date time.");
+            Assert.True(_target.CanSerialize<Uri>(), "Failed to recognize uri.");
+            Assert.True(_target.CanSerialize<Guid>(), "Failed to recognize guid.");
+            Assert.True(_target.CanSerialize<TimeSpan>(), "Failed to recognize timespan.");
         }        
 
         /// <summary>
         ///     Test the serialization and deserialization
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void TestSerialization()
         {
             
@@ -94,12 +94,12 @@ namespace SterlingDB.Test.Serializer
                 }
             }
 
-            Assert.AreEqual(DECIMAL, decimalTest, "Decimal did not deserialize correctly.");
-            Assert.AreEqual(_date, dateTest, "DateTime did not deserialize correctly.");
-            Assert.AreEqual(_secondDate, date2Test, "Second DateTime did not deserialize correctly.");
-            Assert.AreEqual(_uri, uriTest, "Uri did not deserialize correctly.");            
-            Assert.AreEqual(_guid, guidTest, "Guid did not de-serialized correctly.");
-            Assert.AreEqual(_timeSpan, timeSpanTest, "Time span did not deserialize correctly.");
+            Assert.Equal(DECIMAL, decimalTest, "Decimal did not deserialize correctly.");
+            Assert.Equal(_date, dateTest, "DateTime did not deserialize correctly.");
+            Assert.Equal(_secondDate, date2Test, "Second DateTime did not deserialize correctly.");
+            Assert.Equal(_uri, uriTest, "Uri did not deserialize correctly.");            
+            Assert.Equal(_guid, guidTest, "Guid did not de-serialized correctly.");
+            Assert.Equal(_timeSpan, timeSpanTest, "Time span did not deserialize correctly.");
         }
     }
 }

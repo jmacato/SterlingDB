@@ -72,7 +72,7 @@ namespace SterlingDB.Test.Database
 
         public TestContext TestContext { get; set; }
 
-        [TestInitialize]
+        
         public void TestInit()
         {            
             _engine = Factory.NewEngine();
@@ -81,32 +81,32 @@ namespace SterlingDB.Test.Database
             _databaseInstance.PurgeAsync().Wait();
         }
 
-        [TestCleanup]
-        public void TestCleanup()
+        
+        public override void Cleanup()
         {
             _databaseInstance.PurgeAsync().Wait();
             _engine.Dispose();
             _databaseInstance = null;            
         }
 
-        [TestMethod]
+        [Fact]
         public void TestNotNull()
         {
             var test = new NullableClass {Id = 1, Value = 1};
             _databaseInstance.SaveAsync( test ).Wait();
             var actual = _databaseInstance.LoadAsync<NullableClass>( 1 ).Result;
-            Assert.AreEqual(test.Id, actual.Id, "Failed to load nullable with nullable set: key mismatch.");
-            Assert.AreEqual(test.Value, actual.Value, "Failed to load nullable with nullable set: value mismatch.");
+            Assert.Equal(test.Id, actual.Id, "Failed to load nullable with nullable set: key mismatch.");
+            Assert.Equal(test.Value, actual.Value, "Failed to load nullable with nullable set: value mismatch.");
         }
 
-        [TestMethod]
+        [Fact]
         public void TestNull()
         {
             var test = new NullableClass { Id = 1, Value = null };
             _databaseInstance.SaveAsync( test ).Wait();
             var actual = _databaseInstance.LoadAsync<NullableClass>( 1 ).Result;
-            Assert.AreEqual(test.Id, actual.Id, "Failed to load nullable with nullable set: key mismatch.");
-            Assert.IsNull(actual.Value, "Failed to load nullable with nullable set: value mismatch.");
+            Assert.Equal(test.Id, actual.Id, "Failed to load nullable with nullable set: key mismatch.");
+            Assert.Null(actual.Value, "Failed to load nullable with nullable set: value mismatch.");
         }
     }
 }

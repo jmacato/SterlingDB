@@ -47,7 +47,7 @@
 //        private SterlingEngine _engine;
 //        private ISterlingDatabaseInstance _databaseInstance;
 
-//        [TestInitialize]
+//        
 //        public void TestInit()
 //        {            
 //            _engine = new SterlingEngine();
@@ -56,8 +56,8 @@
 //            _databaseInstance.PurgeAsync().Wait();
 //        }
 
-//        [TestCleanup]
-//        public void TestCleanup()
+//        
+//        public override void Cleanup()
 //        {
 //            _databaseInstance.PurgeAsync().Wait();
 //            _engine.Dispose();
@@ -65,7 +65,7 @@
 //        }
 
 //        [Asynchronous]
-//        [TestMethod]
+//        [Fact]
 //        public void TestImageSaveAndRestore()
 //        {
 //            var grid = new Grid();
@@ -100,11 +100,11 @@
 
 //                                    var key = _databaseInstance.Save(expected);
 //                                    var actual = _databaseInstance.Load<ImageClass>(key);
-//                                    Assert.IsNotNull(actual, "Test failed: ");
-//                                    Assert.IsNotNull(actual.BitMap, "Test failed: actual bitmap is null.");
-//                                    Assert.AreEqual(expected.BitMap.PixelHeight, actual.BitMap.PixelHeight,
+//                                    Assert.NotNull(actual, "Test failed: ");
+//                                    Assert.NotNull(actual.BitMap, "Test failed: actual bitmap is null.");
+//                                    Assert.Equal(expected.BitMap.PixelHeight, actual.BitMap.PixelHeight,
 //                                                    "Test failed: height mismatch.");
-//                                    Assert.AreEqual(expected.BitMap.PixelWidth, actual.BitMap.PixelWidth,
+//                                    Assert.Equal(expected.BitMap.PixelWidth, actual.BitMap.PixelWidth,
 //                                                    "Test failed: width mismatch.");
 //                                    loaded = false;
 //                                    var image2 = new Image

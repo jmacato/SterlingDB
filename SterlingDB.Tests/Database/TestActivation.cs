@@ -70,7 +70,7 @@ namespace SterlingDB.Test.Database
         //            exception = true;
         //        }
 
-        //        Assert.IsTrue(exception, "Sterling did not throw an activation exception on duplicate activation with new database class.");
+        //        Assert.True(exception, "Sterling did not throw an activation exception on duplicate activation with new database class.");
         //    }
         //}
 

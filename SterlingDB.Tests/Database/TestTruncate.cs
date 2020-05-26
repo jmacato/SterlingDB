@@ -49,7 +49,7 @@ namespace SterlingDB.Test.Database
 
         public TestContext TestContext { get; set; }
 
-        [TestInitialize]
+        
         public void TestInit()
         {
             _engine = Factory.NewEngine();
@@ -57,15 +57,15 @@ namespace SterlingDB.Test.Database
             _databaseInstance = _engine.SterlingDatabase.RegisterDatabase<TestDatabaseInstance>( TestContext.TestName, GetDriver() );
         }
 
-        [TestCleanup]
-        public void TestCleanup()
+        
+        public override void Cleanup()
         {
             _databaseInstance.PurgeAsync().Wait();
             _engine.Dispose();
             _databaseInstance = null;            
         }        
 
-        [TestMethod]
+        [Fact]
         public void TestTruncateAction()
         {
             // save a few objects
@@ -77,12 +77,12 @@ namespace SterlingDB.Test.Database
             _databaseInstance.TruncateAsync(typeof(TestModel)).Wait();
 
             // query should be empty
-            Assert.IsFalse(_databaseInstance.Query<TestModel,int>().Any(), "Truncate failed: key list still exists.");
+            Assert.False(_databaseInstance.Query<TestModel,int>().Any(), "Truncate failed: key list still exists.");
 
             // load should be empty
             var actual = _databaseInstance.LoadAsync<TestModel>( sample.Key ).Result;
 
-            Assert.IsNull(actual, "Truncate failed: was able to load item.");            
+            Assert.Null(actual, "Truncate failed: was able to load item.");            
         }       
     }
 }

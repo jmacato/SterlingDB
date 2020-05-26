@@ -66,7 +66,7 @@ namespace SterlingDB.Test.Database
 
         public TestContext TestContext { get; set; }
 
-        [TestInitialize]
+        
         public void TestInit()
         {            
             _engine = Factory.NewEngine();
@@ -75,7 +75,7 @@ namespace SterlingDB.Test.Database
             _databaseInstance.PurgeAsync().Wait();
         }
 
-        [TestMethod]
+        [Fact]
         public void TestData()
         {
             var testNull = new TestObjectField {Key = 1, Data = "data"};
@@ -85,13 +85,13 @@ namespace SterlingDB.Test.Database
             var loadedTestNull = _databaseInstance.LoadAsync<TestObjectField>( 1 ).Result;
 
             // The values in the deserialized class should be populated.
-            Assert.IsNotNull(loadedTestNull);
-            Assert.IsNotNull(loadedTestNull.Data);
-            Assert.IsNotNull(loadedTestNull.Key);
+            Assert.NotNull(loadedTestNull);
+            Assert.NotNull(loadedTestNull.Data);
+            Assert.NotNull(loadedTestNull.Key);
         }
 
-        [TestCleanup]
-        public void TestCleanup()
+        
+        public override void Cleanup()
         {
             _databaseInstance.PurgeAsync().Wait();
             _engine.Dispose();

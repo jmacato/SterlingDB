@@ -51,7 +51,7 @@ namespace SterlingDB.Test.Database
 
         public TestContext TestContext { get; set; }
 
-        [TestInitialize]
+        
         public void TestInit()
         {
             _engine = Factory.NewEngine();
@@ -65,15 +65,15 @@ namespace SterlingDB.Test.Database
             }
         }
 
-        [TestCleanup]
-        public void TestCleanup()
+        
+        public override void Cleanup()
         {
             _databaseInstance.PurgeAsync().Wait();
             _engine.Dispose();
             _databaseInstance = null;            
         }
 
-        [TestMethod]
+        [Fact]
         public void TestSequentialQuery()
         {           
             // set up queries
@@ -82,11 +82,11 @@ namespace SterlingDB.Test.Database
             var idx = 0;
             foreach (var key in sequential)
             {
-                Assert.AreEqual(_modelList[idx++].Key, key, "Sequential query failed: key mismatch.");
+                Assert.Equal(_modelList[idx++].Key, key, "Sequential query failed: key mismatch.");
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void TestDescendingQuery()
         {             
             var descending = from k in _databaseInstance.Query<TestModel, int>() orderby k.Key descending select k.Key;
@@ -94,11 +94,11 @@ namespace SterlingDB.Test.Database
             var idx = _modelList.Count - 1;
             foreach (var key in descending)
             {
-                Assert.AreEqual(_modelList[idx--].Key, key, "Descending query failed: key mismatch.");
+                Assert.Equal(_modelList[idx--].Key, key, "Descending query failed: key mismatch.");
             }                   
         }
 
-        [TestMethod]
+        [Fact]
         public void TestRangeQuery()
         {           
             var range = from k in _databaseInstance.Query<TestModel, int>()
@@ -109,11 +109,11 @@ namespace SterlingDB.Test.Database
             var idx = 3;
             foreach (var key in range)
             {
-                Assert.AreEqual(_modelList[idx++].Key, key, "Range query failed: key mismatch.");
+                Assert.Equal(_modelList[idx++].Key, key, "Range query failed: key mismatch.");
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void TestUnrolledQuery()
         {            
             _modelList.Sort((m1, m2) => m1.Data.CompareTo(m2.Data));
@@ -123,9 +123,9 @@ namespace SterlingDB.Test.Database
 
             foreach(var model in unrolled)
             {
-                Assert.AreEqual(_modelList[idx].Key, model.Key, "Unrolled query failed: key mismatch.");
-                Assert.AreEqual(_modelList[idx].Date, model.Date, "Unrolled query failed: date mismatch.");
-                Assert.AreEqual(_modelList[idx].Data, model.Data, "Unrolled query failed: data mismatch.");
+                Assert.Equal(_modelList[idx].Key, model.Key, "Unrolled query failed: key mismatch.");
+                Assert.Equal(_modelList[idx].Date, model.Date, "Unrolled query failed: date mismatch.");
+                Assert.Equal(_modelList[idx].Data, model.Data, "Unrolled query failed: data mismatch.");
                 idx++;
             }
         }

@@ -84,7 +84,7 @@ namespace SterlingDB.Test.Database
 
         public TestContext TestContext { get; set; }
 
-        [TestInitialize]
+        
         public void TestInit()
         {            
             _engine = Factory.NewEngine();
@@ -93,15 +93,15 @@ namespace SterlingDB.Test.Database
             _databaseInstance.PurgeAsync().Wait();
         }
 
-        [TestCleanup]
-        public void TestCleanup()
+        
+        public override void Cleanup()
         {
             _databaseInstance.PurgeAsync().Wait();
             _engine.Dispose();
             _databaseInstance = null;            
         }
 
-        [TestMethod]
+        [Fact]
         public void TestInterface()
         {
             var test = new TargetClass { Id = 1, SubInterface = new InterfaceClass { Id = 5, Value = 6 }};
@@ -110,10 +110,10 @@ namespace SterlingDB.Test.Database
 
             var actual = _databaseInstance.LoadAsync<TargetClass>( 1 ).Result;
             
-            Assert.AreEqual(test.Id, actual.Id, "Failed to load class with interface property: key mismatch.");
-            Assert.IsNotNull(test.SubInterface, "Failed to load class with interface property: interface property is null.");
-            Assert.AreEqual(test.SubInterface.Id, actual.SubInterface.Id, "Failed to load class with interface property: interface id mismatch.");
-            Assert.AreEqual(test.SubInterface.Value, actual.SubInterface.Value, "Failed to load class with interface property: value mismatch.");            
+            Assert.Equal(test.Id, actual.Id, "Failed to load class with interface property: key mismatch.");
+            Assert.NotNull(test.SubInterface, "Failed to load class with interface property: interface property is null.");
+            Assert.Equal(test.SubInterface.Id, actual.SubInterface.Id, "Failed to load class with interface property: interface id mismatch.");
+            Assert.Equal(test.SubInterface.Value, actual.SubInterface.Value, "Failed to load class with interface property: value mismatch.");            
         }       
     }
 }

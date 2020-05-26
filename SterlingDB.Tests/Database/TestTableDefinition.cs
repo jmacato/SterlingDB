@@ -92,7 +92,7 @@ namespace SterlingDB.Test.Database
             return (from t in _models where t.Key.Equals(key) select t).FirstOrDefault();
         }
 
-        [TestInitialize]
+        
         public void TestInit()
         {
             var serializer = new AggregateSerializer( new PlatformAdapter() );
@@ -103,13 +103,13 @@ namespace SterlingDB.Test.Database
                                                         _GetTestModelByKey, t => t.Key);
         }        
 
-        [TestMethod]
+        [Fact]
         public void TestConstruction()
         {
-            Assert.AreEqual(typeof(TestModel), _target.TableType, "Table type mismatch.");
-            Assert.AreEqual(typeof(int), _target.KeyType, "Key type mismatch.");
+            Assert.Equal(typeof(TestModel), _target.TableType, "Table type mismatch.");
+            Assert.Equal(typeof(int), _target.KeyType, "Key type mismatch.");
             var key = _target.FetchKey(_models[1]);
-            Assert.AreEqual(_models[1].Key, key, "Key mismatch after fetch key invoked.");
+            Assert.Equal(_models[1].Key, key, "Key mismatch after fetch key invoked.");
         }
     }
 }

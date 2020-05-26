@@ -50,7 +50,7 @@ namespace SterlingDB.Test.Keys
 
         public TestContext TestContext { get; set; }
 
-        [TestInitialize]
+        
         public void TestInit()
         {           
             _engine = Factory.NewEngine();
@@ -60,15 +60,15 @@ namespace SterlingDB.Test.Keys
             _databaseInstance.PurgeAsync().Wait();
         }
 
-        [TestCleanup]
-        public void TestCleanup()
+        
+        public override void Cleanup()
         {
             _databaseInstance.PurgeAsync().Wait();
             _engine.Dispose();
             _databaseInstance = null;            
         }       
 
-        [TestMethod]
+        [Fact]
         public void TestSave()
         {
             var random = new Random();
@@ -92,8 +92,8 @@ namespace SterlingDB.Test.Keys
             {
                 var actual = _databaseInstance.LoadAsync<TestCompositeClass>( new TestCompositeKeyClass( list[ x ].Key1,
                     list[x].Key2,list[x].Key3,list[x].Key4)).Result;
-                Assert.IsNotNull(actual, "Load failed.");
-                Assert.AreEqual(list[x].Data, actual.Data, "Load failed: data mismatch.");
+                Assert.NotNull(actual, "Load failed.");
+                Assert.Equal(list[x].Data, actual.Data, "Load failed: data mismatch.");
             }
         }
     }

@@ -77,7 +77,7 @@ namespace SterlingDB.Test.Database
         {
         }
 
-        [TestInitialize]
+        
         public void TestInit()
         {
             _engine = Factory.NewEngine();
@@ -87,15 +87,15 @@ namespace SterlingDB.Test.Database
             _databaseInstance.PurgeAsync().Wait();
         }
 
-        [TestCleanup]
-        public void TestCleanup()
+        
+        public override void Cleanup()
         {
             _databaseInstance.PurgeAsync().Wait();
             _engine.Dispose();
             _databaseInstance = null;            
         }
 
-        [TestMethod]
+        [Fact]
         public void TestDirtyFlagFalse()
         {
             var expected = TestListModel.MakeTestListModel();
@@ -117,10 +117,10 @@ namespace SterlingDB.Test.Database
 
             var accessed = (from t in actual.Children where !t.Accessed select 1).Any();
 
-            Assert.IsFalse(accessed, "Dirty flag on save failed: some children were not accessed.");
+            Assert.False(accessed, "Dirty flag on save failed: some children were not accessed.");
         }
 
-        [TestMethod]
+        [Fact]
         public void TestDirtyFlagTrue()
         {
             var expected = TestListModel.MakeTestListModel();
@@ -142,7 +142,7 @@ namespace SterlingDB.Test.Database
 
             var accessed = (from t in actual.Children where t.Accessed select 1).Any();
 
-            Assert.IsFalse(accessed, "Dirty flag on save failed: some children were accessed.");
+            Assert.False(accessed, "Dirty flag on save failed: some children were accessed.");
         }
 
     }
