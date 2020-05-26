@@ -53,7 +53,7 @@ namespace SterlingDB.Core
     }
 
     // http://blogs.msdn.com/b/pfxteam/archive/2012/02/12/10266988.aspx
-    public class AsyncLock
+    internal class AsyncLock
     {
         private readonly AsyncSemaphore _semaphore;
         private readonly Task<Releaser> _releaser;
