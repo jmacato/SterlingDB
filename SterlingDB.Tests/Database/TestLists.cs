@@ -53,6 +53,26 @@ namespace SterlingDB.Test.Database
             }
         }
 
+
+        [Fact]
+        public void TestObservableCollection()
+        {
+            var expected = TestObservableCollectionModel.MakeTestListModel();
+            var key = _databaseInstance.SaveAsync(expected).Result;
+            var actual = _databaseInstance.LoadAsync<TestObservableCollectionModel>(key).Result;
+            Assert.NotNull(actual); //Save/load failed: model is null.");
+            Assert.Equal(expected.ID, actual.ID); //Save/load failed: key mismatch.");
+            Assert.NotNull(actual.Children); //Save/load failed: list not initialized.");
+            Assert.Equal(expected.Children.Count, actual.Children.Count); //Save/load failed: list size mismatch.");
+            for (var x = 0; x < expected.Children.Count; x++)
+            {
+                Assert.Equal(expected.Children[x].Key, actual.Children[x].Key); //Save/load failed: key mismatch.");
+                Assert.Equal(expected.Children[x].Data, actual.Children[x].Data); //Save/load failed: data mismatch.");
+            }
+        }
+
+        
+
         [Fact]
         public void TestModelAsList()
         {

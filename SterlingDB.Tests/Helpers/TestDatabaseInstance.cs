@@ -35,6 +35,7 @@ namespace SterlingDB.Test.Helpers
                 CreateTableDefinition<TestAggregateModel, string>(t => t.Key),
                 CreateTableDefinition<TestAggregateListModel, int>(t => t.ID),
                 CreateTableDefinition<TestListModel, int>(t => t.ID),
+                CreateTableDefinition<TestObservableCollectionModel, int>(t => t.ID),
                 CreateTableDefinition<TestDerivedClassAModel, Guid>(t => t.Key),
                 CreateTableDefinition<TestDerivedClassBModel, Guid>(t => t.Key),
                 CreateTableDefinition<TestClassWithArray, int>(t => t.ID),
