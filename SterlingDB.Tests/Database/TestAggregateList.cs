@@ -5,14 +5,14 @@ using Xunit;
 
 namespace SterlingDB.Test.Database
 {
-    public class TestAggregateListAltDriver : TestAggregateList
-    {
-        protected override ISterlingDriver GetDriver()
-        {
-            return new FileSystemDriver();
+    // public class TestAggregateListAltDriver : TestAggregateList
+    // {
+    //     protected override ISterlingDriver GetDriver()
+    //     {
+    //         return new FileSystemDriver();
 
-        }
-    }
+    //     }
+    // }
 
     public class TestAggregateList : TestBase
     {

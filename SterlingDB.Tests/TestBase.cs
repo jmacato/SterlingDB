@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SterlingDB;
+using Xunit;
 
 namespace SterlingDB.Test
 {
@@ -31,7 +32,7 @@ namespace SterlingDB.Test
                 disposedValue = true;
             }
         }
- 
+
         public void Dispose()
         {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
