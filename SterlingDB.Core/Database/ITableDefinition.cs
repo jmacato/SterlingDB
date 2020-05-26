@@ -18,12 +18,6 @@ namespace SterlingDB.Database
         IKeyCollection Keys { get; }
 
         /// <summary>
-        ///     Get a new dictionary (creates the generic)
-        /// </summary>
-        /// <returns>The new dictionary instance</returns>
-        IDictionary GetNewDictionary();
-
-        /// <summary>
         ///     Indexes
         /// </summary>
         Dictionary<string, IIndexCollection> Indexes { get; }
@@ -37,6 +31,12 @@ namespace SterlingDB.Database
         ///     Key type
         /// </summary>
         Type KeyType { get; }
+
+        /// <summary>
+        ///     Get a new dictionary (creates the generic)
+        /// </summary>
+        /// <returns>The new dictionary instance</returns>
+        IDictionary GetNewDictionary();
 
         /// <summary>
         ///     Refresh key list

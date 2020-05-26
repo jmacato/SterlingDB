@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using SterlingDB.Exceptions;
 
 namespace SterlingDB.Database
 {
@@ -9,13 +8,13 @@ namespace SterlingDB.Database
     /// </summary>
     public class LogManager
     {
-        private object _lock = new object();
-
         /// <summary>
         ///     The dictionary of loggers
         /// </summary>
-        private readonly Dictionary<Guid,Action<SterlingLogLevel, string, Exception>> _loggers 
-            = new Dictionary<Guid,Action<SterlingLogLevel, string, Exception>>();
+        private readonly Dictionary<Guid, Action<SterlingLogLevel, string, Exception>> _loggers
+            = new Dictionary<Guid, Action<SterlingLogLevel, string, Exception>>();
+
+        private readonly object _lock = new object();
 
         /// <summary>
         ///     Register a logger
@@ -26,7 +25,7 @@ namespace SterlingDB.Database
         {
             var identifier = Guid.NewGuid();
 
-            lock(_lock)
+            lock (_lock)
             {
                 _loggers.Add(identifier, logger);
             }
@@ -40,7 +39,7 @@ namespace SterlingDB.Database
         /// <param name="guid">The identifier for the logger</param>
         public void UnhookLogger(Guid guid)
         {
-            lock(_lock)
+            lock (_lock)
             {
                 _loggers.Remove(guid);
             }
@@ -54,12 +53,9 @@ namespace SterlingDB.Database
         /// <param name="exception">The exception</param>
         public void Log(SterlingLogLevel level, string message, Exception exception)
         {
-            lock(_lock)
+            lock (_lock)
             {
-                foreach (var key in _loggers.Keys)
-                {
-                    _loggers[key](level, message, exception);                    
-                }
+                foreach (var key in _loggers.Keys) _loggers[key](level, message, exception);
             }
         }
     }

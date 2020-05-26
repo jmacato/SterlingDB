@@ -1,11 +1,8 @@
-using SterlingDB;
-using SterlingDB.Database;
-using SterlingDB.Server.FileSystem;
-using Xunit;
 using System;
-using System.Linq;
-
 using System.Collections.Generic;
+using System.Linq;
+using SterlingDB.Database;
+using Xunit;
 
 namespace SterlingDB.Test.Database
 {
@@ -38,29 +35,30 @@ namespace SterlingDB.Test.Database
     }
 
     public class NestedInstancesDatabase : BaseDatabaseInstance
-    {       
+    {
         protected override List<ITableDefinition> RegisterTables()
         {
             return new List<ITableDefinition>
-        {
-            CreateTableDefinition<Bill, Guid>( b => b.Id ),
-            CreateTableDefinition<Person, Guid>( p => p.Id )
-        };
+            {
+                CreateTableDefinition<Bill, Guid>(b => b.Id),
+                CreateTableDefinition<Person, Guid>(p => p.Id)
+            };
         }
     }
- 
+
     public class TestNestedInstance : TestBase
     {
-        private readonly SterlingEngine _engine;
-        private ISterlingDatabaseInstance _database;
-        
         public TestNestedInstance()
         {
             _engine = Factory.NewEngine();
             _engine.Activate();
-            _database = _engine.SterlingDatabase.RegisterDatabase<NestedInstancesDatabase>(TestContext.TestName, GetDriver());
+            _database = _engine.SterlingDatabase.RegisterDatabase<NestedInstancesDatabase>(TestContext.TestName,
+                GetDriver());
         }
-        
+
+        private readonly SterlingEngine _engine;
+        private ISterlingDatabaseInstance _database;
+
         public override void Cleanup()
         {
             if (_engine == null) return;
@@ -75,23 +73,23 @@ namespace SterlingDB.Test.Database
             _database.PurgeAsync().Wait();
 
             var bill = new Bill
-                           {
+            {
                 Id = Guid.NewGuid(),
                 Name = "Test"
             };
 
-            _database.SaveAsync( bill ).Wait();
-            
+            _database.SaveAsync(bill).Wait();
+
             var person1 = new Person
-                              {
+            {
                 Id = Guid.NewGuid(),
                 Name = "Martin"
             };
 
-            _database.SaveAsync( person1 ).Wait();
+            _database.SaveAsync(person1).Wait();
 
             var partaker1 = new Partaker
-                                {
+            {
                 Id = Guid.NewGuid(),
                 Paid = 42,
                 Person = person1
@@ -99,18 +97,18 @@ namespace SterlingDB.Test.Database
 
             bill.Partakers.Add(partaker1);
 
-            _database.SaveAsync( bill ).Wait();
+            _database.SaveAsync(bill).Wait();
 
             var person2 = new Person
-                              {
+            {
                 Id = Guid.NewGuid(),
                 Name = "Jeremy"
             };
 
-            _database.SaveAsync( person2 ).Wait();
-            
+            _database.SaveAsync(person2).Wait();
+
             var partaker2 = new Partaker
-                                {
+            {
                 Id = Guid.NewGuid(),
                 Paid = 0,
                 Person = person2
@@ -118,21 +116,21 @@ namespace SterlingDB.Test.Database
 
             bill.Partakers.Add(partaker2);
 
-            _database.SaveAsync( bill ).Wait();
+            _database.SaveAsync(bill).Wait();
 
-            var partaker3 = new Partaker()
-                                {
-                                    Id = Guid.NewGuid(),
-                                    Paid = 1,
-                                    Person = person1
-                                };
+            var partaker3 = new Partaker
+            {
+                Id = Guid.NewGuid(),
+                Paid = 1,
+                Person = person1
+            };
 
             bill.Partakers.Add(partaker3);
 
-            _database.SaveAsync( bill ).Wait();
+            _database.SaveAsync(bill).Wait();
 
             _database.FlushAsync().Wait();
-            
+
             var billKeys = _database.Query<Bill, Guid>();
 
             Assert.True(billKeys.Count == 1);
@@ -145,7 +143,7 @@ namespace SterlingDB.Test.Database
             var personKeys = _database.Query<Person, Guid>();
 
             Assert.True(personKeys.Count == 2); //Failed to save exactly 2 persons.");            
-            
+
             // Compare loaded instances and verify they are equal 
             var persons = (from p in freshBill.Partakers where p.Person.Id.Equals(person1.Id) select p.Person).ToList();
 

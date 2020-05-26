@@ -9,19 +9,12 @@ namespace SterlingDB.Indexes
     /// <typeparam name="T">The class the key maps to</typeparam>
     /// <typeparam name="TIndex">The type of the index</typeparam>
     /// <typeparam name="TKey">The type of the key</typeparam>
-    public class TableIndex<T, TIndex, TKey> where T : class, new() 
+    public class TableIndex<T, TIndex, TKey> where T : class, new()
     {
         private readonly Func<TKey, T> _getter;
         private readonly int _hashCode;
 
         private Lazy<T> _lazyValue;
-
-        public TKey Key { get; private set; }
-
-        /// <summary>
-        ///     Key
-        /// </summary>
-        public TIndex Index { get; internal set; }
 
         //// <param name="getter">The getter</param>
         /// <summary>
@@ -30,7 +23,7 @@ namespace SterlingDB.Indexes
         /// <param name="index">The index value</param>
         /// <param name="key">The associated key with the index</param>
         /// <param name="getter">Getter method for loading an instance</param>
-        internal TableIndex(TIndex index, TKey key, Func<TKey,T> getter)
+        internal TableIndex(TIndex index, TKey key, Func<TKey, T> getter)
         {
             Index = index;
             Key = key;
@@ -39,20 +32,22 @@ namespace SterlingDB.Indexes
             _lazyValue = new Lazy<T>(() => _getter(Key));
         }
 
+        public TKey Key { get; }
+
+        /// <summary>
+        ///     Key
+        /// </summary>
+        public TIndex Index { get; internal set; }
+
         public Task<T> Value
         {
             get
             {
-                lock ( _getter )
+                lock (_getter)
                 {
-                    if ( _lazyValue.IsValueCreated )
-                    {
-                        return Task<T>.FromResult( _lazyValue.Value );
-                    }
-                    else
-                    {
-                        return Task<T>.Factory.StartNew( () => _lazyValue.Value );
-                    }
+                    if (_lazyValue.IsValueCreated)
+                        return Task.FromResult(_lazyValue.Value);
+                    return Task<T>.Factory.StartNew(() => _lazyValue.Value);
                 }
             }
         }
@@ -62,9 +57,9 @@ namespace SterlingDB.Indexes
         /// </summary>
         public void Refresh()
         {
-            lock ( _getter )
+            lock (_getter)
             {
-                _lazyValue = new Lazy<T>( () => _getter( Key ) );
+                _lazyValue = new Lazy<T>(() => _getter(Key));
             }
         }
 
@@ -75,7 +70,7 @@ namespace SterlingDB.Indexes
         /// <returns>True if equal</returns>
         public override bool Equals(object obj)
         {
-            return obj.GetHashCode() == _hashCode && ((TableIndex<T, TIndex, TKey>)obj).Key.Equals(Key);
+            return obj.GetHashCode() == _hashCode && ((TableIndex<T, TIndex, TKey>) obj).Key.Equals(Key);
         }
 
         /// <summary>

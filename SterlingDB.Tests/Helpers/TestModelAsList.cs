@@ -8,14 +8,16 @@ namespace SterlingDB.Test.Helpers
 
         public int Id { get; set; }
 
+        public static TestModelAsListModel Parent { get; set; }
+
         public static TestModelAsListModel MakeTestModelAsList()
         {
             var model = new TestModelAsListModel
-                       {
-                            Id = ++_nextId
-                       };
-            model.AddRange(new[] { TestModel.MakeTestModel(), TestModel.MakeTestModel(), TestModel.MakeTestModel()});
-            return model;           
+            {
+                Id = ++_nextId
+            };
+            model.AddRange(new[] {TestModel.MakeTestModel(), TestModel.MakeTestModel(), TestModel.MakeTestModel()});
+            return model;
         }
 
         public static TestModelAsListModel MakeTestModelAsListWithParentReference()
@@ -24,10 +26,9 @@ namespace SterlingDB.Test.Helpers
             {
                 Id = ++_nextId
             };
-            model.AddRange(new[] { TestModel.MakeTestModel(model), TestModel.MakeTestModel(model), TestModel.MakeTestModel(model) });
-            return model;  
+            model.AddRange(new[]
+                {TestModel.MakeTestModel(model), TestModel.MakeTestModel(model), TestModel.MakeTestModel(model)});
+            return model;
         }
-
-        public static TestModelAsListModel Parent { get; set; }
     }
 }

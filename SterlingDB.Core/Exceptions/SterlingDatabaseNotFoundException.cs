@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SterlingDB.Exceptions
+﻿namespace SterlingDB.Exceptions
 {
     public class SterlingDatabaseNotFoundException : SterlingException
     {

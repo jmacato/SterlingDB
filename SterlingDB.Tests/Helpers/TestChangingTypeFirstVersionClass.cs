@@ -19,14 +19,14 @@ namespace SterlingDB.Test.Helpers
         public static TestChangingTypeFirstVersionClass MakeChangingTypeFirstVersionClass()
         {
             return new TestChangingTypeFirstVersionClass
-                       {
-                           Key = Guid.NewGuid().ToString(),
-                           Name = "Name",
-                           PropertyOne = "One",
-                           PropertyTwo = "Two",
-                           PropertyRemovedInSecondVersion = "ToBeRemoved",
-                           PropertyRenamedInSecondVersion = "ToBeRenamed"
-                       };
+            {
+                Key = Guid.NewGuid().ToString(),
+                Name = "Name",
+                PropertyOne = "One",
+                PropertyTwo = "Two",
+                PropertyRemovedInSecondVersion = "ToBeRemoved",
+                PropertyRenamedInSecondVersion = "ToBeRenamed"
+            };
         }
     }
 }

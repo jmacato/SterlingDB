@@ -9,23 +9,20 @@ namespace SterlingDB
     /// </summary>
     public class SterlingDefaultLogger
     {
-        private Guid _guid = Guid.Empty;
-        private readonly SterlingLogLevel _minimumLevel;
         private readonly ISterlingDatabase _database;
+        private readonly SterlingLogLevel _minimumLevel;
+        private Guid _guid = Guid.Empty;
 
         /// <summary>
-        ///     Create 
+        ///     Create
         /// </summary>
         /// <param name="minimumLevel">Minimum level to debug</param>
-        public SterlingDefaultLogger( ISterlingDatabase database, SterlingLogLevel minimumLevel)
+        public SterlingDefaultLogger(ISterlingDatabase database, SterlingLogLevel minimumLevel)
         {
             _database = database;
             _minimumLevel = minimumLevel;
 
-            if (Debugger.IsAttached)
-            {
-                _guid = _database.LogManager.RegisterLogger(_Log);
-            }
+            if (Debugger.IsAttached) _guid = _database.LogManager.RegisterLogger(_Log);
         }
 
         /// <summary>
@@ -33,14 +30,10 @@ namespace SterlingDB
         /// </summary>
         public void Detach()
         {
-            if (!_guid.Equals(Guid.Empty))
-            {
-                _database.LogManager.UnhookLogger(_guid);
-            }
+            if (!_guid.Equals(Guid.Empty)) _database.LogManager.UnhookLogger(_guid);
         }
 
         /// <summary>
-        ///     
         /// </summary>
         /// <param name="logLevel"></param>
         /// <param name="message"></param>
@@ -50,16 +43,16 @@ namespace SterlingDB
             if (!Debugger.IsAttached || (int) logLevel < (int) _minimumLevel) return;
 
             var sb = new StringBuilder(string.Format("{0}::Sterling::{1}::{2}",
-                                                     DateTime.Now, 
-                                                     logLevel,
-                                                     message));
+                DateTime.Now,
+                logLevel,
+                message));
 
-            var local = exception; 
+            var local = exception;
 
             while (local != null)
             {
                 sb.Append(local);
-                local = local.InnerException; 
+                local = local.InnerException;
             }
 
             Debug.WriteLine(sb.ToString());

@@ -1,8 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -20,25 +17,19 @@ namespace SterlingDB.Database
     /// </summary>
     public abstract class BaseDatabaseInstance : ISterlingDatabaseInstance
     {
-        public ISterlingDriver Driver { get; private set; }
+        /// <summary>
+        ///     The byte stream interceptor list.
+        /// </summary>
+        private readonly List<BaseSterlingByteInterceptor> _byteInterceptorList =
+            new List<BaseSterlingByteInterceptor>();
 
         /// <summary>
         ///     Master database locks
         /// </summary>
         private readonly AsyncLock _lock = new AsyncLock();
-        private long _taskCount = 0;
-        private SerializationHelper _serializationHelper;
 
-        public SerializationHelper Helper
-        {
-            get
-            {
-                return _serializationHelper ?? (_serializationHelper = new SerializationHelper(this, Serializer, this.Database.LogManager,
-                                                                    s => Driver.GetTypeIndexAsync(s).Result,
-                                                                    i => Driver.GetTypeAtIndexAsync(i).Result));
-            }
-
-        }
+        private readonly Dictionary<Type, ISterlingPropertyConverter> _propertyConverters =
+            new Dictionary<Type, ISterlingPropertyConverter>();
 
         /// <summary>
         ///     List of triggers
@@ -49,7 +40,11 @@ namespace SterlingDB.Database
         /// <summary>
         ///     The table definitions
         /// </summary>
-        internal readonly Dictionary<Type, ITableDefinition> TableDefinitions = new Dictionary<Type, ITableDefinition>();
+        internal readonly Dictionary<Type, ITableDefinition>
+            TableDefinitions = new Dictionary<Type, ITableDefinition>();
+
+        private SerializationHelper _serializationHelper;
+        private long _taskCount;
 
         /// <summary>
         ///     Serializer
@@ -57,22 +52,17 @@ namespace SterlingDB.Database
         internal ISterlingSerializer Serializer { get; set; }
 
         internal SterlingDatabase Database { get; set; }
+        public ISterlingDriver Driver { get; private set; }
 
-        /// <summary>
-        ///     The base database instance
-        /// </summary>
-        protected BaseDatabaseInstance()
+        public SerializationHelper Helper
         {
-        }
-
-        public void Unload()
-        {
-            FlushAsync().Wait();
-        }
-
-        private async Task<IDisposable> LockAsync()
-        {
-            return await _lock.LockAsync().ConfigureAwait(false);
+            get
+            {
+                return _serializationHelper ?? (_serializationHelper = new SerializationHelper(this, Serializer,
+                    Database.LogManager,
+                    s => Driver.GetTypeIndexAsync(s).Result,
+                    i => Driver.GetTypeAtIndexAsync(i).Result));
+            }
         }
 
         /// <summary>
@@ -83,30 +73,21 @@ namespace SterlingDB.Database
         {
             using (LockAsync().Result)
             {
-                if (!_triggers.ContainsKey(typeof(T)))
-                {
-                    _triggers.Add(typeof(T), new List<ISterlingTrigger>());
-                }
+                if (!_triggers.ContainsKey(typeof(T))) _triggers.Add(typeof(T), new List<ISterlingTrigger>());
 
                 _triggers[typeof(T)].Add(trigger);
             }
         }
 
         /// <summary>
-        /// The byte stream interceptor list. 
-        /// </summary>
-        private readonly List<BaseSterlingByteInterceptor> _byteInterceptorList =
-            new List<BaseSterlingByteInterceptor>();
-
-        /// <summary>
-        /// Registers the BaseSterlingByteInterceptor
+        ///     Registers the BaseSterlingByteInterceptor
         /// </summary>
         /// <typeparam name="T">The type of the interceptor</typeparam>
         public void RegisterInterceptor<T>() where T : BaseSterlingByteInterceptor, new()
         {
             using (LockAsync().Result)
             {
-                _byteInterceptorList.Add((T)Activator.CreateInstance(typeof(T)));
+                _byteInterceptorList.Add((T) Activator.CreateInstance(typeof(T)));
             }
         }
 
@@ -115,28 +96,22 @@ namespace SterlingDB.Database
             using (LockAsync().Result)
             {
                 var interceptor = (from i
-                                       in _byteInterceptorList
-                                   where i.GetType().Equals(typeof(T))
-                                   select i).FirstOrDefault();
+                        in _byteInterceptorList
+                    where i.GetType().Equals(typeof(T))
+                    select i).FirstOrDefault();
 
-                if (interceptor != null)
-                {
-                    _byteInterceptorList.Remove(interceptor);
-                }
+                if (interceptor != null) _byteInterceptorList.Remove(interceptor);
             }
         }
 
         /// <summary>
-        /// Clears the _byteInterceptorList object
+        ///     Clears the _byteInterceptorList object
         /// </summary>
         public void UnRegisterInterceptors()
         {
             using (LockAsync().Result)
             {
-                if (_byteInterceptorList != null)
-                {
-                    _byteInterceptorList.Clear();
-                }
+                if (_byteInterceptorList != null) _byteInterceptorList.Clear();
             }
         }
 
@@ -154,70 +129,14 @@ namespace SterlingDB.Database
         }
 
         /// <summary>
-        ///     Fire the triggers for a type
-        /// </summary>
-        /// <param name="type">The target type</param>
-        private IEnumerable<ISterlingTrigger> _TriggerList(Type type)
-        {
-            List<ISterlingTrigger> triggers = null;
-
-            _triggers.TryGetValue(type, out triggers);
-
-            return triggers ?? new List<ISterlingTrigger>();
-        }
-
-        /// <summary>
         ///     The name of the database instance
         /// </summary>
-        public string Name
-        {
-            get { return this.Driver.DatabaseInstanceName; }
-        }
+        public string Name => Driver.DatabaseInstanceName;
 
         /// <summary>
         ///     The type dictating which objects should be ignored
         /// </summary>
-        public virtual Type IgnoreAttribute { get { return typeof(SterlingIgnoreAttribute); } }
-
-        /// <summary>
-        ///     Method called from the constructor to register tables
-        /// </summary>
-        /// <returns>The list of tables for the database</returns>
-        protected abstract List<ITableDefinition> RegisterTables();
-
-        /// <summary>
-        ///     Register any type resolvers.
-        /// </summary>
-        internal virtual void RegisterTypeResolvers()
-        {
-        }
-
-        /// <summary>
-        ///     Registers any property converters.
-        /// </summary>
-        internal virtual void RegisterPropertyConverters()
-        {
-        }
-
-        /// <summary>
-        /// Register a class responsible for type resolution.
-        /// </summary>
-        /// <param name="typeInterceptor"></param>
-        protected void RegisterTypeResolver(ISterlingTypeResolver typeInterceptor)
-        {
-            this.Database.RegisterTypeResolver(typeInterceptor);
-        }
-
-        private readonly Dictionary<Type, ISterlingPropertyConverter> _propertyConverters = new Dictionary<Type, ISterlingPropertyConverter>();
-
-        /// <summary>
-        ///     Registers a property converter.
-        /// </summary>
-        /// <param name="propertyConverter">The property converter</param>
-        protected void RegisterPropertyConverter(ISterlingPropertyConverter propertyConverter)
-        {
-            _propertyConverters.Add(propertyConverter.IsConverterFor(), propertyConverter);
-        }
+        public virtual Type IgnoreAttribute => typeof(SterlingIgnoreAttribute);
 
         /// <summary>
         ///     Gets the property converter for the given type, or returns null if none is found.
@@ -231,7 +150,7 @@ namespace SterlingDB.Database
         }
 
         /// <summary>
-        ///     Returns a table definition 
+        ///     Returns a table definition
         /// </summary>
         /// <typeparam name="T">The type of the table</typeparam>
         /// <typeparam name="TKey">The type of the key</typeparam>
@@ -240,8 +159,8 @@ namespace SterlingDB.Database
         public ITableDefinition CreateTableDefinition<T, TKey>(Func<T, TKey> keyFunction) where T : class, new()
         {
             return new TableDefinition<T, TKey>(Driver,
-                                                (key => _Load<T>(typeof(T), key, new CycleCache()).Result),
-                                                keyFunction);
+                key => _Load<T>(typeof(T), key, new CycleCache()).Result,
+                keyFunction);
         }
 
         /// <summary>
@@ -262,32 +181,7 @@ namespace SterlingDB.Database
             using (LockAsync().Result)
             {
                 if (!TableDefinitions.ContainsKey(tableDefinition.TableType))
-                {
                     TableDefinitions.Add(tableDefinition.TableType, tableDefinition);
-                }
-            }
-        }
-
-        /// <summary>
-        ///     Call to publish tables 
-        /// </summary>
-        internal void PublishTables(ISterlingDriver driver)
-        {
-            using (LockAsync().Result)
-            {
-                Driver = driver;
-
-                foreach (var table in RegisterTables())
-                {
-                    if (TableDefinitions.ContainsKey(table.TableType))
-                    {
-                        throw new SterlingDuplicateTypeException(table.TableType, Name);
-                    }
-
-                    TableDefinitions.Add(table.TableType, table);
-                }
-
-                Driver.PublishTables(TableDefinitions, this.Database.TypeResolver.ResolveTableType);
             }
         }
 
@@ -318,10 +212,7 @@ namespace SterlingDB.Database
         /// <returns>The key</returns>
         public object GetKey(object instance)
         {
-            if (!IsRegistered(instance.GetType()))
-            {
-                throw new SterlingTableNotFoundException(instance.GetType(), Name);
-            }
+            if (!IsRegistered(instance.GetType())) throw new SterlingTableNotFoundException(instance.GetType(), Name);
 
             return TableDefinitions[instance.GetType()].FetchKeyFromInstance(instance);
         }
@@ -333,10 +224,7 @@ namespace SterlingDB.Database
         /// <returns>The key type</returns>
         public Type GetKeyType(Type table)
         {
-            if (!IsRegistered(table))
-            {
-                throw new SterlingTableNotFoundException(table, Name);
-            }
+            if (!IsRegistered(table)) throw new SterlingTableNotFoundException(table, Name);
 
             return TableDefinitions[table].KeyType;
         }
@@ -349,14 +237,11 @@ namespace SterlingDB.Database
         /// <returns>The list of keys to query</returns>
         public List<TableKey<T, TKey>> Query<T, TKey>() where T : class, new()
         {
-            if (!IsRegistered(typeof(T)))
-            {
-                throw new SterlingTableNotFoundException(typeof(T), Name);
-            }
+            if (!IsRegistered(typeof(T))) throw new SterlingTableNotFoundException(typeof(T), Name);
 
             return
                 new List<TableKey<T, TKey>>(
-                    ((TableDefinition<T, TKey>)TableDefinitions[typeof(T)]).KeyList.Query);
+                    ((TableDefinition<T, TKey>) TableDefinitions[typeof(T)]).KeyList.Query);
         }
 
         /// <summary>
@@ -369,29 +254,18 @@ namespace SterlingDB.Database
         /// <returns>The indexed items</returns>
         public List<TableIndex<T, TIndex, TKey>> Query<T, TIndex, TKey>(string indexName) where T : class, new()
         {
-            if (string.IsNullOrEmpty(indexName))
-            {
-                throw new ArgumentNullException("indexName");
-            }
+            if (string.IsNullOrEmpty(indexName)) throw new ArgumentNullException("indexName");
 
-            if (!IsRegistered(typeof(T)))
-            {
-                throw new SterlingTableNotFoundException(typeof(T), Name);
-            }
+            if (!IsRegistered(typeof(T))) throw new SterlingTableNotFoundException(typeof(T), Name);
 
-            var tableDef = (TableDefinition<T, TKey>)TableDefinitions[typeof(T)];
+            var tableDef = (TableDefinition<T, TKey>) TableDefinitions[typeof(T)];
 
             if (!tableDef.Indexes.ContainsKey(indexName))
-            {
                 throw new SterlingIndexNotFoundException(indexName, typeof(T));
-            }
 
             var collection = tableDef.Indexes[indexName] as IndexCollection<T, TIndex, TKey>;
 
-            if (collection == null)
-            {
-                throw new SterlingIndexNotFoundException(indexName, typeof(T));
-            }
+            if (collection == null) throw new SterlingIndexNotFoundException(indexName, typeof(T));
 
             return new List<TableIndex<T, TIndex, TKey>>(collection.Query);
         }
@@ -408,29 +282,18 @@ namespace SterlingDB.Database
         public List<TableIndex<T, Tuple<TIndex1, TIndex2>, TKey>> Query<T, TIndex1, TIndex2, TKey>(string indexName)
             where T : class, new()
         {
-            if (string.IsNullOrEmpty(indexName))
-            {
-                throw new ArgumentNullException("indexName");
-            }
+            if (string.IsNullOrEmpty(indexName)) throw new ArgumentNullException("indexName");
 
-            if (!IsRegistered(typeof(T)))
-            {
-                throw new SterlingTableNotFoundException(typeof(T), Name);
-            }
+            if (!IsRegistered(typeof(T))) throw new SterlingTableNotFoundException(typeof(T), Name);
 
-            var tableDef = (TableDefinition<T, TKey>)TableDefinitions[typeof(T)];
+            var tableDef = (TableDefinition<T, TKey>) TableDefinitions[typeof(T)];
 
             if (!tableDef.Indexes.ContainsKey(indexName))
-            {
                 throw new SterlingIndexNotFoundException(indexName, typeof(T));
-            }
 
             var collection = tableDef.Indexes[indexName] as IndexCollection<T, TIndex1, TIndex2, TKey>;
 
-            if (collection == null)
-            {
-                throw new SterlingIndexNotFoundException(indexName, typeof(T));
-            }
+            if (collection == null) throw new SterlingIndexNotFoundException(indexName, typeof(T));
 
             return new List<TableIndex<T, Tuple<TIndex1, TIndex2>, TKey>>(collection.Query);
         }
@@ -460,7 +323,8 @@ namespace SterlingDB.Database
         {
             using (await LockAsync().ConfigureAwait(false))
             {
-                return await _Save<TKey>(instance.GetType(), typeof(T), instance, new CycleCache()).ConfigureAwait(false);
+                return await _Save<TKey>(instance.GetType(), typeof(T), instance, new CycleCache())
+                    .ConfigureAwait(false);
             }
         }
 
@@ -484,10 +348,10 @@ namespace SterlingDB.Database
         /// <returns>The key</returns>
         public Task<object> SaveAsAsync(Type tableType, object instance)
         {
-            if (!this.Database.Engine.PlatformAdapter.IsSubclassOf(instance.GetType(), tableType) || instance.GetType() != tableType)
-            {
-                throw new SterlingException(string.Format("{0} is not of type {1}", instance.GetType().Name, tableType.Name));
-            }
+            if (!Database.Engine.PlatformAdapter.IsSubclassOf(instance.GetType(), tableType) ||
+                instance.GetType() != tableType)
+                throw new SterlingException(string.Format("{0} is not of type {1}", instance.GetType().Name,
+                    tableType.Name));
 
             return SaveAsync(tableType, instance);
         }
@@ -530,89 +394,6 @@ namespace SterlingDB.Database
             return SaveAsync(typeof(T), instance);
         }
 
-        internal async Task<TKey> _Save<TKey>(Type actualType, Type tableType, object instance, CycleCache cache)
-        {
-            ITableDefinition tableDef = null;
-
-            if (!TableDefinitions.ContainsKey(tableType))
-            {
-                throw new SterlingTableNotFoundException(instance.GetType(), Name);
-            }
-
-            tableDef = TableDefinitions[tableType];
-
-            if (!tableDef.IsDirty(instance))
-            {
-                return (TKey)tableDef.FetchKeyFromInstance(instance);
-            }
-
-            foreach (var trigger in _TriggerList(tableType).Where(trigger => !trigger.BeforeSave(actualType, instance)))
-            {
-                throw new SterlingTriggerException("BaseDatabaseInstance_Save_Save_suppressed_by_trigger", trigger.GetType());
-            }
-
-            var key = (TKey)tableDef.FetchKeyFromInstance(instance);
-
-            int keyIndex;
-
-            if (cache.Check(instance))
-            {
-                return key;
-            }
-
-            cache.Add(tableType, instance, key);
-
-            keyIndex = await tableDef.Keys.AddKeyAsync(key).ConfigureAwait(false);
-
-            var memStream = new MemoryStream();
-
-            try
-            {
-                using (var bw = new BinaryWriter(memStream))
-                {
-                    Helper.Save(actualType, instance, bw, cache, true);
-
-                    bw.Flush();
-
-                    if (_byteInterceptorList.Count > 0)
-                    {
-                        var bytes = memStream.ToArray();
-
-                        bytes = _byteInterceptorList.Aggregate(bytes,
-                                                                (current, byteInterceptor) =>
-                                                                byteInterceptor.Save(current));
-
-                        memStream = new MemoryStream(bytes);
-                    }
-
-                    memStream.Seek(0, SeekOrigin.Begin);
-
-                    await Driver.SaveAsync(tableType, keyIndex, memStream.ToArray()).ConfigureAwait(false);
-                }
-            }
-            finally
-            {
-                memStream.Flush();
-                memStream.Dispose();
-            }
-
-            // update the indexes
-            foreach (var index in tableDef.Indexes.Values)
-            {
-                await index.AddIndexAsync(instance, key).ConfigureAwait(false);
-            }
-
-            // call post-save triggers
-            foreach (var trigger in _TriggerList(tableType))
-            {
-                trigger.AfterSave(actualType, instance);
-            }
-
-            _RaiseOperation(SterlingOperation.Save, tableType, key);
-
-            return key;
-        }
-
         /// <summary>
         ///     Flush all keys and indexes to storage
         /// </summary>
@@ -628,10 +409,7 @@ namespace SterlingDB.Database
                     {
                         await def.Keys.FlushAsync().ConfigureAwait(false);
 
-                        foreach (var idx in def.Indexes.Values)
-                        {
-                            await idx.FlushAsync().ConfigureAwait(false);
-                        }
+                        foreach (var idx in def.Indexes.Values) await idx.FlushAsync().ConfigureAwait(false);
                     }
 
                     _RaiseOperation(SterlingOperation.Flush, GetType(), Name);
@@ -644,7 +422,7 @@ namespace SterlingDB.Database
         }
 
         /// <summary>
-        ///     Load it 
+        ///     Load it
         /// </summary>
         /// <typeparam name="T">The type to load</typeparam>
         /// <typeparam name="TKey">The key type</typeparam>
@@ -652,7 +430,7 @@ namespace SterlingDB.Database
         /// <returns>The instance</returns>
         public Task<T> LoadAsync<T, TKey>(TKey key) where T : class, new()
         {
-            return LoadAsync<T>((object)key);
+            return LoadAsync<T>(key);
         }
 
         /// <summary>
@@ -695,105 +473,8 @@ namespace SterlingDB.Database
             }
         }
 
-        internal async Task<TResult> _Load<TResult>(Type type, object key, CycleCache cache) where TResult : new()
-        {
-            Interlocked.Increment(ref _taskCount);
-
-            try
-            {
-                var newType = type;
-                var keyIndex = -1;
-
-                ITableDefinition tableDef = null;
-
-                tableDef = TableDefinitions.SingleOrDefault(pair => pair.Key == type).Value;
-
-                if (tableDef == null)
-                {
-                    foreach (var subDef in TableDefinitions.Where(pair => this.Database.Engine.PlatformAdapter.IsAssignableFrom(type, pair.Key))
-                                                            .Select(pair => pair.Value))
-                    {
-                        keyIndex = await subDef.Keys.GetIndexForKeyAsync(key).ConfigureAwait(false);
-
-                        if (keyIndex < 0) continue;
-
-                        newType = subDef.TableType;
-                        tableDef = subDef;
-                        break;
-                    }
-
-                    if (tableDef == null)
-                    {
-                        throw new SterlingTableNotFoundException(type, Name);
-                    }
-                }
-                else
-                {
-                    keyIndex = await tableDef.Keys.GetIndexForKeyAsync(key).ConfigureAwait(false);
-                }
-
-                if (keyIndex < 0)
-                {
-                    return default(TResult);
-                }
-
-                var obj = (TResult)cache.CheckKey(newType, key);
-
-                if (obj != null)
-                {
-                    return obj;
-                }
-
-                BinaryReader br = null;
-                MemoryStream memStream = null;
-
-                try
-                {
-                    br = await Driver.LoadAsync(newType, keyIndex).ConfigureAwait(false);
-
-                    if (_byteInterceptorList.Count > 0)
-                    {
-                        var bytes = br.ReadBytes((int)br.BaseStream.Length);
-
-                        bytes = _byteInterceptorList.ToArray().Reverse().Aggregate(bytes,
-                                                                                    (current, byteInterceptor) =>
-                                                                                    byteInterceptor.Load(current));
-
-                        memStream = new MemoryStream(bytes);
-
-                        br.Dispose();
-
-                        br = new BinaryReader(memStream);
-                    }
-
-                    obj = (TResult)Helper.Load(newType, key, br, cache);
-                }
-                finally
-                {
-                    if (br != null)
-                    {
-                        br.Dispose();
-                    }
-
-                    if (memStream != null)
-                    {
-                        memStream.Flush();
-                        memStream.Dispose();
-                    }
-                }
-
-                _RaiseOperation(SterlingOperation.Load, newType, key);
-
-                return obj;
-            }
-            finally
-            {
-                Interlocked.Decrement(ref _taskCount);
-            }
-        }
-
         /// <summary>
-        ///     Delete it 
+        ///     Delete it
         /// </summary>
         /// <typeparam name="T">The type to delete</typeparam>
         /// <param name="instance">The instance</param>
@@ -813,18 +494,14 @@ namespace SterlingDB.Database
             {
                 ITableDefinition tableDef = null;
 
-                if (!TableDefinitions.ContainsKey(type))
-                {
-                    throw new SterlingTableNotFoundException(type, Name);
-                }
+                if (!TableDefinitions.ContainsKey(type)) throw new SterlingTableNotFoundException(type, Name);
 
                 tableDef = TableDefinitions[type];
 
                 // call any before save triggers 
                 foreach (var trigger in _TriggerList(type).Where(trigger => !trigger.BeforeDelete(type, key)))
-                {
-                    throw new SterlingTriggerException(string.Format("Delete_Delete_failed_for_type {0}", type), trigger.GetType());
-                }
+                    throw new SterlingTriggerException(string.Format("Delete_Delete_failed_for_type {0}", type),
+                        trigger.GetType());
 
                 var keyEntry = await tableDef.Keys.GetIndexForKeyAsync(key).ConfigureAwait(false);
 
@@ -832,10 +509,7 @@ namespace SterlingDB.Database
 
                 await tableDef.Keys.RemoveKeyAsync(key).ConfigureAwait(false);
 
-                foreach (var index in tableDef.Indexes.Values)
-                {
-                    await index.RemoveIndexAsync(key).ConfigureAwait(false);
-                }
+                foreach (var index in tableDef.Indexes.Values) await index.RemoveIndexAsync(key).ConfigureAwait(false);
 
                 _RaiseOperation(SterlingOperation.Delete, type, key);
             }
@@ -850,10 +524,8 @@ namespace SterlingDB.Database
             using (await LockAsync().ConfigureAwait(false))
             {
                 if (Interlocked.Read(ref _taskCount) > 1)
-                {
                     throw new SterlingException(
                         "Instance_Truncate_Cannot_truncate_when_background_operations");
-                }
 
                 Interlocked.Increment(ref _taskCount);
 
@@ -864,9 +536,7 @@ namespace SterlingDB.Database
                     await TableDefinitions[type].Keys.TruncateAsync().ConfigureAwait(false);
 
                     foreach (var index in TableDefinitions[type].Indexes.Values)
-                    {
                         await index.TruncateAsync().ConfigureAwait(false);
-                    }
 
                     _RaiseOperation(SterlingOperation.Truncate, type, null);
                 }
@@ -885,10 +555,8 @@ namespace SterlingDB.Database
             using (await LockAsync().ConfigureAwait(false))
             {
                 if (Interlocked.Read(ref _taskCount) > 1)
-                {
                     throw new SterlingException(
                         "Instance_Cannot_purge_when_background_operations");
-                }
 
                 Interlocked.Increment(ref _taskCount);
 
@@ -902,9 +570,7 @@ namespace SterlingDB.Database
                         await TableDefinitions[table].Keys.TruncateAsync().ConfigureAwait(false);
 
                         foreach (var index in TableDefinitions[table].Indexes.Values)
-                        {
                             await index.TruncateAsync().ConfigureAwait(false);
-                        }
                     }
 
                     _RaiseOperation(SterlingOperation.Purge, GetType(), Name);
@@ -921,9 +587,245 @@ namespace SterlingDB.Database
         /// </summary>
         public async Task RefreshAsync()
         {
-            foreach (var table in TableDefinitions)
+            foreach (var table in TableDefinitions) await table.Value.RefreshAsync().ConfigureAwait(false);
+        }
+
+        public event EventHandler<SterlingOperationArgs> SterlingOperationPerformed;
+
+        public void Unload()
+        {
+            FlushAsync().Wait();
+        }
+
+        private async Task<IDisposable> LockAsync()
+        {
+            return await _lock.LockAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        ///     Fire the triggers for a type
+        /// </summary>
+        /// <param name="type">The target type</param>
+        private IEnumerable<ISterlingTrigger> _TriggerList(Type type)
+        {
+            List<ISterlingTrigger> triggers = null;
+
+            _triggers.TryGetValue(type, out triggers);
+
+            return triggers ?? new List<ISterlingTrigger>();
+        }
+
+        /// <summary>
+        ///     Method called from the constructor to register tables
+        /// </summary>
+        /// <returns>The list of tables for the database</returns>
+        protected abstract List<ITableDefinition> RegisterTables();
+
+        /// <summary>
+        ///     Register any type resolvers.
+        /// </summary>
+        internal virtual void RegisterTypeResolvers()
+        {
+        }
+
+        /// <summary>
+        ///     Registers any property converters.
+        /// </summary>
+        internal virtual void RegisterPropertyConverters()
+        {
+        }
+
+        /// <summary>
+        ///     Register a class responsible for type resolution.
+        /// </summary>
+        /// <param name="typeInterceptor"></param>
+        protected void RegisterTypeResolver(ISterlingTypeResolver typeInterceptor)
+        {
+            Database.RegisterTypeResolver(typeInterceptor);
+        }
+
+        /// <summary>
+        ///     Registers a property converter.
+        /// </summary>
+        /// <param name="propertyConverter">The property converter</param>
+        protected void RegisterPropertyConverter(ISterlingPropertyConverter propertyConverter)
+        {
+            _propertyConverters.Add(propertyConverter.IsConverterFor(), propertyConverter);
+        }
+
+        /// <summary>
+        ///     Call to publish tables
+        /// </summary>
+        internal void PublishTables(ISterlingDriver driver)
+        {
+            using (LockAsync().Result)
             {
-                await table.Value.RefreshAsync().ConfigureAwait(false);
+                Driver = driver;
+
+                foreach (var table in RegisterTables())
+                {
+                    if (TableDefinitions.ContainsKey(table.TableType))
+                        throw new SterlingDuplicateTypeException(table.TableType, Name);
+
+                    TableDefinitions.Add(table.TableType, table);
+                }
+
+                Driver.PublishTables(TableDefinitions, Database.TypeResolver.ResolveTableType);
+            }
+        }
+
+        internal async Task<TKey> _Save<TKey>(Type actualType, Type tableType, object instance, CycleCache cache)
+        {
+            ITableDefinition tableDef = null;
+
+            if (!TableDefinitions.ContainsKey(tableType))
+                throw new SterlingTableNotFoundException(instance.GetType(), Name);
+
+            tableDef = TableDefinitions[tableType];
+
+            if (!tableDef.IsDirty(instance)) return (TKey) tableDef.FetchKeyFromInstance(instance);
+
+            foreach (var trigger in _TriggerList(tableType).Where(trigger => !trigger.BeforeSave(actualType, instance)))
+                throw new SterlingTriggerException("BaseDatabaseInstance_Save_Save_suppressed_by_trigger",
+                    trigger.GetType());
+
+            var key = (TKey) tableDef.FetchKeyFromInstance(instance);
+
+            int keyIndex;
+
+            if (cache.Check(instance)) return key;
+
+            cache.Add(tableType, instance, key);
+
+            keyIndex = await tableDef.Keys.AddKeyAsync(key).ConfigureAwait(false);
+
+            var memStream = new MemoryStream();
+
+            try
+            {
+                using (var bw = new BinaryWriter(memStream))
+                {
+                    Helper.Save(actualType, instance, bw, cache, true);
+
+                    bw.Flush();
+
+                    if (_byteInterceptorList.Count > 0)
+                    {
+                        var bytes = memStream.ToArray();
+
+                        bytes = _byteInterceptorList.Aggregate(bytes,
+                            (current, byteInterceptor) =>
+                                byteInterceptor.Save(current));
+
+                        memStream = new MemoryStream(bytes);
+                    }
+
+                    memStream.Seek(0, SeekOrigin.Begin);
+
+                    await Driver.SaveAsync(tableType, keyIndex, memStream.ToArray()).ConfigureAwait(false);
+                }
+            }
+            finally
+            {
+                memStream.Flush();
+                memStream.Dispose();
+            }
+
+            // update the indexes
+            foreach (var index in tableDef.Indexes.Values)
+                await index.AddIndexAsync(instance, key).ConfigureAwait(false);
+
+            // call post-save triggers
+            foreach (var trigger in _TriggerList(tableType)) trigger.AfterSave(actualType, instance);
+
+            _RaiseOperation(SterlingOperation.Save, tableType, key);
+
+            return key;
+        }
+
+        internal async Task<TResult> _Load<TResult>(Type type, object key, CycleCache cache) where TResult : new()
+        {
+            Interlocked.Increment(ref _taskCount);
+
+            try
+            {
+                var newType = type;
+                var keyIndex = -1;
+
+                ITableDefinition tableDef = null;
+
+                tableDef = TableDefinitions.SingleOrDefault(pair => pair.Key == type).Value;
+
+                if (tableDef == null)
+                {
+                    foreach (var subDef in TableDefinitions.Where(pair =>
+                            Database.Engine.PlatformAdapter.IsAssignableFrom(type, pair.Key))
+                        .Select(pair => pair.Value))
+                    {
+                        keyIndex = await subDef.Keys.GetIndexForKeyAsync(key).ConfigureAwait(false);
+
+                        if (keyIndex < 0) continue;
+
+                        newType = subDef.TableType;
+                        tableDef = subDef;
+                        break;
+                    }
+
+                    if (tableDef == null) throw new SterlingTableNotFoundException(type, Name);
+                }
+                else
+                {
+                    keyIndex = await tableDef.Keys.GetIndexForKeyAsync(key).ConfigureAwait(false);
+                }
+
+                if (keyIndex < 0) return default;
+
+                var obj = (TResult) cache.CheckKey(newType, key);
+
+                if (obj != null) return obj;
+
+                BinaryReader br = null;
+                MemoryStream memStream = null;
+
+                try
+                {
+                    br = await Driver.LoadAsync(newType, keyIndex).ConfigureAwait(false);
+
+                    if (_byteInterceptorList.Count > 0)
+                    {
+                        var bytes = br.ReadBytes((int) br.BaseStream.Length);
+
+                        bytes = _byteInterceptorList.ToArray().Reverse().Aggregate(bytes,
+                            (current, byteInterceptor) =>
+                                byteInterceptor.Load(current));
+
+                        memStream = new MemoryStream(bytes);
+
+                        br.Dispose();
+
+                        br = new BinaryReader(memStream);
+                    }
+
+                    obj = (TResult) Helper.Load(newType, key, br, cache);
+                }
+                finally
+                {
+                    if (br != null) br.Dispose();
+
+                    if (memStream != null)
+                    {
+                        memStream.Flush();
+                        memStream.Dispose();
+                    }
+                }
+
+                _RaiseOperation(SterlingOperation.Load, newType, key);
+
+                return obj;
+            }
+            finally
+            {
+                Interlocked.Decrement(ref _taskCount);
             }
         }
 
@@ -944,7 +846,5 @@ namespace SterlingDB.Database
 
             handler(this, new SterlingOperationArgs(operation, targetType, key));
         }
-
-        public event EventHandler<SterlingOperationArgs> SterlingOperationPerformed;
     }
 }

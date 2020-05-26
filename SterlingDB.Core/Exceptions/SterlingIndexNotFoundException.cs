@@ -2,12 +2,11 @@
 
 namespace SterlingDB.Exceptions
 {
-    public class SterlingIndexNotFoundException : SterlingException 
+    public class SterlingIndexNotFoundException : SterlingException
     {
-        public SterlingIndexNotFoundException(string indexName, Type type) : 
+        public SterlingIndexNotFoundException(string indexName, Type type) :
             base($"{indexName} {type.FullName}")
         {
-            
         }
     }
 }

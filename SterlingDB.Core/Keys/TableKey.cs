@@ -7,7 +7,7 @@ namespace SterlingDB.Keys
     /// </summary>
     /// <typeparam name="T">The class the key maps to</typeparam>
     /// <typeparam name="TKey">The type of the key</typeparam>
-    public class TableKey<T,TKey> where T: class, new()
+    public class TableKey<T, TKey> where T : class, new()
     {
         private readonly Func<TKey, T> _getter;
         private readonly int _hashCode;
@@ -17,18 +17,18 @@ namespace SterlingDB.Keys
         /// </summary>
         /// <param name="key">The key</param>
         /// <param name="getter">The getter</param>
-        public TableKey(TKey key, Func<TKey,T> getter)
+        public TableKey(TKey key, Func<TKey, T> getter)
         {
             Key = key;
             _hashCode = key.GetHashCode();
             _getter = getter;
-            LazyValue = new Lazy<T>( () => _getter(Key) );
+            LazyValue = new Lazy<T>(() => _getter(Key));
         }
 
         /// <summary>
         ///     Key
         /// </summary>
-        public TKey Key { get; private set; }
+        public TKey Key { get; }
 
         /// <summary>
         ///     Entity the key points to
@@ -68,7 +68,7 @@ namespace SterlingDB.Keys
         /// <returns>The key</returns>
         public override string ToString()
         {
-            return string.Format("Key: [{0}][{1}]={2}", typeof (T).FullName, typeof (TKey).FullName, Key);
+            return string.Format("Key: [{0}][{1}]={2}", typeof(T).FullName, typeof(TKey).FullName, Key);
         }
     }
 }

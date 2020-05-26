@@ -1,8 +1,4 @@
-
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using SterlingDB;
 
 namespace SterlingDB.Server.FileSystem
 {
@@ -10,17 +6,13 @@ namespace SterlingDB.Server.FileSystem
     {
         private static readonly Dictionary<int, AsyncLock> _pathLocks = new Dictionary<int, AsyncLock>();
 
-        public static AsyncLock GetLock( string path )
+        public static AsyncLock GetLock(string path)
         {
             var hash = path.GetHashCode();
 
-            lock ( _pathLocks )
+            lock (_pathLocks)
             {
-
-                if (_pathLocks.TryGetValue(hash, out AsyncLock aLock) == false)
-                {
-                    aLock = _pathLocks[hash] = new AsyncLock();
-                }
+                if (_pathLocks.TryGetValue(hash, out var aLock) == false) aLock = _pathLocks[hash] = new AsyncLock();
 
                 return aLock;
             }

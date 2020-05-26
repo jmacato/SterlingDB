@@ -1,17 +1,17 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SterlingDB;
-using Xunit;
+﻿using System;
 
 namespace SterlingDB.Test
 {
     public abstract class TestBase : IDisposable
     {
         private bool disposedValue;
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
         protected virtual ISterlingDriver GetDriver()
         {
@@ -24,20 +24,10 @@ namespace SterlingDB.Test
         {
             if (!disposedValue)
             {
-                if (disposing)
-                {
-                    Cleanup();
-                }
+                if (disposing) Cleanup();
 
                 disposedValue = true;
             }
-        }
-
-        public void Dispose()
-        {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
         }
     }
 }

@@ -1,8 +1,4 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,22 +6,22 @@ namespace SterlingDB.Database
 {
     public sealed class PendingOperationProgressChangedEventArgs : EventArgs
     {
-        internal PendingOperationProgressChangedEventArgs( decimal progress )
+        internal PendingOperationProgressChangedEventArgs(decimal progress)
         {
-            this.Progress = progress;
+            Progress = progress;
         }
 
-        public decimal Progress { get; private set; }
+        public decimal Progress { get; }
     }
 
     public sealed class PendingOperationErrorEventArgs : EventArgs
     {
-        internal PendingOperationErrorEventArgs( Exception ex )
+        internal PendingOperationErrorEventArgs(Exception ex)
         {
-            this.Exception = ex;
+            Exception = ex;
         }
 
-        public Exception Exception { get; private set; }
+        public Exception Exception { get; }
     }
 
     public interface IPendingOperation
@@ -40,38 +36,39 @@ namespace SterlingDB.Database
 
     public sealed class PendingOperation : IPendingOperation
     {
-        private readonly Action _uow = null;
-        private readonly CancellationTokenSource _cancelSource = null;
+        private readonly CancellationTokenSource _cancelSource;
+        private readonly Action _uow;
 
-        internal PendingOperation( Action<CancellationToken> work )
+        internal PendingOperation(Action<CancellationToken> work)
         {
             _cancelSource = new CancellationTokenSource();
-            _uow = () => work( _cancelSource.Token );
-            this.Task = Task.Factory.StartNew( DoWork, _cancelSource.Token );
+            _uow = () => work(_cancelSource.Token);
+            Task = Task.Factory.StartNew(DoWork, _cancelSource.Token);
         }
 
-        internal PendingOperation( Action<CancellationToken> work, CancellationTokenSource cancelSource )
+        internal PendingOperation(Action<CancellationToken> work, CancellationTokenSource cancelSource)
         {
             _cancelSource = cancelSource;
-            _uow = () => work( _cancelSource.Token );
-            this.Task = Task.Factory.StartNew( DoWork, _cancelSource.Token );
+            _uow = () => work(_cancelSource.Token);
+            Task = Task.Factory.StartNew(DoWork, _cancelSource.Token);
         }
 
-        internal PendingOperation( Action<CancellationToken, Action<decimal>> progressVisibleWork )
+        internal PendingOperation(Action<CancellationToken, Action<decimal>> progressVisibleWork)
         {
             _cancelSource = new CancellationTokenSource();
-            _uow = () => progressVisibleWork( _cancelSource.Token, ReportProgress );
-            this.Task = Task.Factory.StartNew( DoWork, _cancelSource.Token );
+            _uow = () => progressVisibleWork(_cancelSource.Token, ReportProgress);
+            Task = Task.Factory.StartNew(DoWork, _cancelSource.Token);
         }
 
-        internal PendingOperation( Action<CancellationToken, Action<decimal>> progressVisibleWork, CancellationTokenSource cancelSource )
+        internal PendingOperation(Action<CancellationToken, Action<decimal>> progressVisibleWork,
+            CancellationTokenSource cancelSource)
         {
             _cancelSource = cancelSource;
-            _uow = () => progressVisibleWork( _cancelSource.Token, ReportProgress );
-            this.Task = Task.Factory.StartNew( DoWork, _cancelSource.Token );
+            _uow = () => progressVisibleWork(_cancelSource.Token, ReportProgress);
+            Task = Task.Factory.StartNew(DoWork, _cancelSource.Token);
         }
 
-        public Task Task { get; private set; }
+        public Task Task { get; }
 
         public event EventHandler Completed = delegate { };
         public event EventHandler Canceled = delegate { };
@@ -88,60 +85,61 @@ namespace SterlingDB.Database
             try
             {
                 _uow();
-                Completed( this, EventArgs.Empty );
+                Completed(this, EventArgs.Empty);
             }
-            catch ( OperationCanceledException )
+            catch (OperationCanceledException)
             {
-                Canceled( this, EventArgs.Empty );
+                Canceled(this, EventArgs.Empty);
                 throw;
             }
-            catch ( Exception ex )
+            catch (Exception ex)
             {
-                ErrorOccured( this, new PendingOperationErrorEventArgs( ex ) );
+                ErrorOccured(this, new PendingOperationErrorEventArgs(ex));
                 throw;
             }
         }
 
-        private void ReportProgress( decimal percentComplete )
+        private void ReportProgress(decimal percentComplete)
         {
-            ProgressChanged( this, new PendingOperationProgressChangedEventArgs( percentComplete ) );
+            ProgressChanged(this, new PendingOperationProgressChangedEventArgs(percentComplete));
         }
     }
 
     public sealed class PendingOperation<T> : IPendingOperation
     {
-        private readonly Func<T> _uow = null;
-        private readonly CancellationTokenSource _cancelSource = null;
+        private readonly CancellationTokenSource _cancelSource;
+        private readonly Func<T> _uow;
 
-        internal PendingOperation( Func<CancellationToken, T> work )
+        internal PendingOperation(Func<CancellationToken, T> work)
         {
             _cancelSource = new CancellationTokenSource();
-            _uow = () => work( _cancelSource.Token );
-            this.Task = Task<T>.Factory.StartNew( DoWork, _cancelSource.Token );
+            _uow = () => work(_cancelSource.Token);
+            Task = Task<T>.Factory.StartNew(DoWork, _cancelSource.Token);
         }
 
-        internal PendingOperation( Func<CancellationToken, T> work, CancellationTokenSource cancelSource )
+        internal PendingOperation(Func<CancellationToken, T> work, CancellationTokenSource cancelSource)
         {
             _cancelSource = cancelSource;
-            _uow = () => work( _cancelSource.Token );
-            this.Task = Task<T>.Factory.StartNew( DoWork, _cancelSource.Token );
+            _uow = () => work(_cancelSource.Token);
+            Task = Task<T>.Factory.StartNew(DoWork, _cancelSource.Token);
         }
 
-        internal PendingOperation( Func<CancellationToken, Action<decimal>, T> progressVisibleWork )
+        internal PendingOperation(Func<CancellationToken, Action<decimal>, T> progressVisibleWork)
         {
             _cancelSource = new CancellationTokenSource();
-            _uow = () => progressVisibleWork( _cancelSource.Token, ReportProgress );
-            this.Task = Task<T>.Factory.StartNew( DoWork, _cancelSource.Token );
+            _uow = () => progressVisibleWork(_cancelSource.Token, ReportProgress);
+            Task = Task<T>.Factory.StartNew(DoWork, _cancelSource.Token);
         }
 
-        internal PendingOperation( Func<CancellationToken, Action<decimal>, T> progressVisibleWork, CancellationTokenSource cancelSource )
+        internal PendingOperation(Func<CancellationToken, Action<decimal>, T> progressVisibleWork,
+            CancellationTokenSource cancelSource)
         {
             _cancelSource = cancelSource;
-            _uow = () => progressVisibleWork( _cancelSource.Token, ReportProgress );
-            this.Task = Task<T>.Factory.StartNew( DoWork, _cancelSource.Token );
+            _uow = () => progressVisibleWork(_cancelSource.Token, ReportProgress);
+            Task = Task<T>.Factory.StartNew(DoWork, _cancelSource.Token);
         }
 
-        public Task<T> Task { get; private set; }
+        public Task<T> Task { get; }
 
         public event EventHandler Completed = delegate { };
         public event EventHandler Canceled = delegate { };
@@ -157,27 +155,27 @@ namespace SterlingDB.Database
         {
             try
             {
-                T result = _uow();
-                
-                Completed( this, EventArgs.Empty );
+                var result = _uow();
+
+                Completed(this, EventArgs.Empty);
 
                 return result;
             }
-            catch ( OperationCanceledException )
+            catch (OperationCanceledException)
             {
-                Canceled( this, EventArgs.Empty );
+                Canceled(this, EventArgs.Empty);
                 throw;
             }
-            catch ( Exception ex )
+            catch (Exception ex)
             {
-                ErrorOccured( this, new PendingOperationErrorEventArgs( ex ) );
+                ErrorOccured(this, new PendingOperationErrorEventArgs(ex));
                 throw;
             }
         }
 
-        private void ReportProgress( decimal percentComplete )
+        private void ReportProgress(decimal percentComplete)
         {
-            ProgressChanged( this, new PendingOperationProgressChangedEventArgs( percentComplete ) );
+            ProgressChanged(this, new PendingOperationProgressChangedEventArgs(percentComplete));
         }
     }
 }

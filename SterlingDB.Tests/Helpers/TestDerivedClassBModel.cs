@@ -1,15 +1,12 @@
-﻿using System;
-
-namespace SterlingDB.Test.Helpers
+﻿namespace SterlingDB.Test.Helpers
 {
     public class TestDerivedClassBModel : TestBaseClassModel
     {
-        public String PropertyB { get; set; }
-
         public TestDerivedClassBModel()
-            : base()
         {
             PropertyB = "Property B Value";
         }
+
+        public string PropertyB { get; set; }
     }
 }

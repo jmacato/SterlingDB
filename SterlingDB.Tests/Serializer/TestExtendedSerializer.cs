@@ -1,57 +1,36 @@
-using SterlingDB;
-using SterlingDB.Server.FileSystem;
-using SterlingDB.Test.Helpers;
-using Xunit;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
-using SterlingDB.Exceptions;
-using SterlingDB.Indexes;
-using Xunit;
-using SterlingDB.Serialization;
 using System.IO;
-using System.Text;
+using SterlingDB.Serialization;
 using SterlingDB.Server;
+using Xunit;
 
 namespace SterlingDB.Test.Serializer
 {
     /// <summary>
     ///     Default serializer test
-    /// </summary> 
+    /// </summary>
     public class TestExtendedSerializer : TestBase
     {
-        /// <summary>
-        ///     The target default serializer
-        /// </summary>
-        private ISterlingSerializer _target;
-
-        // test data
-        const decimal DECIMAL = (decimal)5.11;
-        private readonly DateTime _date = DateTime.MinValue;
-        private readonly DateTime _secondDate = DateTime.Now;
-        private readonly Uri _uri = new Uri("http://sterling.codeplex.com", UriKind.Absolute);
-        private readonly Guid _guid = Guid.NewGuid();
-        private readonly TimeSpan _timeSpan = TimeSpan.FromSeconds(2);
-
-
         public TestExtendedSerializer()
         {
             _target = new ExtendedSerializer(new PlatformAdapter());
         }
 
         /// <summary>
-        ///     Check that serialization checks are working
+        ///     The target default serializer
         /// </summary>
-        [Fact]
-        public void TestSerializationChecks()
+        private readonly ISterlingSerializer _target;
+
+        // test data
+        private const decimal DECIMAL = (decimal) 5.11;
+        private readonly DateTime _date = DateTime.MinValue;
+        private readonly DateTime _secondDate = DateTime.Now;
+        private readonly Uri _uri = new Uri("http://sterling.codeplex.com", UriKind.Absolute);
+        private readonly Guid _guid = Guid.NewGuid();
+        private readonly TimeSpan _timeSpan = TimeSpan.FromSeconds(2);
+
+        public override void Cleanup()
         {
-            Assert.True(_target.CanSerialize<decimal>()); //Failed to recognize decimal.");          
-            Assert.True(_target.CanSerialize<DateTime>()); //Failed to recognize date time.");
-            Assert.True(_target.CanSerialize<Uri>()); //Failed to recognize uri.");
-            Assert.True(_target.CanSerialize<Guid>()); //Failed to recognize guid.");
-            Assert.True(_target.CanSerialize<TimeSpan>()); //Failed to recognize timespan.");
         }
 
         /// <summary>
@@ -60,7 +39,6 @@ namespace SterlingDB.Test.Serializer
         [Fact]
         public void TestSerialization()
         {
-
             decimal decimalTest;
             DateTime dateTest, date2Test;
             Uri uriTest;
@@ -86,7 +64,7 @@ namespace SterlingDB.Test.Serializer
                     date2Test = _target.Deserialize<DateTime>(br);
                     uriTest = _target.Deserialize<Uri>(br);
                     guidTest = _target.Deserialize<Guid>(br);
-                    timeSpanTest = (TimeSpan)_target.Deserialize(typeof(TimeSpan), br);
+                    timeSpanTest = (TimeSpan) _target.Deserialize(typeof(TimeSpan), br);
                 }
             }
 
@@ -98,6 +76,17 @@ namespace SterlingDB.Test.Serializer
             Assert.Equal(_timeSpan, timeSpanTest); //Time span did not deserialize correctly.");
         }
 
-        public override void Cleanup() { }
+        /// <summary>
+        ///     Check that serialization checks are working
+        /// </summary>
+        [Fact]
+        public void TestSerializationChecks()
+        {
+            Assert.True(_target.CanSerialize<decimal>()); //Failed to recognize decimal.");          
+            Assert.True(_target.CanSerialize<DateTime>()); //Failed to recognize date time.");
+            Assert.True(_target.CanSerialize<Uri>()); //Failed to recognize uri.");
+            Assert.True(_target.CanSerialize<Guid>()); //Failed to recognize guid.");
+            Assert.True(_target.CanSerialize<TimeSpan>()); //Failed to recognize timespan.");
+        }
     }
 }

@@ -1,10 +1,9 @@
 using System;
 using System.IO;
-using SterlingDB;
 using SterlingDB.Serialization;
 
 namespace SterlingDB.Test.Helpers
-{    
+{
     public class TestCompositeSerializer : BaseSerializer
     {
         /// <summary>
@@ -24,7 +23,7 @@ namespace SterlingDB.Test.Helpers
         /// <param name="writer">The writer</param>
         public override void Serialize(object target, BinaryWriter writer)
         {
-            var instance = (TestCompositeKeyClass)target;
+            var instance = (TestCompositeKeyClass) target;
             writer.Write(instance.Key1);
             writer.Write(instance.Key2);
             writer.Write(instance.Key3.ToByteArray());
@@ -43,7 +42,7 @@ namespace SterlingDB.Test.Helpers
                 reader.ReadInt32(),
                 reader.ReadString(),
                 new Guid(reader.ReadBytes(16)),
-                DateTime.FromFileTimeUtc(reader.ReadInt64()).ToLocalTime());            
+                DateTime.FromFileTimeUtc(reader.ReadInt64()).ToLocalTime());
         }
     }
 }

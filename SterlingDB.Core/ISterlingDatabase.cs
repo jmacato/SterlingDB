@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Threading.Tasks;
 using SterlingDB.Database;
@@ -9,12 +8,12 @@ namespace SterlingDB
     /// <summary>
     ///     Sterling database interface
     /// </summary>
-    public interface ISterlingDatabase 
+    public interface ISterlingDatabase
     {
         SterlingEngine Engine { get; }
 
         LogManager LogManager { get; }
-        
+
         /// <summary>
         ///     Backup the database
         /// </summary>
@@ -34,7 +33,7 @@ namespace SterlingDB
         /// </summary>
         /// <typeparam name="T">The type of the database to register</typeparam>
         /// <param name="instanceName">The name of the database instance</param>
-        ISterlingDatabaseInstance RegisterDatabase<T>( string instanceName ) where T : BaseDatabaseInstance;
+        ISterlingDatabaseInstance RegisterDatabase<T>(string instanceName) where T : BaseDatabaseInstance;
 
         /// <summary>
         ///     Register a database type with the system
@@ -42,7 +41,7 @@ namespace SterlingDB
         /// <typeparam name="T">The type of the database to register</typeparam>
         /// <typeparam name="TDriver">Register with a driver</typeparam>
         /// <param name="instanceName">The name of the database instance</param>
-        ISterlingDatabaseInstance RegisterDatabase<T, TDriver>( string instanceName )
+        ISterlingDatabaseInstance RegisterDatabase<T, TDriver>(string instanceName)
             where T : BaseDatabaseInstance
             where TDriver : ISterlingDriver;
 
@@ -52,8 +51,8 @@ namespace SterlingDB
         /// <typeparam name="T">The type of the database to register</typeparam>
         /// <param name="instanceName">The name of the database instance</param>
         /// <param name="driver">The storage driver</param>
-        ISterlingDatabaseInstance RegisterDatabase<T>( string instanceName, ISterlingDriver driver )
-            where T : BaseDatabaseInstance;           
+        ISterlingDatabaseInstance RegisterDatabase<T>(string instanceName, ISterlingDriver driver)
+            where T : BaseDatabaseInstance;
 
 
         /// <summary>
@@ -70,7 +69,7 @@ namespace SterlingDB
         void RegisterSerializer<T>() where T : BaseSerializer;
 
         /// <summary>
-        /// Register a class responsible for type resolution.
+        ///     Register a class responsible for type resolution.
         /// </summary>
         /// <param name="typeResolver">The typeResolver</param>
         void RegisterTypeResolver(ISterlingTypeResolver typeResolver);

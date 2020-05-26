@@ -1,26 +1,21 @@
-using SterlingDB;
-using SterlingDB.Database;
-using SterlingDB.Server.FileSystem;
+using System.Linq;
 using SterlingDB.Test.Helpers;
 using Xunit;
-using System.Linq;
-
-using SterlingDB;
-using SterlingDB.Test.Helpers;
 
 namespace SterlingDB.Test.Database
 {
     public class TestPurge : TestBase
     {
-        private readonly SterlingEngine _engine;
-        private ISterlingDatabaseInstance _databaseInstance;
-
         public TestPurge()
         {
             _engine = Factory.NewEngine();
             _engine.Activate();
-            _databaseInstance = _engine.SterlingDatabase.RegisterDatabase<TestDatabaseInstance>(TestContext.TestName, GetDriver());
+            _databaseInstance =
+                _engine.SterlingDatabase.RegisterDatabase<TestDatabaseInstance>(TestContext.TestName, GetDriver());
         }
+
+        private readonly SterlingEngine _engine;
+        private ISterlingDatabaseInstance _databaseInstance;
 
 
         public override void Cleanup()

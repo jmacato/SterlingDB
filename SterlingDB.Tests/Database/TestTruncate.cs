@@ -1,27 +1,21 @@
-using SterlingDB;
-using SterlingDB.Server.FileSystem;
+using System.Linq;
 using SterlingDB.Test.Helpers;
 using Xunit;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
-using SterlingDB.Exceptions;
 
 namespace SterlingDB.Test.Database
 {
     public class TestTruncate : TestBase
     {
-        private readonly SterlingEngine _engine;
-        private ISterlingDatabaseInstance _databaseInstance;
-
         public TestTruncate()
         {
             _engine = Factory.NewEngine();
             _engine.Activate();
-            _databaseInstance = _engine.SterlingDatabase.RegisterDatabase<TestDatabaseInstance>(TestContext.TestName, GetDriver());
+            _databaseInstance =
+                _engine.SterlingDatabase.RegisterDatabase<TestDatabaseInstance>(TestContext.TestName, GetDriver());
         }
+
+        private readonly SterlingEngine _engine;
+        private ISterlingDatabaseInstance _databaseInstance;
 
 
         public override void Cleanup()

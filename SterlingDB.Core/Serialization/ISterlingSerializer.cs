@@ -35,7 +35,7 @@ namespace SterlingDB.Serialization
         /// </summary>
         /// <typeparam name="T">The type</typeparam>
         /// <returns>True if it can handle it</returns>
-        bool CanSerialize<T>();        
+        bool CanSerialize<T>();
 
         /// <summary>
         ///     Typed deserialization
@@ -43,6 +43,6 @@ namespace SterlingDB.Serialization
         /// <typeparam name="T">The type</typeparam>
         /// <param name="reader">The reader</param>
         /// <returns>The type</returns>
-        T Deserialize<T>(BinaryReader reader);        
+        T Deserialize<T>(BinaryReader reader);
     }
 }

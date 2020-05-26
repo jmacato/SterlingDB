@@ -18,7 +18,7 @@ namespace SterlingDB.Test.Helpers
         public static TestClassWithStruct MakeTestClassWithStruct()
         {
             var retVal = new TestClassWithStruct {ID = _key++};
-            retVal.Structs.Add(new TestStruct { Date=DateTime.Now, Value = new Random().Next()});
+            retVal.Structs.Add(new TestStruct {Date = DateTime.Now, Value = new Random().Next()});
             return retVal;
         }
     }

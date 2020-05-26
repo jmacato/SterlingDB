@@ -1,11 +1,9 @@
 using System.IO;
-using SterlingDB;
-using SterlingDB.Server.FileSystem;
 using SterlingDB.Test.Helpers;
 using Xunit;
 
 namespace SterlingDB.Test.Database
-{  
+{
     public class TestBackupRestore : TestBase
     {
         private SterlingEngine _engine;
@@ -26,7 +24,8 @@ namespace SterlingDB.Test.Database
             // activate the engine and store the data
             _engine = Factory.NewEngine();
             _engine.Activate();
-            _databaseInstance = _engine.SterlingDatabase.RegisterDatabase<TestDatabaseInstance>(TestContext.TestName, driver);
+            _databaseInstance =
+                _engine.SterlingDatabase.RegisterDatabase<TestDatabaseInstance>(TestContext.TestName, driver);
 
             // test saving and reloading
             var expected = TestModel.MakeTestModel();
@@ -51,7 +50,7 @@ namespace SterlingDB.Test.Database
             var actual = _databaseInstance.LoadAsync<TestModel>(expected.Key).Result;
 
             // confirm the database is gone
-            Assert.Null(actual);//, "Purge failed, was able to load the test model.");
+            Assert.Null(actual); //, "Purge failed, was able to load the test model.");
 
             _databaseInstance = null;
 
@@ -64,10 +63,12 @@ namespace SterlingDB.Test.Database
 
             // activate it and grab the database again
             _engine.Activate();
-            _databaseInstance = _engine.SterlingDatabase.RegisterDatabase<TestDatabaseInstance>(TestContext.TestName, driver);
+            _databaseInstance =
+                _engine.SterlingDatabase.RegisterDatabase<TestDatabaseInstance>(TestContext.TestName, driver);
 
             // restore it
-            _engine.SterlingDatabase.RestoreAsync<TestDatabaseInstance>(new BinaryReader(new MemoryStream(databaseBuffer))).Wait();
+            _engine.SterlingDatabase
+                .RestoreAsync<TestDatabaseInstance>(new BinaryReader(new MemoryStream(databaseBuffer))).Wait();
 
             _engine.Dispose();
             _engine = null;
@@ -77,19 +78,23 @@ namespace SterlingDB.Test.Database
 
             // activate it and grab the database again
             _engine.Activate();
-            _databaseInstance = _engine.SterlingDatabase.RegisterDatabase<TestDatabaseInstance>(TestContext.TestName, driver);
+            _databaseInstance =
+                _engine.SterlingDatabase.RegisterDatabase<TestDatabaseInstance>(TestContext.TestName, driver);
 
             actual = _databaseInstance.LoadAsync<TestModel>(expected.Key).Result;
 
-            Assert.NotNull(actual);//, "Load failed.");
-            Assert.Equal(expected.Key, actual.Key);//, "Load failed: key mismatch.");
-            Assert.Equal(expected.Data, actual.Data);//, "Load failed: data mismatch.");
-            Assert.Null(actual.Data2);//, "Load failed: suppressed data property not valid on de-serialize.");
-            Assert.NotNull(actual.SubClass);//, "Load failed: sub class is null.");
-            Assert.Null(actual.SubClass2);//, "Load failed: supressed sub class should be null.");
-            Assert.Equal(expected.SubClass.NestedText, actual.SubClass.NestedText);//,"Load failed: sub class text mismtach.");
-            Assert.Equal(expected.SubStruct.NestedId, actual.SubStruct.NestedId);//"Load failed: sub struct id mismtach.");
-            Assert.Equal(expected.SubStruct.NestedString, actual.SubStruct.NestedString);//,"Load failed: sub class string mismtach.");
+            Assert.NotNull(actual); //, "Load failed.");
+            Assert.Equal(expected.Key, actual.Key); //, "Load failed: key mismatch.");
+            Assert.Equal(expected.Data, actual.Data); //, "Load failed: data mismatch.");
+            Assert.Null(actual.Data2); //, "Load failed: suppressed data property not valid on de-serialize.");
+            Assert.NotNull(actual.SubClass); //, "Load failed: sub class is null.");
+            Assert.Null(actual.SubClass2); //, "Load failed: supressed sub class should be null.");
+            Assert.Equal(expected.SubClass.NestedText,
+                actual.SubClass.NestedText); //,"Load failed: sub class text mismtach.");
+            Assert.Equal(expected.SubStruct.NestedId,
+                actual.SubStruct.NestedId); //"Load failed: sub struct id mismtach.");
+            Assert.Equal(expected.SubStruct.NestedString,
+                actual.SubStruct.NestedString); //,"Load failed: sub class string mismtach.");
         }
     }
 }

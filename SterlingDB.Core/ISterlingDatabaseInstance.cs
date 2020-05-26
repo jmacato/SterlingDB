@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Threading.Tasks;
 using SterlingDB.Database;
 using SterlingDB.Events;
@@ -14,7 +12,7 @@ namespace SterlingDB
     /// <summary>
     ///     The sterling database instance
     /// </summary>
-    public interface ISterlingDatabaseInstance 
+    public interface ISterlingDatabaseInstance
     {
         /// <summary>
         ///     The driver
@@ -22,35 +20,6 @@ namespace SterlingDB
         ISterlingDriver Driver { get; }
 
         SerializationHelper Helper { get; }
-
-        /// <summary>
-        ///     Register a trigger
-        /// </summary>
-        /// <param name="trigger">The trigger</param>
-        void RegisterTrigger<T,TKey>(BaseSterlingTrigger<T, TKey> trigger) where T : class, new();
-
-        /// <summary>
-        /// Registers the byte stream interceptor
-        /// </summary>
-        /// <typeparam name="T">The interceptor</typeparam>
-        void RegisterInterceptor<T>() where T : BaseSterlingByteInterceptor, new();
-
-        /// <summary>
-        ///     Unregister a byte stream interceptor
-        /// </summary>
-        /// <typeparam name="T">The interceptor</typeparam>
-        void UnRegisterInterceptor<T>() where T : BaseSterlingByteInterceptor, new();
-
-        /// <summary>
-        /// Clears the byte stream interceptor list
-        /// </summary>
-        void UnRegisterInterceptors();
-
-        /// <summary>
-        ///     Unregister the trigger
-        /// </summary>
-        /// <param name="trigger">The trigger</param>
-        void UnregisterTrigger<T, TKey>(BaseSterlingTrigger<T, TKey> trigger) where T : class, new();
 
         /// <summary>
         ///     The name of the database instance
@@ -63,11 +32,40 @@ namespace SterlingDB
         Type IgnoreAttribute { get; }
 
         /// <summary>
+        ///     Register a trigger
+        /// </summary>
+        /// <param name="trigger">The trigger</param>
+        void RegisterTrigger<T, TKey>(BaseSterlingTrigger<T, TKey> trigger) where T : class, new();
+
+        /// <summary>
+        ///     Registers the byte stream interceptor
+        /// </summary>
+        /// <typeparam name="T">The interceptor</typeparam>
+        void RegisterInterceptor<T>() where T : BaseSterlingByteInterceptor, new();
+
+        /// <summary>
+        ///     Unregister a byte stream interceptor
+        /// </summary>
+        /// <typeparam name="T">The interceptor</typeparam>
+        void UnRegisterInterceptor<T>() where T : BaseSterlingByteInterceptor, new();
+
+        /// <summary>
+        ///     Clears the byte stream interceptor list
+        /// </summary>
+        void UnRegisterInterceptors();
+
+        /// <summary>
+        ///     Unregister the trigger
+        /// </summary>
+        /// <param name="trigger">The trigger</param>
+        void UnregisterTrigger<T, TKey>(BaseSterlingTrigger<T, TKey> trigger) where T : class, new();
+
+        /// <summary>
         ///     True if it is registered with the sterling engine
         /// </summary>
         /// <param name="instance">The instance</param>
         /// <returns>True if it can be persisted</returns>
-        bool IsRegistered<T>(T instance) where T : class;        
+        bool IsRegistered<T>(T instance) where T : class;
 
         /// <summary>
         ///     Non-generic registration check
@@ -105,7 +103,7 @@ namespace SterlingDB
         /// <typeparam name="TKey">Save it</typeparam>
         /// <param name="instance">An instance or sub-class of the table type</param>
         /// <returns></returns>
-        Task<TKey> SaveAsAsync<T, TKey>(T instance) where T : class,new();
+        Task<TKey> SaveAsAsync<T, TKey>(T instance) where T : class, new();
 
         /// <summary>
         ///     Query (keys only)
@@ -133,7 +131,7 @@ namespace SterlingDB
         /// <typeparam name="TIndex2">The type of the index</typeparam>
         /// <typeparam name="TKey">The type of the key</typeparam>
         /// <param name="indexName">The name of the index</param>
-        /// <returns>The list of indexes to query</returns>    
+        /// <returns>The list of indexes to query</returns>
         List<TableIndex<T, Tuple<TIndex1, TIndex2>, TKey>> Query<T, TIndex1, TIndex2, TKey>(string indexName)
             where T : class, new();
 
@@ -151,7 +149,7 @@ namespace SterlingDB
         /// <typeparam name="T">The table type</typeparam>
         /// <param name="instance">The instance or sub-class of the table type</param>
         /// <returns></returns>
-        Task<object> SaveAsAsync<T>(T instance) where T : class,new();
+        Task<object> SaveAsAsync<T>(T instance) where T : class, new();
 
         /// <summary>
         ///     Save when key is not known
@@ -182,10 +180,10 @@ namespace SterlingDB
         /// <summary>
         ///     Flush all keys and indexes to storage
         /// </summary>
-        Task FlushAsync();        
+        Task FlushAsync();
 
         /// <summary>
-        ///     Load it 
+        ///     Load it
         /// </summary>
         /// <typeparam name="T">The type to load</typeparam>
         /// <typeparam name="TKey">The key type</typeparam>
@@ -219,7 +217,7 @@ namespace SterlingDB
         Task<object> LoadAsync(Type type, object key);
 
         /// <summary>
-        ///     Delete it 
+        ///     Delete it
         /// </summary>
         /// <typeparam name="T">The type to delete</typeparam>
         /// <param name="instance">The instance</param>

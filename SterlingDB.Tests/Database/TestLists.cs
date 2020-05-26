@@ -1,4 +1,3 @@
-using SterlingDB;
 using SterlingDB.Test.Helpers;
 using Xunit;
 
@@ -6,33 +5,22 @@ namespace SterlingDB.Test.Database
 {
     public class TestLists : TestBase
     {
-        private readonly SterlingEngine _engine;
-        private ISterlingDatabaseInstance _databaseInstance;
-
         public TestLists()
         {
             _engine = Factory.NewEngine();
             _engine.Activate();
-            _databaseInstance = _engine.SterlingDatabase.RegisterDatabase<TestDatabaseInstance>(TestContext.TestName, GetDriver());
+            _databaseInstance =
+                _engine.SterlingDatabase.RegisterDatabase<TestDatabaseInstance>(TestContext.TestName, GetDriver());
         }
+
+        private readonly SterlingEngine _engine;
+        private ISterlingDatabaseInstance _databaseInstance;
 
         public override void Cleanup()
         {
             _databaseInstance.PurgeAsync().Wait();
             _engine.Dispose();
             _databaseInstance = null;
-        }
-
-        [Fact]
-        public void TestNullList()
-        {
-            var expected = TestListModel.MakeTestListModel();
-            expected.Children = null;
-            var key = _databaseInstance.SaveAsync(expected).Result;
-            var actual = _databaseInstance.LoadAsync<TestListModel>(key).Result;
-            Assert.NotNull(actual); //Save/load failed: model is null.");
-            Assert.Equal(expected.ID, actual.ID); //Save/load failed: key mismatch.");
-            Assert.Null(actual.Children); //Save/load failed: list should be null.");
         }
 
         [Fact]
@@ -99,5 +87,16 @@ namespace SterlingDB.Test.Database
             }
         }
 
+        [Fact]
+        public void TestNullList()
+        {
+            var expected = TestListModel.MakeTestListModel();
+            expected.Children = null;
+            var key = _databaseInstance.SaveAsync(expected).Result;
+            var actual = _databaseInstance.LoadAsync<TestListModel>(key).Result;
+            Assert.NotNull(actual); //Save/load failed: model is null.");
+            Assert.Equal(expected.ID, actual.ID); //Save/load failed: key mismatch.");
+            Assert.Null(actual.Children); //Save/load failed: list should be null.");
+        }
     }
 }

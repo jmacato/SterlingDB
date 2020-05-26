@@ -4,15 +4,14 @@ namespace SterlingDB.Database
 {
     public abstract class BaseSterlingByteInterceptor : ISterlingByteInterceptor
     {
-        virtual public byte[] Save(byte[] sourceStream)
+        public virtual byte[] Save(byte[] sourceStream)
         {
             throw new NotImplementedException();
         }
 
-        virtual public byte[] Load(byte[] sourceStream)
+        public virtual byte[] Load(byte[] sourceStream)
         {
             throw new NotImplementedException();
         }
     }
-
 }

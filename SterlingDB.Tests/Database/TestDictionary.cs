@@ -1,53 +1,26 @@
-﻿using SterlingDB;
-using SterlingDB.Test.Helpers;
+﻿using SterlingDB.Test.Helpers;
 using Xunit;
 
 namespace SterlingDB.Test.Database
 {
     public class TestDictionary : TestBase
     {
-        private readonly SterlingEngine _engine;
-        private ISterlingDatabaseInstance _databaseInstance;
-
         public TestDictionary()
         {
             _engine = Factory.NewEngine();
             _engine.Activate();
-            _databaseInstance = _engine.SterlingDatabase.RegisterDatabase<TestDatabaseInstance>(TestContext.TestName, GetDriver());
+            _databaseInstance =
+                _engine.SterlingDatabase.RegisterDatabase<TestDatabaseInstance>(TestContext.TestName, GetDriver());
         }
+
+        private readonly SterlingEngine _engine;
+        private ISterlingDatabaseInstance _databaseInstance;
 
         public override void Cleanup()
         {
             _databaseInstance.PurgeAsync().Wait();
             _engine.Dispose();
             _databaseInstance = null;
-        }
-
-        [Fact]
-        public void TestNullDictionary()
-        {
-            var expected = TestClassWithDictionary.MakeTestClassWithDictionary();
-            expected.DictionaryWithBaseClassAsValue = null;
-            var key = _databaseInstance.SaveAsync(expected).Result;
-            var actual = _databaseInstance.LoadAsync<TestClassWithDictionary>(key).Result;
-
-            Assert.NotNull(actual); //Save/load failed: model is null.");
-            Assert.Equal(expected.ID, actual.ID); //Save/load failed: key mismatch.");
-            Assert.Null(actual.DictionaryWithBaseClassAsValue); //Save/load failed: dictionary is not null.");
-        }
-
-        [Fact]
-        public void TestEmptyDictionary()
-        {
-            var expected = TestClassWithDictionary.MakeTestClassWithDictionary();
-            expected.DictionaryWithBaseClassAsValue.Clear();
-            var key = _databaseInstance.SaveAsync(expected).Result;
-            var actual = _databaseInstance.LoadAsync<TestClassWithDictionary>(key).Result;
-
-            Assert.NotNull(actual); //Save/load failed: model is null.");
-            Assert.Equal(expected.ID, actual.ID); //Save/load failed: key mismatch.");
-            Assert.NotNull(actual.DictionaryWithBaseClassAsValue); //Save/load failed: dictionary not initialized.");
-            Assert.Empty(actual.DictionaryWithBaseClassAsValue); //Save/load failed: dictionary size mismatch.");
         }
 
         [Fact]
@@ -67,12 +40,14 @@ namespace SterlingDB.Test.Database
             foreach (var v in expected.BaseDictionary)
             {
                 Assert.True(actual.BaseDictionary.ContainsKey(v.Key)); //Save/load failed: key not found.");
-                Assert.Equal(expected.BaseDictionary[v.Key], actual.BaseDictionary[v.Key]); //Save/load failed: key mismatch.");
+                Assert.Equal(expected.BaseDictionary[v.Key],
+                    actual.BaseDictionary[v.Key]); //Save/load failed: key mismatch.");
             }
 
             foreach (var v in expected.DictionaryWithBaseClassAsValue)
             {
-                Assert.True(actual.DictionaryWithBaseClassAsValue.ContainsKey(v.Key)); //Save/load failed: key not found.");
+                Assert.True(actual.DictionaryWithBaseClassAsValue
+                    .ContainsKey(v.Key)); //Save/load failed: key not found.");
                 Assert.Equal(expected.DictionaryWithBaseClassAsValue[v.Key].Key,
                     actual.DictionaryWithBaseClassAsValue[v.Key].Key); //Save/load failed: key mismatch.");
                 Assert.Equal(expected.DictionaryWithBaseClassAsValue[v.Key].BaseProperty,
@@ -111,6 +86,33 @@ namespace SterlingDB.Test.Database
                         actual.DictionaryWithListAsValue[v.Key][x].Date); //Save/load failed: date mismatch.");
                 }
             }
+        }
+
+        [Fact]
+        public void TestEmptyDictionary()
+        {
+            var expected = TestClassWithDictionary.MakeTestClassWithDictionary();
+            expected.DictionaryWithBaseClassAsValue.Clear();
+            var key = _databaseInstance.SaveAsync(expected).Result;
+            var actual = _databaseInstance.LoadAsync<TestClassWithDictionary>(key).Result;
+
+            Assert.NotNull(actual); //Save/load failed: model is null.");
+            Assert.Equal(expected.ID, actual.ID); //Save/load failed: key mismatch.");
+            Assert.NotNull(actual.DictionaryWithBaseClassAsValue); //Save/load failed: dictionary not initialized.");
+            Assert.Empty(actual.DictionaryWithBaseClassAsValue); //Save/load failed: dictionary size mismatch.");
+        }
+
+        [Fact]
+        public void TestNullDictionary()
+        {
+            var expected = TestClassWithDictionary.MakeTestClassWithDictionary();
+            expected.DictionaryWithBaseClassAsValue = null;
+            var key = _databaseInstance.SaveAsync(expected).Result;
+            var actual = _databaseInstance.LoadAsync<TestClassWithDictionary>(key).Result;
+
+            Assert.NotNull(actual); //Save/load failed: model is null.");
+            Assert.Equal(expected.ID, actual.ID); //Save/load failed: key mismatch.");
+            Assert.Null(actual.DictionaryWithBaseClassAsValue); //Save/load failed: dictionary is not null.");
         }
     }
 }

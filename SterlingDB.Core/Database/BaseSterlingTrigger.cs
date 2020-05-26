@@ -7,7 +7,7 @@ namespace SterlingDB.Database
     /// </summary>
     /// <typeparam name="T">The type the trigger is for</typeparam>
     /// <typeparam name="TKey">The type of the key</typeparam>
-    public abstract class BaseSterlingTrigger<T,TKey> : ISterlingTrigger<T,TKey> where T: class, new()
+    public abstract class BaseSterlingTrigger<T, TKey> : ISterlingTrigger<T, TKey> where T : class, new()
     {
         public bool BeforeSave(Type type, object instance)
         {
@@ -18,7 +18,7 @@ namespace SterlingDB.Database
         {
             AfterSave((T) instance);
         }
-       
+
         public bool BeforeDelete(Type type, object key)
         {
             return BeforeDelete((TKey) key);
@@ -29,6 +29,5 @@ namespace SterlingDB.Database
         public abstract void AfterSave(T instance);
 
         public abstract bool BeforeDelete(TKey key);
-        
     }
 }

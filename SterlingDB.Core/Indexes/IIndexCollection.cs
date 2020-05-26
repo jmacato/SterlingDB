@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+
 namespace SterlingDB.Indexes
 {
     /// <summary>
@@ -10,7 +11,7 @@ namespace SterlingDB.Indexes
         ///     Serialize
         /// </summary>
         Task FlushAsync();
-        
+
         /// <summary>
         ///     Refresh the list
         /// </summary>

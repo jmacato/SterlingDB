@@ -1,12 +1,6 @@
-﻿using System;
-
-namespace SterlingDB.Exceptions
+﻿namespace SterlingDB.Exceptions
 {
-    public class SterlingNoTableDefinitionsException : SterlingException 
+    public class SterlingNoTableDefinitionsException : SterlingException
     {
-        public SterlingNoTableDefinitionsException() : base()
-        {
-            
-        }
     }
 }

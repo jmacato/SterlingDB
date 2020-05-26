@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 using System.Threading.Tasks;
-using SterlingDB;
 using SterlingDB.Database;
 using SterlingDB.Events;
 using SterlingDB.Indexes;
@@ -16,23 +12,15 @@ namespace SterlingDB.Test.Helpers
     public class TestDatabaseInterfaceInstance : ISterlingDatabaseInstance
     {
         private static readonly object _lock = new object();
-        public object Lock
-        {
-            get { return _lock; }
-        }
+
+        public object Lock => _lock;
 
         /// <summary>
         ///     The driver
         /// </summary>
-        public ISterlingDriver Driver
-        {
-            get { throw new NotImplementedException(); }
-        }
+        public ISterlingDriver Driver => throw new NotImplementedException();
 
-        public SerializationHelper Helper
-        {
-            get { throw new NotImplementedException(); }
-        }
+        public SerializationHelper Helper => throw new NotImplementedException();
 
         /// <summary>
         ///     Register a trigger
@@ -53,7 +41,7 @@ namespace SterlingDB.Test.Helpers
         }
 
         /// <summary>
-        /// Register byte stream interceptors
+        ///     Register byte stream interceptors
         /// </summary>
         /// <typeparam name="T"></typeparam>
         public void RegisterInterceptor<T>() where T : BaseSterlingByteInterceptor, new()
@@ -62,7 +50,7 @@ namespace SterlingDB.Test.Helpers
         }
 
         /// <summary>
-        /// Register byte stream interceptors
+        ///     Register byte stream interceptors
         /// </summary>
         /// <typeparam name="T"></typeparam>
         public void UnRegisterInterceptor<T>() where T : BaseSterlingByteInterceptor, new()
@@ -74,19 +62,16 @@ namespace SterlingDB.Test.Helpers
         {
             throw new NotImplementedException();
         }
-        
+
         /// <summary>
         ///     The name of the database instance
         /// </summary>
-        public string Name
-        {
-            get { return "Test Database Instance"; }
-        }
+        public string Name => "Test Database Instance";
 
         /// <summary>
         ///     The type dictating which objects should be ignored
         /// </summary>
-        public Type IgnoreAttribute { get { return typeof(SterlingIgnoreAttribute); } }
+        public Type IgnoreAttribute => typeof(SterlingIgnoreAttribute);
 
         /// <summary>
         ///     True if it is registered with the sterling engine
@@ -145,7 +130,7 @@ namespace SterlingDB.Test.Helpers
         /// <typeparam name="T">The type to query</typeparam>
         /// <typeparam name="TKey">The type of the key</typeparam>
         /// <returns>The list of keys to query</returns>
-        public List<TableKey<T, TKey>> Query<T, TKey>() where T: class, new()
+        public List<TableKey<T, TKey>> Query<T, TKey>() where T : class, new()
         {
             throw new NotImplementedException();
         }
@@ -171,8 +156,9 @@ namespace SterlingDB.Test.Helpers
         /// <typeparam name="TIndex2">The type of the index</typeparam>
         /// <typeparam name="TKey">The type of the key</typeparam>
         /// <param name="indexName">The name of the index</param>
-        /// <returns>The list of indexes to query</returns>  
-        public List<TableIndex<T, Tuple<TIndex1, TIndex2>, TKey>> Query<T, TIndex1, TIndex2, TKey>(string indexName) where T : class, new()
+        /// <returns>The list of indexes to query</returns>
+        public List<TableIndex<T, Tuple<TIndex1, TIndex2>, TKey>> Query<T, TIndex1, TIndex2, TKey>(string indexName)
+            where T : class, new()
         {
             throw new NotImplementedException();
         }
@@ -184,7 +170,7 @@ namespace SterlingDB.Test.Helpers
         /// <typeparam name="TKey">Save it</typeparam>
         /// <param name="instance">An instance or sub-class of the table type</param>
         /// <returns></returns>
-        public Task<TKey> SaveAsAsync<T, TKey>(T instance) where T : class,new()
+        public Task<TKey> SaveAsAsync<T, TKey>(T instance) where T : class, new()
         {
             throw new NotImplementedException();
         }
@@ -195,7 +181,7 @@ namespace SterlingDB.Test.Helpers
         /// <typeparam name="T">The table type</typeparam>
         /// <param name="instance">The instance or sub-class of the table type</param>
         /// <returns></returns>
-        public Task<object> SaveAsAsync<T>(T instance) where T : class,new()
+        public Task<object> SaveAsAsync<T>(T instance) where T : class, new()
         {
             throw new NotImplementedException();
         }
@@ -255,7 +241,7 @@ namespace SterlingDB.Test.Helpers
         }
 
         /// <summary>
-        ///     Load it 
+        ///     Load it
         /// </summary>
         /// <typeparam name="T">The type to load</typeparam>
         /// <typeparam name="TKey">The key type</typeparam>
@@ -301,7 +287,7 @@ namespace SterlingDB.Test.Helpers
         }
 
         /// <summary>
-        ///     Delete it 
+        ///     Delete it
         /// </summary>
         /// <typeparam name="T">The type to delete</typeparam>
         /// <param name="instance">The instance</param>
@@ -344,7 +330,6 @@ namespace SterlingDB.Test.Helpers
         {
             throw new NotImplementedException();
         }
-
 #pragma warning disable 0067
         public event EventHandler<SterlingOperationArgs> SterlingOperationPerformed;
 

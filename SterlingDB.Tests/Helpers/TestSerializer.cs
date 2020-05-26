@@ -1,7 +1,5 @@
-﻿
-using System;
+﻿using System;
 using System.IO;
-using SterlingDB;
 using SterlingDB.Serialization;
 
 namespace SterlingDB.Test.Helpers
@@ -9,10 +7,10 @@ namespace SterlingDB.Test.Helpers
     public struct TestStruct
     {
         public int Value;
-        public DateTime Date; 
+        public DateTime Date;
     }
 
-    public class TestSerializer : BaseSerializer 
+    public class TestSerializer : BaseSerializer
     {
         /// <summary>
         ///     Return true if this serializer can handle the object
@@ -21,7 +19,7 @@ namespace SterlingDB.Test.Helpers
         /// <returns>True if it can be serialized</returns>
         public override bool CanSerialize(Type targetType)
         {
-            return targetType.Equals(typeof (TestStruct));
+            return targetType.Equals(typeof(TestStruct));
         }
 
         /// <summary>

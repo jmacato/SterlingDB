@@ -13,12 +13,12 @@ namespace SterlingDB.Test.Helpers
         public static TestAggregateModel MakeAggregateModel()
         {
             return new TestAggregateModel
-                       {
-                           Key = Guid.NewGuid().ToString(),
-                           TestModelInstance = TestModel.MakeTestModel(),
-                           TestForeignInstance = TestForeignModel.MakeForeignModel(),
-                           TestBaseClassInstance = new TestDerivedClassAModel()
-                       };
+            {
+                Key = Guid.NewGuid().ToString(),
+                TestModelInstance = TestModel.MakeTestModel(),
+                TestForeignInstance = TestForeignModel.MakeForeignModel(),
+                TestBaseClassInstance = new TestDerivedClassAModel()
+            };
         }
     }
 }

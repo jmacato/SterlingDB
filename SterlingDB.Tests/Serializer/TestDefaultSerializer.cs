@@ -1,41 +1,32 @@
-﻿using Xunit;
-using SterlingDB.Serialization;
-using System.IO;
+﻿using System.IO;
 using System.Text;
+using SterlingDB.Serialization;
+using Xunit;
 
 namespace SterlingDB.Test.Serializer
 {
     /// <summary>
     ///     Default serializer test
-    /// </summary> 
-
+    /// </summary>
     public class TestDefaultSerializer : TestBase
     {
-        /// <summary>
-        ///     The target default serializer
-        /// </summary>
-        private ISterlingSerializer _target;
-
-        // test data
-        const int FIVE = 5;
-        const double PI = 3.14;
-        const string TEST_STRING = "This string";
-
         public TestDefaultSerializer()
         {
             _target = new DefaultSerializer();
         }
 
         /// <summary>
-        ///     Check that serialization checks are working
+        ///     The target default serializer
         /// </summary>
-        [Fact]
-        public void TestSerializationChecks()
+        private readonly ISterlingSerializer _target;
+
+        // test data
+        private const int FIVE = 5;
+        private const double PI = 3.14;
+        private const string TEST_STRING = "This string";
+
+        public override void Cleanup()
         {
-            Assert.True(_target.CanSerialize<int>()); //Failed to recognize integer.");
-            Assert.True(_target.CanSerialize<double>()); //Failed to recognize double.");
-            Assert.True(_target.CanSerialize<string>()); //Failed to recognize string (generic).");
-            Assert.True(_target.CanSerialize(typeof(string))); //Failed to recognize string.");
         }
 
         /// <summary>
@@ -70,7 +61,7 @@ namespace SterlingDB.Test.Serializer
                     targetPi = _target.Deserialize<double>(br);
                     targetTestString = _target.Deserialize<string>(br);
                     targetCharArray = _target.Deserialize<char[]>(br);
-                    targetByteArray = (byte[])_target.Deserialize(typeof(byte[]), br);
+                    targetByteArray = (byte[]) _target.Deserialize(typeof(byte[]), br);
                 }
             }
 
@@ -80,23 +71,26 @@ namespace SterlingDB.Test.Serializer
 
             Assert.Equal(charArray.Length, targetCharArray.Length); //Character array length mismatch.");
             if (charArray.Length == targetCharArray.Length)
-            {
                 for (var idx = 0; idx < charArray.Length; idx++)
-                {
-                    Assert.Equal(charArray[idx], targetCharArray[idx]); //Character array did not deserialize correctly.");
-                }
-            }
+                    Assert.Equal(charArray[idx],
+                        targetCharArray[idx]); //Character array did not deserialize correctly.");
 
             Assert.Equal(byteArray.Length, targetByteArray.Length); //Byte array length mismatch.");
             if (byteArray.Length == targetByteArray.Length)
-            {
                 for (var idx = 0; idx < byteArray.Length; idx++)
-                {
                     Assert.Equal(byteArray[idx], targetByteArray[idx]); //Byte array did not deserialize correctly.");
-                }
-            }
         }
 
-        public override void Cleanup() { }
+        /// <summary>
+        ///     Check that serialization checks are working
+        /// </summary>
+        [Fact]
+        public void TestSerializationChecks()
+        {
+            Assert.True(_target.CanSerialize<int>()); //Failed to recognize integer.");
+            Assert.True(_target.CanSerialize<double>()); //Failed to recognize double.");
+            Assert.True(_target.CanSerialize<string>()); //Failed to recognize string (generic).");
+            Assert.True(_target.CanSerialize(typeof(string))); //Failed to recognize string.");
+        }
     }
 }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
 
 namespace SterlingDB.Server.FileSystem
 {
@@ -14,7 +13,7 @@ namespace SterlingDB.Server.FileSystem
     {
         private static readonly List<string> _paths = new List<string>();
         private static readonly List<string> _files = new List<string>();
-                
+
         /// <summary>
         ///     Gets an isolated storage reader
         /// </summary>
@@ -26,7 +25,7 @@ namespace SterlingDB.Server.FileSystem
             {
                 return new BinaryReader(File.OpenRead(path));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new SterlingFileSystemException(ex);
             }
@@ -41,10 +40,10 @@ namespace SterlingDB.Server.FileSystem
         {
             try
             {
-                var stream = File.Open( path, FileMode.Create, FileAccess.Write );
-                return new BinaryWriter( stream );
+                var stream = File.Open(path, FileMode.Create, FileAccess.Write);
+                return new BinaryWriter(stream);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new SterlingFileSystemException(ex);
             }
@@ -55,47 +54,38 @@ namespace SterlingDB.Server.FileSystem
         /// </summary>
         /// <param name="path">The path</param>
         public void Delete(string path)
-        {            
+        {
             try
             {
                 if (File.Exists(path))
                 {
                     File.Delete(path);
-                    if (_files.Contains(path))
-                    {
-                        _paths.Remove(path);
-                    }
+                    if (_files.Contains(path)) _paths.Remove(path);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                throw new SterlingFileSystemException(ex);   
+                throw new SterlingFileSystemException(ex);
             }
         }
-       
+
         /// <summary>
         ///     Ensure that a directory exists
         /// </summary>
         /// <param name="path">the path</param>
         public void EnsureDirectory(string path)
-        {            
-            if (path.EndsWith("/"))
-            {
-                path = path.Substring(0, path.Length - 1);
-            }
+        {
+            if (path.EndsWith("/")) path = path.Substring(0, path.Length - 1);
 
             try
             {
                 if (!_paths.Contains(path))
                 {
-                    if (!Directory.Exists(path))
-                    {
-                        Directory.CreateDirectory(path);
-                    }
+                    if (!Directory.Exists(path)) Directory.CreateDirectory(path);
                     _paths.Add(path);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new SterlingFileSystemException(ex);
             }
@@ -111,13 +101,14 @@ namespace SterlingDB.Server.FileSystem
             try
             {
                 if (_files.Contains(path))
-                    return true; 
+                    return true;
 
                 if (File.Exists(path))
                 {
                     _files.Add(path);
                     return true;
                 }
+
                 return false;
             }
             catch (Exception ex)
@@ -127,7 +118,7 @@ namespace SterlingDB.Server.FileSystem
         }
 
         /// <summary>
-        /// Purge a directory and everything beneath it
+        ///     Purge a directory and everything beneath it
         /// </summary>
         /// <param name="path">The path</param>
         public void Purge(string path)
@@ -136,7 +127,7 @@ namespace SterlingDB.Server.FileSystem
         }
 
         /// <summary>
-        /// Purge a directory and everything beneath it
+        ///     Purge a directory and everything beneath it
         /// </summary>
         /// <param name="path">The path</param>
         /// <param name="clear">A value indicating whether the internal lists should be cleared</param>
@@ -151,40 +142,29 @@ namespace SterlingDB.Server.FileSystem
             try
             {
                 // already purged!
-                if (!Directory.Exists(path))
-                {
-                    return;
-                }
+                if (!Directory.Exists(path)) return;
 
                 // clear the sub directories
                 var directory = new DirectoryInfo(path);
 
-                foreach (var dir in directory.EnumerateDirectories())
-                {
-                    _Purge(Path.Combine(path, dir.FullName), false);
-                }
+                foreach (var dir in directory.EnumerateDirectories()) _Purge(Path.Combine(path, dir.FullName), false);
 
                 // clear the files - don't use a where clause because we want to get closer to the delete operation
                 // with the filter
                 foreach (var filePath in
                     directory.EnumerateFiles()
-                    .Select(file => file.FullName))
-                {
-                    File.Delete( filePath );
-                }
+                        .Select(file => file.FullName))
+                    File.Delete(filePath);
 
                 var dirPath = path.TrimEnd('\\', '/');
-                if (!string.IsNullOrEmpty(dirPath) && Directory.Exists(dirPath))
-                {
-                    Directory.Delete(dirPath);                   
-                }
+                if (!string.IsNullOrEmpty(dirPath) && Directory.Exists(dirPath)) Directory.Delete(dirPath);
             }
             catch (Exception ex)
             {
                 throw new SterlingFileSystemException(ex);
             }
-        }        
-        
+        }
+
         public static void PurgeAll()
         {
             var fileHelper = new FileSystemHelper();

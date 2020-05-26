@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SterlingDB.Test.Helpers
+﻿namespace SterlingDB.Test.Helpers
 {
     public class TestClassWithArray
     {
@@ -13,12 +11,12 @@ namespace SterlingDB.Test.Helpers
 
         public static TestClassWithArray MakeTestClassWithArray()
         {
-            return new TestClassWithArray()
+            return new TestClassWithArray
             {
                 ID = _id++,
-                ValueTypeArray = new int[] { 1, 2, 3 },
-                BaseClassArray = new TestBaseClassModel[] { new TestDerivedClassAModel(), new TestDerivedClassBModel() },
-                ClassArray = new TestModel[] { TestModel.MakeTestModel() }
+                ValueTypeArray = new[] {1, 2, 3},
+                BaseClassArray = new TestBaseClassModel[] {new TestDerivedClassAModel(), new TestDerivedClassBModel()},
+                ClassArray = new[] {TestModel.MakeTestModel()}
             };
         }
     }

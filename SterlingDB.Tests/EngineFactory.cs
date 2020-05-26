@@ -1,7 +1,4 @@
-﻿
-using System;
-
-using SterlingDB;
+﻿using SterlingDB.Server;
 
 namespace SterlingDB.Test
 {
@@ -9,12 +6,12 @@ namespace SterlingDB.Test
     {
         public static SterlingEngine NewEngine()
         {
-            return new SterlingEngine( NewPlatformAdapter() );
+            return new SterlingEngine(NewPlatformAdapter());
         }
 
         public static ISterlingPlatformAdapter NewPlatformAdapter()
         {
-            return new SterlingDB.Server.PlatformAdapter();
+            return new PlatformAdapter();
         }
     }
 }

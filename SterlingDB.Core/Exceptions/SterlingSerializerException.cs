@@ -6,9 +6,8 @@ namespace SterlingDB.Exceptions
     public class SterlingSerializerException : SterlingException
     {
         public SterlingSerializerException(ISterlingSerializer serializer, Type targetType) :
-            base($"{ serializer.GetType().FullName} {targetType.FullName}")
+            base($"{serializer.GetType().FullName} {targetType.FullName}")
         {
-
         }
     }
 }

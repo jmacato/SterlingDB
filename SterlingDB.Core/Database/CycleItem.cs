@@ -17,7 +17,6 @@ namespace SterlingDB.Database
             return other != null &&
                    other.ClassType.Equals(ClassType) &&
                    other.Key.Equals(Key);
-                
         }
 
         public override int GetHashCode()

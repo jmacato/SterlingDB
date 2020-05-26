@@ -12,7 +12,7 @@ namespace SterlingDB.Test.Helpers
 
             while (exception != null)
             {
-                sb.Append(ex.ToString());
+                sb.Append(ex);
                 if (exception.InnerException == null) break;
                 sb.Append(" - with inner exception: ");
                 exception = exception.InnerException;

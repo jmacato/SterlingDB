@@ -1,31 +1,25 @@
-using SterlingDB;
-using SterlingDB.Server.FileSystem;
-using SterlingDB.Test.Helpers;
-using Xunit;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
-using SterlingDB.Exceptions;
-using SterlingDB.Indexes;
 using SterlingDB.Test.Helpers;
+using Xunit;
 
 namespace SterlingDB.Test.Keys
 {
     public class TestCompositeKeyWithKeyClass : TestBase
     {
-        private readonly SterlingEngine _engine;
-        private ISterlingDatabaseInstance _databaseInstance;
-
         public TestCompositeKeyWithKeyClass()
         {
             _engine = Factory.NewEngine();
             _engine.SterlingDatabase.RegisterSerializer<TestCompositeSerializer>();
             _engine.Activate();
-            _databaseInstance = _engine.SterlingDatabase.RegisterDatabase<TestDatabaseInstanceComposite>(TestContext.TestName, GetDriver());
+            _databaseInstance =
+                _engine.SterlingDatabase.RegisterDatabase<TestDatabaseInstanceComposite>(TestContext.TestName,
+                    GetDriver());
             _databaseInstance.PurgeAsync().Wait();
         }
+
+        private readonly SterlingEngine _engine;
+        private ISterlingDatabaseInstance _databaseInstance;
 
         public override void Cleanup()
         {

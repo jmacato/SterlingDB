@@ -1,9 +1,7 @@
-﻿using System;
-
-namespace SterlingDB
+﻿namespace SterlingDB
 {
     /// <summary>
-    /// Byte Interceptor interface
+    ///     Byte Interceptor interface
     /// </summary>
     public interface ISterlingByteInterceptor
     {

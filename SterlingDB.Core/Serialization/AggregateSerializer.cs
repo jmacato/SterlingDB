@@ -10,19 +10,8 @@ namespace SterlingDB.Serialization
     /// <summary>
     ///     The aggregate serializer
     /// </summary>
-    public class AggregateSerializer : BaseSerializer 
+    public class AggregateSerializer : BaseSerializer
     {
-        /// <summary>
-        ///     List of serializers to aggregate
-        /// </summary>
-        private readonly List<ISterlingSerializer> _serializers = new List<ISterlingSerializer>();
-
-        /// <summary>
-        ///     The cache of actions mapped by type
-        /// </summary>
-        private readonly Dictionary<Type, Tuple<Action<object,BinaryWriter>, Func<BinaryReader,object>>> _serializerCache 
-            = new Dictionary<Type, Tuple<Action<object,BinaryWriter>, Func<BinaryReader,object>>>();
-
         /// <summary>
         ///     Quick lookup for non-serialization
         /// </summary>
@@ -30,7 +19,19 @@ namespace SterlingDB.Serialization
 
         private readonly ISterlingPlatformAdapter _platformAdapter;
 
-        public AggregateSerializer( ISterlingPlatformAdapter platformAdapter )
+        /// <summary>
+        ///     The cache of actions mapped by type
+        /// </summary>
+        private readonly Dictionary<Type, Tuple<Action<object, BinaryWriter>, Func<BinaryReader, object>>>
+            _serializerCache
+                = new Dictionary<Type, Tuple<Action<object, BinaryWriter>, Func<BinaryReader, object>>>();
+
+        /// <summary>
+        ///     List of serializers to aggregate
+        /// </summary>
+        private readonly List<ISterlingSerializer> _serializers = new List<ISterlingSerializer>();
+
+        public AggregateSerializer(ISterlingPlatformAdapter platformAdapter)
         {
             _platformAdapter = platformAdapter;
         }
@@ -42,12 +43,9 @@ namespace SterlingDB.Serialization
         /// <returns>An aggregate serializer that omits the requesting serializer</returns>
         public ISterlingSerializer CloneFor(ISterlingSerializer serializer)
         {
-            var aggregateSerializer = new AggregateSerializer( _platformAdapter );
+            var aggregateSerializer = new AggregateSerializer(_platformAdapter);
             var query = from s in _serializers where !s.GetType().Equals(serializer.GetType()) select s;
-            foreach(var s in query)
-            {
-                aggregateSerializer.AddSerializer(s);
-            }
+            foreach (var s in query) aggregateSerializer.AddSerializer(s);
             return aggregateSerializer;
         }
 
@@ -64,11 +62,10 @@ namespace SterlingDB.Serialization
             if (_serializerCache.ContainsKey(targetType))
                 return true;
 
-            lock (((ICollection)_serializers).SyncRoot)
+            lock (((ICollection) _serializers).SyncRoot)
             {
                 var canSerialize = false;
                 foreach (var serializer in _serializers)
-                {
                     if (serializer.CanSerialize(targetType))
                     {
                         var serializer1 = serializer;
@@ -76,11 +73,10 @@ namespace SterlingDB.Serialization
                         _serializerCache.Add(targetType,
                             new Tuple<Action<object, BinaryWriter>, Func<BinaryReader, object>>(
                                 serializer1.Serialize,
-                                reader => serializer2.Deserialize(targetType,reader)));
+                                reader => serializer2.Deserialize(targetType, reader)));
                         canSerialize = true;
                         break;
                     }
-                }
 
                 if (!canSerialize)
                 {
@@ -98,10 +94,7 @@ namespace SterlingDB.Serialization
         /// <param name="serializer">The serializer</param>
         public void AddSerializer(ISterlingSerializer serializer)
         {
-            if (!_serializers.Contains(serializer))
-            {
-                _serializers.Add(serializer);
-            }
+            if (!_serializers.Contains(serializer)) _serializers.Add(serializer);
         }
 
         /// <summary>
@@ -113,20 +106,16 @@ namespace SterlingDB.Serialization
         {
             var type = target.GetType();
 
-            if ( _platformAdapter.IsEnum( type ) )
+            if (_platformAdapter.IsEnum(type))
             {
                 type = Enum.GetUnderlyingType(type);
-                target = Convert.ChangeType( target, type, null );
+                target = Convert.ChangeType(target, type, null);
             }
 
             if (CanSerialize(type))
-            {
                 _serializerCache[type].Item1(target, writer);
-            }
             else
-            {
                 throw new SterlingSerializerException(this, target.GetType());
-            }
         }
 
         /// <summary>
@@ -139,16 +128,10 @@ namespace SterlingDB.Serialization
         {
             var targetType = type;
 
-            if ( _platformAdapter.IsEnum( targetType ) )
-            {
-                targetType = Enum.GetUnderlyingType(targetType);
-            }
-            if (CanSerialize(targetType))
-            {
-                return _serializerCache[targetType].Item2(reader);
-            }
-            
-            throw new SterlingSerializerException(this,type);            
-        }       
+            if (_platformAdapter.IsEnum(targetType)) targetType = Enum.GetUnderlyingType(targetType);
+            if (CanSerialize(targetType)) return _serializerCache[targetType].Item2(reader);
+
+            throw new SterlingSerializerException(this, type);
+        }
     }
 }

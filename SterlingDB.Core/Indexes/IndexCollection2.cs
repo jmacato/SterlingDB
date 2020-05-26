@@ -19,7 +19,7 @@ namespace SterlingDB.Indexes
         /// <param name="indexer">How to resolve the index</param>
         /// <param name="resolver">The resolver for loading the object</param>
         public IndexCollection(string name, ISterlingDriver driver,
-                               Func<T, Tuple<TIndex1, TIndex2>> indexer, Func<TKey, T> resolver) 
+            Func<T, Tuple<TIndex1, TIndex2>> indexer, Func<TKey, T> resolver)
             : base(name, driver, indexer, resolver)
         {
             IsTuple = true;
@@ -32,12 +32,12 @@ namespace SterlingDB.Indexes
         {
             IndexList.Clear();
 
-            var indexes = await Driver.DeserializeIndexAsync<TKey, TIndex1, TIndex2>( typeof( T ), Name ).ConfigureAwait( false );
+            var indexes = await Driver.DeserializeIndexAsync<TKey, TIndex1, TIndex2>(typeof(T), Name)
+                .ConfigureAwait(false);
 
-            foreach ( var index in indexes ?? new Dictionary<TKey, Tuple<TIndex1, TIndex2>>() )
-            {
-                IndexList.Add( new TableIndex<T, TIndex1, TIndex2, TKey>( index.Value.Item1, index.Value.Item2, index.Key, Resolver ) );
-            }
+            foreach (var index in indexes ?? new Dictionary<TKey, Tuple<TIndex1, TIndex2>>())
+                IndexList.Add(new TableIndex<T, TIndex1, TIndex2, TKey>(index.Value.Item1, index.Value.Item2, index.Key,
+                    Resolver));
         }
 
         /// <summary>
@@ -45,11 +45,12 @@ namespace SterlingDB.Indexes
         /// </summary>
         protected override async Task SerializeIndexesAsync()
         {
-            var dictionary = IndexList.ToDictionary( item => item.Key, item => Tuple.Create( item.Index.Item1, item.Index.Item2 ) );
+            var dictionary = IndexList.ToDictionary(item => item.Key,
+                item => Tuple.Create(item.Index.Item1, item.Index.Item2));
 
-            await Driver.SerializeIndexAsync( typeof( T ), Name, dictionary ).ConfigureAwait( false );
+            await Driver.SerializeIndexAsync(typeof(T), Name, dictionary).ConfigureAwait(false);
         }
-        
+
 
         /// <summary>
         ///     Add an index to the list
@@ -59,10 +60,10 @@ namespace SterlingDB.Indexes
         /// <param name="index1">The first index</param>
         public async Task AddIndexAsync(object index1, object index2, object key)
         {
-            var newIndex = new TableIndex<T, TIndex1, TIndex2, TKey>( (TIndex1) index1, (TIndex2) index2, (TKey) key,
-                                                                     Resolver );
+            var newIndex = new TableIndex<T, TIndex1, TIndex2, TKey>((TIndex1) index1, (TIndex2) index2, (TKey) key,
+                Resolver);
 
-            await AddIndexAsync( newIndex, key ).ConfigureAwait( false );
+            await AddIndexAsync(newIndex, key).ConfigureAwait(false);
         }
     }
 }

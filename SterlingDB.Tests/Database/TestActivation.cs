@@ -4,35 +4,15 @@ using Xunit;
 
 namespace SterlingDB.Test.Database
 {
-
     /// <summary>
     ///     Test activation-related database steps
-    /// </summary> 
+    /// </summary>
     public class TestActivation : TestBase
     {
-        /// <summary>
-        ///     Test for a duplicate activation using different scenarios
-        /// </summary>
-        [Fact]
-        public void TestDuplicateActivation()
+        public override void Cleanup()
         {
-            var engine1 = Factory.NewEngine();
-            var engine2 = Factory.NewEngine();
-
-            Assert.NotSame(engine1.SterlingDatabase, engine2.SterlingDatabase);
-
-            engine1.Activate();
-            engine2.Activate();
-
-            engine1.Dispose();
-
-            engine2.Activate();
-            engine2.Activate();
-
-            engine2.Dispose();
-            engine1.Dispose();
         }
- 
+
         [Fact]
         public void TestActivationNotReady()
         {
@@ -57,9 +37,27 @@ namespace SterlingDB.Test.Database
             engine.SterlingDatabase.RegisterDatabase<TestDatabaseInstance>(TestContext.TestName, GetDriver());
         }
 
-        public override void Cleanup()
+        /// <summary>
+        ///     Test for a duplicate activation using different scenarios
+        /// </summary>
+        [Fact]
+        public void TestDuplicateActivation()
         {
+            var engine1 = Factory.NewEngine();
+            var engine2 = Factory.NewEngine();
 
+            Assert.NotSame(engine1.SterlingDatabase, engine2.SterlingDatabase);
+
+            engine1.Activate();
+            engine2.Activate();
+
+            engine1.Dispose();
+
+            engine2.Activate();
+            engine2.Activate();
+
+            engine2.Dispose();
+            engine1.Dispose();
         }
     }
 }

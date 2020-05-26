@@ -13,20 +13,20 @@ namespace SterlingDB.Database
     /// </summary>
     public abstract class BaseDriver : ISterlingDriver
     {
-        protected List<string> TypeIndex { get; private set; }
-
         protected BaseDriver()
         {
             TypeIndex = new List<string>();
 #if DEBUG
-            Log = ( level, msg, ex ) => Debug.WriteLine( "Level: {0} Message: {1} Exception: {2}",
-                                                         level,
-                                                         msg ?? "<null>",
-                                                         ex == null ? "<null>" : ex.GetType().FullName );
+            Log = (level, msg, ex) => Debug.WriteLine("Level: {0} Message: {1} Exception: {2}",
+                level,
+                msg ?? "<null>",
+                ex == null ? "<null>" : ex.GetType().FullName);
 #else
             Log = ( level, msg, ex ) => { };
 #endif
         }
+
+        protected List<string> TypeIndex { get; private set; }
 
         /// <summary>
         ///     Name of the database the driver is registered to
@@ -37,7 +37,7 @@ namespace SterlingDB.Database
         ///     Logger
         /// </summary>
         public Action<SterlingLogLevel, string, Exception> Log { get; set; }
-        
+
         /// <summary>
         ///     The registered serializer for the database
         /// </summary>
@@ -58,29 +58,30 @@ namespace SterlingDB.Database
         /// <param name="keyType">Type of the key</param>
         /// <param name="template">The template</param>
         /// <returns>The keys without the template</returns>
-        public abstract Task<IDictionary> DeserializeKeysAsync(Type type, Type keyType, IDictionary template);        
+        public abstract Task<IDictionary> DeserializeKeysAsync(Type type, Type keyType, IDictionary template);
 
         /// <summary>
-        ///     Serialize a single index 
+        ///     Serialize a single index
         /// </summary>
         /// <typeparam name="TKey">The type of the key</typeparam>
         /// <typeparam name="TIndex">The type of the index</typeparam>
         /// <param name="type">The type of the parent table</param>
         /// <param name="indexName">The name of the index</param>
         /// <param name="indexMap">The index map</param>
-        public abstract Task SerializeIndexAsync<TKey, TIndex>(Type type, string indexName, Dictionary<TKey, TIndex> indexMap);
+        public abstract Task SerializeIndexAsync<TKey, TIndex>(Type type, string indexName,
+            Dictionary<TKey, TIndex> indexMap);
 
         /// <summary>
-        ///     Serialize a double index 
+        ///     Serialize a double index
         /// </summary>
         /// <typeparam name="TKey">The type of the key</typeparam>
         /// <typeparam name="TIndex1">The type of the first index</typeparam>
         /// <typeparam name="TIndex2">The type of the second index</typeparam>
         /// <param name="type">The type of the parent table</param>
         /// <param name="indexName">The name of the index</param>
-        /// <param name="indexMap">The index map</param>        
+        /// <param name="indexMap">The index map</param>
         public abstract Task SerializeIndexAsync<TKey, TIndex1, TIndex2>(Type type, string indexName,
-                                                                    Dictionary<TKey, Tuple<TIndex1, TIndex2>> indexMap);
+            Dictionary<TKey, Tuple<TIndex1, TIndex2>> indexMap);
 
         /// <summary>
         ///     Deserialize a single index
@@ -88,7 +89,7 @@ namespace SterlingDB.Database
         /// <typeparam name="TKey">The type of the key</typeparam>
         /// <typeparam name="TIndex">The type of the index</typeparam>
         /// <param name="type">The type of the parent table</param>
-        /// <param name="indexName">The name of the index</param>        
+        /// <param name="indexName">The name of the index</param>
         /// <returns>The index map</returns>
         public abstract Task<Dictionary<TKey, TIndex>> DeserializeIndexAsync<TKey, TIndex>(Type type, string indexName);
 
@@ -99,17 +100,18 @@ namespace SterlingDB.Database
         /// <typeparam name="TIndex1">The type of the first index</typeparam>
         /// <typeparam name="TIndex2">The type of the second index</typeparam>
         /// <param name="type">The type of the parent table</param>
-        /// <param name="indexName">The name of the index</param>        
-        /// <returns>The index map</returns>        
-        public abstract Task<Dictionary<TKey, Tuple<TIndex1, TIndex2>>> DeserializeIndexAsync<TKey, TIndex1, TIndex2>(Type type,
-                                                                                                           string
-                                                                                                               indexName);
+        /// <param name="indexName">The name of the index</param>
+        /// <returns>The index map</returns>
+        public abstract Task<Dictionary<TKey, Tuple<TIndex1, TIndex2>>> DeserializeIndexAsync<TKey, TIndex1, TIndex2>(
+            Type type,
+            string
+                indexName);
 
         /// <summary>
         ///     Publish the list of tables
         /// </summary>
         /// <param name="tables">The list of tables</param>
-        public abstract void PublishTables( Dictionary<Type, ITableDefinition> tables, Func<string, Type> resolveType );
+        public abstract void PublishTables(Dictionary<Type, ITableDefinition> tables, Func<string, Type> resolveType);
 
         /// <summary>
         ///     Serialize the type master
@@ -122,7 +124,7 @@ namespace SterlingDB.Database
         /// <param name="types">The list of types</param>
         public async Task DeserializeTypesAsync(IList<string> types)
         {
-            TypeIndex = new List<string>( types );
+            TypeIndex = new List<string>(types);
         }
 
         /// <summary>
@@ -131,7 +133,7 @@ namespace SterlingDB.Database
         /// <returns></returns>
         public Task<IList<string>> GetTypesAsync()
         {
-            return Task.FromResult( (IList<string>) new List<string>( TypeIndex ) );
+            return Task.FromResult((IList<string>) new List<string>(TypeIndex));
         }
 
         /// <summary>
@@ -141,17 +143,14 @@ namespace SterlingDB.Database
         /// <returns>The type</returns>
         public virtual Task<int> GetTypeIndexAsync(string type)
         {
-            return Task.Factory.StartNew( () =>
+            return Task.Factory.StartNew(() =>
             {
-                lock ( ( (ICollection) TypeIndex ).SyncRoot )
+                lock (((ICollection) TypeIndex).SyncRoot)
                 {
-                    if ( !TypeIndex.Contains( type ) )
-                    {
-                        TypeIndex.Add( type );
-                    }
-                    return TypeIndex.IndexOf( type );
+                    if (!TypeIndex.Contains(type)) TypeIndex.Add(type);
+                    return TypeIndex.IndexOf(type);
                 }
-            } );
+            });
         }
 
         /// <summary>
@@ -161,7 +160,7 @@ namespace SterlingDB.Database
         /// <returns>The type</returns>
         public virtual Task<string> GetTypeAtIndexAsync(int index)
         {
-            return Task.FromResult( TypeIndex[ index ] );
+            return Task.FromResult(TypeIndex[index]);
         }
 
         /// <summary>

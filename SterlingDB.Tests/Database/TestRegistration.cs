@@ -1,16 +1,16 @@
-﻿using SterlingDB.Test.Helpers;
+﻿using SterlingDB.Exceptions;
+using SterlingDB.Test.Helpers;
 using Xunit;
-using SterlingDB.Exceptions;
 
 namespace SterlingDB.Test.Database
 {
     public class TestRegistration
-    {        
+    {
         [Fact]
         public void TestDatabaseRegistration()
         {
             using var engine = Factory.NewEngine();
-            
+
             var db = engine.SterlingDatabase;
 
             // test not activated yet 

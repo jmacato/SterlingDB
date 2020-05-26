@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace SterlingDB.Test.Helpers
 {
     public class TestClassWithDictionary
     {
-        private static int _id = 0;
+        private static int _id;
 
         public int ID { get; set; }
         public Dictionary<int, int> BaseDictionary { get; set; }
@@ -15,27 +14,27 @@ namespace SterlingDB.Test.Helpers
 
         public static TestClassWithDictionary MakeTestClassWithDictionary()
         {
-            return new TestClassWithDictionary()
+            return new TestClassWithDictionary
             {
                 ID = _id++,
-                BaseDictionary = new Dictionary<int, int>()
+                BaseDictionary = new Dictionary<int, int>
                 {
-                    { 1, 2 },
-                    { 2, 3 }
+                    {1, 2},
+                    {2, 3}
                 },
-                DictionaryWithBaseClassAsValue = new Dictionary<int, TestBaseClassModel>()
+                DictionaryWithBaseClassAsValue = new Dictionary<int, TestBaseClassModel>
                 {
-                    { 1, new TestDerivedClassAModel() },
-                    { 2, new TestDerivedClassBModel() }
+                    {1, new TestDerivedClassAModel()},
+                    {2, new TestDerivedClassBModel()}
                 },
-                DictionaryWithClassAsValue = new Dictionary<int, TestModel>()
+                DictionaryWithClassAsValue = new Dictionary<int, TestModel>
                 {
-                    { 1, TestModel.MakeTestModel() },
-                    { 2, TestModel.MakeTestModel() }
+                    {1, TestModel.MakeTestModel()},
+                    {2, TestModel.MakeTestModel()}
                 },
-                DictionaryWithListAsValue = new Dictionary<int, List<TestModel>>()
+                DictionaryWithListAsValue = new Dictionary<int, List<TestModel>>
                 {
-                    { 1, new List<TestModel>() { TestModel.MakeTestModel(), TestModel.MakeTestModel() } }
+                    {1, new List<TestModel> {TestModel.MakeTestModel(), TestModel.MakeTestModel()}}
                 }
             };
         }

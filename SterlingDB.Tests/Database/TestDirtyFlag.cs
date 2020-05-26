@@ -1,10 +1,9 @@
-using SterlingDB;
-using SterlingDB.Database;
-using SterlingDB.Test.Helpers;
-using Xunit;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SterlingDB.Database;
+using SterlingDB.Test.Helpers;
+using Xunit;
 
 namespace SterlingDB.Test.Database
 {
@@ -19,27 +18,28 @@ namespace SterlingDB.Test.Database
         protected override List<ITableDefinition> RegisterTables()
         {
             return new List<ITableDefinition>
-                           {
-                               CreateTableDefinition<TestListModel, int>(t=>t.ID),
-                               CreateTableDefinition<TestModel, int>(t=>t.Key)
-                               .WithDirtyFlag<TestModel,int>(o=>this.Predicate(o))
-                           };
+            {
+                CreateTableDefinition<TestListModel, int>(t => t.ID),
+                CreateTableDefinition<TestModel, int>(t => t.Key)
+                    .WithDirtyFlag<TestModel, int>(o => Predicate(o))
+            };
         }
     }
 
     public class TestDirtyFlag : TestBase
     {
-        private readonly SterlingEngine _engine;
-        private ISterlingDatabaseInstance _databaseInstance;
-
         public TestDirtyFlag()
         {
             _engine = Factory.NewEngine();
             _engine.Activate();
-            _databaseInstance = _engine.SterlingDatabase.RegisterDatabase<DirtyDatabase>(TestContext.TestName, GetDriver());
-            ((DirtyDatabase)_databaseInstance).Predicate = model => true;
+            _databaseInstance =
+                _engine.SterlingDatabase.RegisterDatabase<DirtyDatabase>(TestContext.TestName, GetDriver());
+            ((DirtyDatabase) _databaseInstance).Predicate = model => true;
             _databaseInstance.PurgeAsync().Wait();
         }
+
+        private readonly SterlingEngine _engine;
+        private ISterlingDatabaseInstance _databaseInstance;
 
         public override void Cleanup()
         {
@@ -58,12 +58,9 @@ namespace SterlingDB.Test.Database
 
             var actual = _databaseInstance.LoadAsync<TestListModel>(key).Result;
 
-            foreach (var model in actual.Children)
-            {
-                model.ResetAccess();
-            }
+            foreach (var model in actual.Children) model.ResetAccess();
 
-            ((DirtyDatabase)_databaseInstance).Predicate = model => true;
+            ((DirtyDatabase) _databaseInstance).Predicate = model => true;
 
             // now check that all were accessed
             _databaseInstance.SaveAsync(actual).Wait();
@@ -83,12 +80,9 @@ namespace SterlingDB.Test.Database
 
             var actual = _databaseInstance.LoadAsync<TestListModel>(key).Result;
 
-            foreach (var model in actual.Children)
-            {
-                model.ResetAccess();
-            }
+            foreach (var model in actual.Children) model.ResetAccess();
 
-            ((DirtyDatabase)_databaseInstance).Predicate = model => false;
+            ((DirtyDatabase) _databaseInstance).Predicate = model => false;
 
             // now check that none were accessed
             _databaseInstance.SaveAsync(actual).Wait();

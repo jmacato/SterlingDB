@@ -1,38 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using SterlingDB.Exceptions;
 
 namespace SterlingDB.Database
 {
     /// <summary>
-    /// Helper class to resolve the types of elements stored in database tables.
+    ///     Helper class to resolve the types of elements stored in database tables.
     /// </summary>
     public class TableTypeResolver
     {
-        private List<ISterlingTypeResolver> _typeResolvers = new List<ISterlingTypeResolver>();
-        private Dictionary<string, Type> _resolvedTypes = new Dictionary<string, Type>();
+        private readonly Dictionary<string, Type> _resolvedTypes = new Dictionary<string, Type>();
+        private readonly List<ISterlingTypeResolver> _typeResolvers = new List<ISterlingTypeResolver>();
 
         public void RegisterTypeResolver(ISterlingTypeResolver interceptor)
         {
-            if (interceptor == null)
-            {
-                throw new ArgumentNullException("interceptor");
-            }
+            if (interceptor == null) throw new ArgumentNullException("interceptor");
 
-            if (!_typeResolvers.Contains(interceptor))
-            {
-                _typeResolvers.Add(interceptor);
-            }
+            if (!_typeResolvers.Contains(interceptor)) _typeResolvers.Add(interceptor);
         }
 
         public Type ResolveTableType(string fullTypeName)
         {
             // TODO: searching for replacement type first makes unit testing possible, but isn't nice design
-            Type tableType = (ResolveCachedType(fullTypeName) ??
-                ResolveReplacementType(fullTypeName) ??
-                ResolveOriginalType(fullTypeName));
-            
+            var tableType = ResolveCachedType(fullTypeName) ??
+                            ResolveReplacementType(fullTypeName) ??
+                            ResolveOriginalType(fullTypeName);
+
             return tableType;
         }
 
@@ -49,19 +41,22 @@ namespace SterlingDB.Database
 
             try
             {
-                result = Type.GetType( fullTypeName, false );
-                CacheResolvedType( fullTypeName, result );
+                result = Type.GetType(fullTypeName, false);
+                CacheResolvedType(fullTypeName, result);
             }
             //catch (TypeLoadException) { }
             //catch (FileLoadException) { }
-            catch ( Exception ) { }
+            catch (Exception)
+            {
+            }
+
             return result;
         }
 
         private Type ResolveReplacementType(string fullTypeName)
         {
             Type result = null;
-            foreach (ISterlingTypeResolver typeResolver in _typeResolvers)
+            foreach (var typeResolver in _typeResolvers)
             {
                 result = typeResolver.ResolveTableType(fullTypeName);
                 if (result != null)
@@ -70,15 +65,13 @@ namespace SterlingDB.Database
                     break;
                 }
             }
+
             return result;
         }
 
         private void CacheResolvedType(string fullTypeName, Type resolvedType)
         {
-            if (resolvedType != null)
-            {
-                _resolvedTypes[fullTypeName] = resolvedType;
-            }
+            if (resolvedType != null) _resolvedTypes[fullTypeName] = resolvedType;
         }
     }
 }

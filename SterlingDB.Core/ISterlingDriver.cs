@@ -43,7 +43,7 @@ namespace SterlingDB
         Task<IDictionary> DeserializeKeysAsync(Type type, Type keyType, IDictionary template);
 
         /// <summary>
-        ///     Serialize a single index 
+        ///     Serialize a single index
         /// </summary>
         /// <typeparam name="TKey">The type of the key</typeparam>
         /// <typeparam name="TIndex">The type of the index</typeparam>
@@ -53,15 +53,16 @@ namespace SterlingDB
         Task SerializeIndexAsync<TKey, TIndex>(Type type, string indexName, Dictionary<TKey, TIndex> indexMap);
 
         /// <summary>
-        ///     Serialize a double index 
+        ///     Serialize a double index
         /// </summary>
         /// <typeparam name="TKey">The type of the key</typeparam>
         /// <typeparam name="TIndex1">The type of the first index</typeparam>
         /// <typeparam name="TIndex2">The type of the second index</typeparam>
         /// <param name="type">The type of the parent table</param>
         /// <param name="indexName">The name of the index</param>
-        /// <param name="indexMap">The index map</param>        
-        Task SerializeIndexAsync<TKey, TIndex1, TIndex2>(Type type, string indexName, Dictionary<TKey, Tuple<TIndex1,TIndex2>> indexMap);
+        /// <param name="indexMap">The index map</param>
+        Task SerializeIndexAsync<TKey, TIndex1, TIndex2>(Type type, string indexName,
+            Dictionary<TKey, Tuple<TIndex1, TIndex2>> indexMap);
 
         /// <summary>
         ///     Deserialize a single index
@@ -69,7 +70,7 @@ namespace SterlingDB
         /// <typeparam name="TKey">The type of the key</typeparam>
         /// <typeparam name="TIndex">The type of the index</typeparam>
         /// <param name="type">The type of the parent table</param>
-        /// <param name="indexName">The name of the index</param>        
+        /// <param name="indexName">The name of the index</param>
         /// <returns>The index map</returns>
         Task<Dictionary<TKey, TIndex>> DeserializeIndexAsync<TKey, TIndex>(Type type, string indexName);
 
@@ -80,15 +81,16 @@ namespace SterlingDB
         /// <typeparam name="TIndex1">The type of the first index</typeparam>
         /// <typeparam name="TIndex2">The type of the second index</typeparam>
         /// <param name="type">The type of the parent table</param>
-        /// <param name="indexName">The name of the index</param>        
-        /// <returns>The index map</returns>        
-        Task<Dictionary<TKey, Tuple<TIndex1, TIndex2>>> DeserializeIndexAsync<TKey, TIndex1, TIndex2>(Type type, string indexName);
+        /// <param name="indexName">The name of the index</param>
+        /// <returns>The index map</returns>
+        Task<Dictionary<TKey, Tuple<TIndex1, TIndex2>>> DeserializeIndexAsync<TKey, TIndex1, TIndex2>(Type type,
+            string indexName);
 
         /// <summary>
         ///     Publish the list of tables
         /// </summary>
         /// <param name="tables">The list of tables</param>
-        void PublishTables(Dictionary<Type,ITableDefinition> tables, Func<string, Type> resolveType );
+        void PublishTables(Dictionary<Type, ITableDefinition> tables, Func<string, Type> resolveType);
 
         /// <summary>
         ///     Serialize the type master
@@ -153,6 +155,6 @@ namespace SterlingDB
         /// <summary>
         ///     Purge the database
         /// </summary>
-        Task PurgeAsync();        
+        Task PurgeAsync();
     }
 }

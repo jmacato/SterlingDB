@@ -2,12 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
-using SterlingDB;
 using SterlingDB.Database;
 using SterlingDB.Exceptions;
-using SterlingDB.Serialization;
 
 namespace SterlingDB.Server.FileSystem
 {
@@ -17,26 +14,26 @@ namespace SterlingDB.Server.FileSystem
     public class FileSystemDriver : BaseDriver
     {
         private const string BASE = "Databases/";
+        private readonly PathProvider _pathProvider = new PathProvider();
         private readonly List<Type> _tables = new List<Type>();
+        private string _basePath;
         private bool _dirtyType;
-        
+
+        private FileSystemHelper _fileHelper;
+
         public FileSystemDriver() : this(BASE)
-        {            
+        {
         }
 
-        public FileSystemDriver(string basePath) 
+        public FileSystemDriver(string basePath)
         {
             Initialize(basePath);
         }
 
-        private FileSystemHelper _fileHelper;
-        private string _basePath;
-        private readonly PathProvider _pathProvider = new PathProvider();
-
         public void Initialize(string basePath)
         {
             _fileHelper = new FileSystemHelper();
-            _basePath = basePath.EndsWith( "/" ) ? basePath : basePath + "/";
+            _basePath = basePath.EndsWith("/") ? basePath : basePath + "/";
         }
 
         /// <summary>
@@ -47,28 +44,28 @@ namespace SterlingDB.Server.FileSystem
         /// <param name="keyMap">Key map</param>
         public override async Task SerializeKeysAsync(Type type, Type keyType, IDictionary keyMap)
         {
-            _fileHelper.EnsureDirectory( _pathProvider.GetTablePath( _basePath, DatabaseInstanceName, type, this ) );
+            _fileHelper.EnsureDirectory(_pathProvider.GetTablePath(_basePath, DatabaseInstanceName, type, this));
 
-            var pathLock = PathLock.GetLock( type.FullName );
+            var pathLock = PathLock.GetLock(type.FullName);
 
-            using ( await pathLock.LockAsync().ConfigureAwait( false ) )
+            using (await pathLock.LockAsync().ConfigureAwait(false))
             {
-                var keyPath = _pathProvider.GetKeysPath( _basePath, DatabaseInstanceName, type, this );
+                var keyPath = _pathProvider.GetKeysPath(_basePath, DatabaseInstanceName, type, this);
 
-                using ( var keyFile = _fileHelper.GetWriter( keyPath ) )
+                using (var keyFile = _fileHelper.GetWriter(keyPath))
                 {
-                    keyFile.Write( keyMap.Count );
-                
-                    foreach ( var key in keyMap.Keys )
+                    keyFile.Write(keyMap.Count);
+
+                    foreach (var key in keyMap.Keys)
                     {
-                        DatabaseSerializer.Serialize( key, keyFile );
-                    
-                        keyFile.Write( (int) keyMap[ key ] );
+                        DatabaseSerializer.Serialize(key, keyFile);
+
+                        keyFile.Write((int) keyMap[key]);
                     }
                 }
             }
 
-            await SerializeTypesAsync().ConfigureAwait( false );
+            await SerializeTypesAsync().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -80,22 +77,20 @@ namespace SterlingDB.Server.FileSystem
         /// <returns>The key list</returns>
         public override async Task<IDictionary> DeserializeKeysAsync(Type type, Type keyType, IDictionary dictionary)
         {
-            var keyPath = _pathProvider.GetKeysPath( _basePath, DatabaseInstanceName, type, this );
+            var keyPath = _pathProvider.GetKeysPath(_basePath, DatabaseInstanceName, type, this);
 
-            if ( _fileHelper.FileExists( keyPath ) )
+            if (_fileHelper.FileExists(keyPath))
             {
-                var pathLock = PathLock.GetLock( type.FullName );
+                var pathLock = PathLock.GetLock(type.FullName);
 
-                using ( await pathLock.LockAsync().ConfigureAwait( false ) )
+                using (await pathLock.LockAsync().ConfigureAwait(false))
                 {
-                    using ( var keyFile = _fileHelper.GetReader( keyPath ) )
+                    using (var keyFile = _fileHelper.GetReader(keyPath))
                     {
                         var count = keyFile.ReadInt32();
 
-                        for ( var x = 0; x < count; x++ )
-                        {
-                            dictionary.Add( DatabaseSerializer.Deserialize( keyType, keyFile ), keyFile.ReadInt32() );
-                        }
+                        for (var x = 0; x < count; x++)
+                            dictionary.Add(DatabaseSerializer.Deserialize(keyType, keyFile), keyFile.ReadInt32());
                     }
                 }
             }
@@ -104,60 +99,62 @@ namespace SterlingDB.Server.FileSystem
         }
 
         /// <summary>
-        ///     Serialize a single index 
+        ///     Serialize a single index
         /// </summary>
         /// <typeparam name="TKey">The type of the key</typeparam>
         /// <typeparam name="TIndex">The type of the index</typeparam>
         /// <param name="type">The type of the parent table</param>
         /// <param name="indexName">The name of the index</param>
         /// <param name="indexMap">The index map</param>
-        public override async Task SerializeIndexAsync<TKey, TIndex>(Type type, string indexName, Dictionary<TKey, TIndex> indexMap)
+        public override async Task SerializeIndexAsync<TKey, TIndex>(Type type, string indexName,
+            Dictionary<TKey, TIndex> indexMap)
         {
-            var indexPath = _pathProvider.GetIndexPath( _basePath, DatabaseInstanceName, type, this, indexName );
+            var indexPath = _pathProvider.GetIndexPath(_basePath, DatabaseInstanceName, type, this, indexName);
 
-            var pathLock = PathLock.GetLock( type.FullName );
+            var pathLock = PathLock.GetLock(type.FullName);
 
-            using ( await pathLock.LockAsync().ConfigureAwait( false ) )
+            using (await pathLock.LockAsync().ConfigureAwait(false))
             {
-                using ( var indexFile = _fileHelper.GetWriter( indexPath ) )
+                using (var indexFile = _fileHelper.GetWriter(indexPath))
                 {
-                    indexFile.Write( indexMap.Count );
+                    indexFile.Write(indexMap.Count);
 
-                    foreach ( var index in indexMap )
+                    foreach (var index in indexMap)
                     {
-                        DatabaseSerializer.Serialize( index.Key, indexFile );
-                        DatabaseSerializer.Serialize( index.Value, indexFile );
+                        DatabaseSerializer.Serialize(index.Key, indexFile);
+                        DatabaseSerializer.Serialize(index.Value, indexFile);
                     }
                 }
             }
         }
 
         /// <summary>
-        ///     Serialize a double index 
+        ///     Serialize a double index
         /// </summary>
         /// <typeparam name="TKey">The type of the key</typeparam>
         /// <typeparam name="TIndex1">The type of the first index</typeparam>
         /// <typeparam name="TIndex2">The type of the second index</typeparam>
         /// <param name="type">The type of the parent table</param>
         /// <param name="indexName">The name of the index</param>
-        /// <param name="indexMap">The index map</param>        
-        public override async Task SerializeIndexAsync<TKey, TIndex1, TIndex2>(Type type, string indexName, Dictionary<TKey, Tuple<TIndex1, TIndex2>> indexMap)
+        /// <param name="indexMap">The index map</param>
+        public override async Task SerializeIndexAsync<TKey, TIndex1, TIndex2>(Type type, string indexName,
+            Dictionary<TKey, Tuple<TIndex1, TIndex2>> indexMap)
         {
-            var indexPath = _pathProvider.GetIndexPath( _basePath, DatabaseInstanceName, type, this, indexName );
+            var indexPath = _pathProvider.GetIndexPath(_basePath, DatabaseInstanceName, type, this, indexName);
 
-            var pathLock = PathLock.GetLock( type.FullName );
+            var pathLock = PathLock.GetLock(type.FullName);
 
-            using ( await pathLock.LockAsync().ConfigureAwait( false ) )
+            using (await pathLock.LockAsync().ConfigureAwait(false))
             {
-                using ( var indexFile = _fileHelper.GetWriter( indexPath ) )
+                using (var indexFile = _fileHelper.GetWriter(indexPath))
                 {
-                    indexFile.Write( indexMap.Count );
+                    indexFile.Write(indexMap.Count);
 
-                    foreach ( var index in indexMap )
+                    foreach (var index in indexMap)
                     {
-                        DatabaseSerializer.Serialize( index.Key, indexFile );
-                        DatabaseSerializer.Serialize( index.Value.Item1, indexFile );
-                        DatabaseSerializer.Serialize( index.Value.Item2, indexFile );
+                        DatabaseSerializer.Serialize(index.Key, indexFile);
+                        DatabaseSerializer.Serialize(index.Value.Item1, indexFile);
+                        DatabaseSerializer.Serialize(index.Value.Item2, indexFile);
                     }
                 }
             }
@@ -169,29 +166,28 @@ namespace SterlingDB.Server.FileSystem
         /// <typeparam name="TKey">The type of the key</typeparam>
         /// <typeparam name="TIndex">The type of the index</typeparam>
         /// <param name="type">The type of the parent table</param>
-        /// <param name="indexName">The name of the index</param>        
+        /// <param name="indexName">The name of the index</param>
         /// <returns>The index map</returns>
-        public override async Task<Dictionary<TKey, TIndex>> DeserializeIndexAsync<TKey, TIndex>(Type type, string indexName)
+        public override async Task<Dictionary<TKey, TIndex>> DeserializeIndexAsync<TKey, TIndex>(Type type,
+            string indexName)
         {
-            var indexPath = _pathProvider.GetIndexPath( _basePath, DatabaseInstanceName, type, this, indexName );
+            var indexPath = _pathProvider.GetIndexPath(_basePath, DatabaseInstanceName, type, this, indexName);
 
             var dictionary = new Dictionary<TKey, TIndex>();
-            
-            if ( _fileHelper.FileExists( indexPath ) )
-            {
-                var pathLock = PathLock.GetLock( type.FullName );
 
-                using ( await pathLock.LockAsync().ConfigureAwait( false ) )
+            if (_fileHelper.FileExists(indexPath))
+            {
+                var pathLock = PathLock.GetLock(type.FullName);
+
+                using (await pathLock.LockAsync().ConfigureAwait(false))
                 {
-                    using ( var indexFile = _fileHelper.GetReader( indexPath ) )
+                    using (var indexFile = _fileHelper.GetReader(indexPath))
                     {
                         var count = indexFile.ReadInt32();
 
-                        for ( var x = 0; x < count; x++ )
-                        {
-                            dictionary.Add( (TKey) DatabaseSerializer.Deserialize( typeof( TKey ), indexFile ),
-                                           (TIndex) DatabaseSerializer.Deserialize( typeof( TIndex ), indexFile ) );
-                        }
+                        for (var x = 0; x < count; x++)
+                            dictionary.Add((TKey) DatabaseSerializer.Deserialize(typeof(TKey), indexFile),
+                                (TIndex) DatabaseSerializer.Deserialize(typeof(TIndex), indexFile));
                     }
                 }
             }
@@ -206,31 +202,30 @@ namespace SterlingDB.Server.FileSystem
         /// <typeparam name="TIndex1">The type of the first index</typeparam>
         /// <typeparam name="TIndex2">The type of the second index</typeparam>
         /// <param name="type">The type of the parent table</param>
-        /// <param name="indexName">The name of the index</param>        
-        /// <returns>The index map</returns>        
-        public override async Task<Dictionary<TKey, Tuple<TIndex1, TIndex2>>> DeserializeIndexAsync<TKey, TIndex1, TIndex2>(Type type, string indexName)
+        /// <param name="indexName">The name of the index</param>
+        /// <returns>The index map</returns>
+        public override async Task<Dictionary<TKey, Tuple<TIndex1, TIndex2>>> DeserializeIndexAsync<TKey, TIndex1,
+            TIndex2>(Type type, string indexName)
         {
-            var indexPath = _pathProvider.GetIndexPath( _basePath, DatabaseInstanceName, type, this, indexName );
+            var indexPath = _pathProvider.GetIndexPath(_basePath, DatabaseInstanceName, type, this, indexName);
 
             var dictionary = new Dictionary<TKey, Tuple<TIndex1, TIndex2>>();
-            
-            if ( _fileHelper.FileExists( indexPath ) )
-            {
-                var pathLock = PathLock.GetLock( type.FullName );
 
-                using ( await pathLock.LockAsync().ConfigureAwait( false ) )
+            if (_fileHelper.FileExists(indexPath))
+            {
+                var pathLock = PathLock.GetLock(type.FullName);
+
+                using (await pathLock.LockAsync().ConfigureAwait(false))
                 {
-                    using ( var indexFile = _fileHelper.GetReader( indexPath ) )
+                    using (var indexFile = _fileHelper.GetReader(indexPath))
                     {
                         var count = indexFile.ReadInt32();
 
-                        for ( var x = 0; x < count; x++ )
-                        {
-                            dictionary.Add( (TKey) DatabaseSerializer.Deserialize( typeof( TKey ), indexFile ),
+                        for (var x = 0; x < count; x++)
+                            dictionary.Add((TKey) DatabaseSerializer.Deserialize(typeof(TKey), indexFile),
                                 Tuple.Create(
-                                (TIndex1) DatabaseSerializer.Deserialize( typeof( TIndex1 ), indexFile ),
-                                (TIndex2) DatabaseSerializer.Deserialize( typeof( TIndex2 ), indexFile ) ) );
-                        }
+                                    (TIndex1) DatabaseSerializer.Deserialize(typeof(TIndex1), indexFile),
+                                    (TIndex2) DatabaseSerializer.Deserialize(typeof(TIndex2), indexFile)));
                     }
                 }
             }
@@ -242,7 +237,8 @@ namespace SterlingDB.Server.FileSystem
         ///     Publish the list of tables
         /// </summary>
         /// <param name="tables">The list of tables</param>
-        public override async void PublishTables(Dictionary<Type, ITableDefinition> tables, Func<string, Type> resolveType )
+        public override async void PublishTables(Dictionary<Type, ITableDefinition> tables,
+            Func<string, Type> resolveType)
         {
             _fileHelper.EnsureDirectory(_pathProvider.GetDatabasePath(_basePath, DatabaseInstanceName, this));
 
@@ -259,24 +255,22 @@ namespace SterlingDB.Server.FileSystem
                     var fullTypeName = typeFile.ReadString();
 
                     var tableType = resolveType(fullTypeName);
-                    
-                    if (tableType == null)
-                    {
-                        throw new SterlingTableNotFoundException(fullTypeName, DatabaseInstanceName);
-                    }
 
-                    await GetTypeIndexAsync( tableType.AssemblyQualifiedName ).ConfigureAwait( false );
+                    if (tableType == null) throw new SterlingTableNotFoundException(fullTypeName, DatabaseInstanceName);
+
+                    await GetTypeIndexAsync(tableType.AssemblyQualifiedName).ConfigureAwait(false);
                 }
             }
 
             var pathLock = PathLock.GetLock(DatabaseInstanceName);
 
-            using ( await pathLock.LockAsync().ConfigureAwait( false ) )
+            using (await pathLock.LockAsync().ConfigureAwait(false))
             {
                 foreach (var type in tables.Keys)
                 {
                     _tables.Add(type);
-                    _fileHelper.EnsureDirectory(_pathProvider.GetTablePath(_basePath, DatabaseInstanceName, type, this));
+                    _fileHelper.EnsureDirectory(_pathProvider.GetTablePath(_basePath, DatabaseInstanceName, type,
+                        this));
                 }
             }
         }
@@ -286,20 +280,17 @@ namespace SterlingDB.Server.FileSystem
         /// </summary>
         public override async Task SerializeTypesAsync()
         {
-            var pathLock = PathLock.GetLock( TypeIndex.GetType().FullName );
+            var pathLock = PathLock.GetLock(TypeIndex.GetType().FullName);
 
-            using ( await pathLock.LockAsync().ConfigureAwait( false ) )
+            using (await pathLock.LockAsync().ConfigureAwait(false))
             {
-                var typePath = _pathProvider.GetTypesPath( _basePath, DatabaseInstanceName, this );
+                var typePath = _pathProvider.GetTypesPath(_basePath, DatabaseInstanceName, this);
 
-                using ( var typeFile = _fileHelper.GetWriter( typePath ) )
+                using (var typeFile = _fileHelper.GetWriter(typePath))
                 {
-                    typeFile.Write( TypeIndex.Count );
-                
-                    foreach ( var type in TypeIndex )
-                    {
-                        typeFile.Write( type );
-                    }
+                    typeFile.Write(TypeIndex.Count);
+
+                    foreach (var type in TypeIndex) typeFile.Write(type);
                 }
             }
         }
@@ -311,18 +302,18 @@ namespace SterlingDB.Server.FileSystem
         /// <returns>The type</returns>
         public override async Task<int> GetTypeIndexAsync(string type)
         {
-            var pathLock = PathLock.GetLock( TypeIndex.GetType().FullName );
+            var pathLock = PathLock.GetLock(TypeIndex.GetType().FullName);
 
-            using ( await pathLock.LockAsync().ConfigureAwait( false ) )
+            using (await pathLock.LockAsync().ConfigureAwait(false))
             {
-                if ( !TypeIndex.Contains( type ) )
+                if (!TypeIndex.Contains(type))
                 {
-                    TypeIndex.Add( type );
+                    TypeIndex.Add(type);
                     _dirtyType = true;
                 }
             }
 
-            return TypeIndex.IndexOf( type );
+            return TypeIndex.IndexOf(type);
         }
 
         /// <summary>
@@ -332,9 +323,9 @@ namespace SterlingDB.Server.FileSystem
         /// <returns>The type</returns>
         public override Task<string> GetTypeAtIndexAsync(int index)
         {
-            return Task.FromResult( TypeIndex[ index ] );
+            return Task.FromResult(TypeIndex[index]);
         }
-        
+
         /// <summary>
         ///     Save operation
         /// </summary>
@@ -343,29 +334,29 @@ namespace SterlingDB.Server.FileSystem
         /// <param name="bytes">The byte stream</param>
         public override async Task SaveAsync(Type type, int keyIndex, byte[] bytes)
         {
-            var instanceFolder = _pathProvider.GetInstanceFolder( _basePath, DatabaseInstanceName, type, this, keyIndex );
+            var instanceFolder = _pathProvider.GetInstanceFolder(_basePath, DatabaseInstanceName, type, this, keyIndex);
 
-            _fileHelper.EnsureDirectory( instanceFolder );
-            
-            var instancePath = _pathProvider.GetInstancePath( _basePath, DatabaseInstanceName, type, this, keyIndex );
+            _fileHelper.EnsureDirectory(instanceFolder);
 
-            var pathLock = PathLock.GetLock( instancePath );
+            var instancePath = _pathProvider.GetInstancePath(_basePath, DatabaseInstanceName, type, this, keyIndex);
 
-            using ( await pathLock.LockAsync().ConfigureAwait( false ) )
-            using ( var instanceFile = _fileHelper.GetWriter( instancePath ) )
+            var pathLock = PathLock.GetLock(instancePath);
+
+            using (await pathLock.LockAsync().ConfigureAwait(false))
+            using (var instanceFile = _fileHelper.GetWriter(instancePath))
             {
-                instanceFile.Write( bytes );
+                instanceFile.Write(bytes);
                 instanceFile.Flush();
                 instanceFile.Close();
             }
 
-            if ( !_dirtyType ) return;
+            if (!_dirtyType) return;
 
             _dirtyType = false;
 
-            await SerializeTypesAsync().ConfigureAwait( false );
-        }   
-            
+            await SerializeTypesAsync().ConfigureAwait(false);
+        }
+
         /// <summary>
         ///     Load from the store
         /// </summary>
@@ -374,15 +365,15 @@ namespace SterlingDB.Server.FileSystem
         /// <returns>The byte stream</returns>
         public override async Task<BinaryReader> LoadAsync(Type type, int keyIndex)
         {
-            var instancePath = _pathProvider.GetInstancePath( _basePath, DatabaseInstanceName, type, this, keyIndex );
+            var instancePath = _pathProvider.GetInstancePath(_basePath, DatabaseInstanceName, type, this, keyIndex);
 
-            var pathLock = PathLock.GetLock( instancePath );
+            var pathLock = PathLock.GetLock(instancePath);
 
-            using ( await pathLock.LockAsync().ConfigureAwait( false ) )
+            using (await pathLock.LockAsync().ConfigureAwait(false))
             {
-                return _fileHelper.FileExists( instancePath )
-                           ? _fileHelper.GetReader( instancePath )
-                           : new BinaryReader( new MemoryStream() );
+                return _fileHelper.FileExists(instancePath)
+                    ? _fileHelper.GetReader(instancePath)
+                    : new BinaryReader(new MemoryStream());
             }
         }
 
@@ -393,16 +384,13 @@ namespace SterlingDB.Server.FileSystem
         /// <param name="keyIndex">The index of the key</param>
         public override async Task DeleteAsync(Type type, int keyIndex)
         {
-            var instancePath = _pathProvider.GetInstancePath( _basePath, DatabaseInstanceName, type, this, keyIndex );
+            var instancePath = _pathProvider.GetInstancePath(_basePath, DatabaseInstanceName, type, this, keyIndex);
 
-            var pathLock = PathLock.GetLock( instancePath );
+            var pathLock = PathLock.GetLock(instancePath);
 
-            using ( await pathLock.LockAsync().ConfigureAwait( false ) )
+            using (await pathLock.LockAsync().ConfigureAwait(false))
             {
-                if ( _fileHelper.FileExists( instancePath ) )
-                {
-                    _fileHelper.Delete( instancePath );
-                }
+                if (_fileHelper.FileExists(instancePath)) _fileHelper.Delete(instancePath);
             }
         }
 
@@ -412,13 +400,13 @@ namespace SterlingDB.Server.FileSystem
         /// <param name="type">The type to truncate</param>
         public override async Task TruncateAsync(Type type)
         {
-            var folderPath = _pathProvider.GetTablePath( _basePath, DatabaseInstanceName, type, this );
+            var folderPath = _pathProvider.GetTablePath(_basePath, DatabaseInstanceName, type, this);
 
-            var pathLock = PathLock.GetLock( type.FullName );
+            var pathLock = PathLock.GetLock(type.FullName);
 
-            using ( await pathLock.LockAsync().ConfigureAwait( false ) )
+            using (await pathLock.LockAsync().ConfigureAwait(false))
             {
-                _fileHelper.Purge( folderPath );
+                _fileHelper.Purge(folderPath);
             }
         }
 
@@ -427,12 +415,12 @@ namespace SterlingDB.Server.FileSystem
         /// </summary>
         public override async Task PurgeAsync()
         {
-            var pathLock = PathLock.GetLock( DatabaseInstanceName );
+            var pathLock = PathLock.GetLock(DatabaseInstanceName);
 
-            using ( await pathLock.LockAsync().ConfigureAwait( false ) )
+            using (await pathLock.LockAsync().ConfigureAwait(false))
             {
-                _fileHelper.Purge( _pathProvider.GetDatabasePath( _basePath, DatabaseInstanceName, this ) );
+                _fileHelper.Purge(_pathProvider.GetDatabasePath(_basePath, DatabaseInstanceName, this));
             }
-        }        
+        }
     }
 }

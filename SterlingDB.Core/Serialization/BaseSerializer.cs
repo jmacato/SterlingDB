@@ -3,7 +3,7 @@ using System.IO;
 
 namespace SterlingDB.Serialization
 {
-    public abstract class BaseSerializer : ISterlingSerializer 
+    public abstract class BaseSerializer : ISterlingSerializer
     {
         /// <summary>
         ///     Return true if this serializer can handle the object
@@ -26,7 +26,7 @@ namespace SterlingDB.Serialization
         /// <param name="reader">A reader to deserialize from</param>
         /// <returns>The deserialized object</returns>
         public abstract object Deserialize(Type type, BinaryReader reader);
-        
+
         /// <summary>
         ///     Return true
         /// </summary>
@@ -34,8 +34,8 @@ namespace SterlingDB.Serialization
         /// <returns>True if it can handle it</returns>
         public bool CanSerialize<T>()
         {
-            return CanSerialize(typeof (T));
-        }     
+            return CanSerialize(typeof(T));
+        }
 
         /// <summary>
         ///     Typed deserialization
@@ -45,7 +45,7 @@ namespace SterlingDB.Serialization
         /// <returns>The type</returns>
         public T Deserialize<T>(BinaryReader reader)
         {
-            return (T)Deserialize(typeof (T), reader); 
+            return (T) Deserialize(typeof(T), reader);
         }
     }
 }

@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.ObjectModel;
-using SterlingDB;
 using SterlingDB.Serialization;
 
 namespace SterlingDB.Test.Helpers
-{    
+{
     /// <summary>
     ///     A sub class Sterling isn't explicitly aware of
     /// </summary>
@@ -35,34 +34,28 @@ namespace SterlingDB.Test.Helpers
     /// </summary>
     public class TestModel
     {
+        public const int SAMPLE_CONSTANT = 2;
         private static readonly Random _random = new Random((int) DateTime.Now.Ticks);
-    
+
+        private static int _idx;
+
+        private string _data;
+
         public TestModel()
         {
             SubClass = new TestSubclass();
             Accessed = false;
-        }        
-
-        private static int _idx;
-
-        public const int SAMPLE_CONSTANT = 2;
+        }
 
         /// <summary>
         ///     Determines if the class was accessed
         /// </summary>
         public bool Accessed { get; private set; }
 
-        public void ResetAccess()
-        {
-            Accessed = false;
-        }
-
         /// <summary>
         ///     The key
         /// </summary>
         public int Key { get; set; }
-
-        private string _data;
 
         /// <summary>
         ///     Data
@@ -75,13 +68,12 @@ namespace SterlingDB.Test.Helpers
                 return _data;
             }
 
-            set { _data = value; }
+            set => _data = value;
         }
 
         public Guid? GuidNullable { get; set; }
-        
-        [SterlingIgnore]
-        public string Data2 { get; set; }
+
+        [SterlingIgnore] public string Data2 { get; set; }
 
         public TestSubclass SubClass { get; set; }
 
@@ -96,21 +88,34 @@ namespace SterlingDB.Test.Helpers
         /// </summary>
         public DateTime Date { get; set; }
 
+        public void ResetAccess()
+        {
+            Accessed = false;
+        }
+
         public static TestModel MakeTestModel()
         {
-
-            return new TestModel { Data = Guid.NewGuid().ToString(), Data2 = Guid.NewGuid().ToString(), Date = DateTime.Now.AddSeconds(_random.Next()), Key = _idx++, SubClass = new TestSubclass { NestedText = Guid.NewGuid().ToString() },
-                                   SubClass2 = new TestSubclass2 { NestedText = Guid.NewGuid().ToString() }, GuidNullable = Guid.NewGuid(),
-                                   SubStruct = new TestSubStruct { NestedId = _idx, NestedString = Guid.NewGuid().ToString() }
+            return new TestModel
+            {
+                Data = Guid.NewGuid().ToString(), Data2 = Guid.NewGuid().ToString(),
+                Date = DateTime.Now.AddSeconds(_random.Next()), Key = _idx++,
+                SubClass = new TestSubclass {NestedText = Guid.NewGuid().ToString()},
+                SubClass2 = new TestSubclass2 {NestedText = Guid.NewGuid().ToString()}, GuidNullable = Guid.NewGuid(),
+                SubStruct = new TestSubStruct {NestedId = _idx, NestedString = Guid.NewGuid().ToString()}
             };
         }
 
         internal static TestModel MakeTestModel(TestModelAsListModel parentModel)
         {
-            return new TestModel { Data = Guid.NewGuid().ToString(), Data2 = Guid.NewGuid().ToString(), Date = DateTime.Now.AddSeconds(_random.Next()), Key = _idx++, SubClass = new TestSubclass { NestedText = Guid.NewGuid().ToString() }, 
-                SubClass2 = new TestSubclass2 { NestedText = Guid.NewGuid().ToString() }, 
-                SubStruct = new TestSubStruct { NestedId = _idx, NestedString = Guid.NewGuid().ToString() },
-                Parent = parentModel };
+            return new TestModel
+            {
+                Data = Guid.NewGuid().ToString(), Data2 = Guid.NewGuid().ToString(),
+                Date = DateTime.Now.AddSeconds(_random.Next()), Key = _idx++,
+                SubClass = new TestSubclass {NestedText = Guid.NewGuid().ToString()},
+                SubClass2 = new TestSubclass2 {NestedText = Guid.NewGuid().ToString()},
+                SubStruct = new TestSubStruct {NestedId = _idx, NestedString = Guid.NewGuid().ToString()},
+                Parent = parentModel
+            };
         }
     }
 
@@ -123,16 +128,17 @@ namespace SterlingDB.Test.Helpers
 
     public class TestIndexedSubclassBase
     {
-        public int Id {get;set;}
+        public int Id { get; set; }
         public string BaseProperty { get; set; }
     }
 
-    public class TestIndexedSubclassModel:TestIndexedSubclassBase
+    public class TestIndexedSubclassModel : TestIndexedSubclassBase
     {
         public string SubclassProperty { get; set; }
     }
 
-    public class TestIndexedSubclassFake {
+    public class TestIndexedSubclassFake
+    {
         public int Id;
         public string BaseProperty { get; set; }
         public string SubclassProperty { get; set; }

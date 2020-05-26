@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace SterlingDB.Serialization
-{    
+{
     /// <summary>
     ///     Cache for serialization of properties
     /// </summary>
@@ -10,7 +10,7 @@ namespace SterlingDB.Serialization
         public SerializationCache(Type propertyType, string propertyName,
             Action<object, object> setter, Func<object, object> getter)
         {
-            PropType = propertyType;          
+            PropType = propertyType;
             SetMethod = setter;
             GetMethod = getter;
             PropertyName = propertyName;
@@ -19,21 +19,21 @@ namespace SterlingDB.Serialization
         /// <summary>
         ///     Property type
         /// </summary>
-        public Type PropType { get; private set; }
+        public Type PropType { get; }
 
         /// <summary>
         ///     The setter for the type
         /// </summary>
-        public Action<object, object> SetMethod { get; private set; }
+        public Action<object, object> SetMethod { get; }
 
         /// <summary>
         ///     The getter for the type
         /// </summary>
-        public Func<object, object> GetMethod { get; private set; }
+        public Func<object, object> GetMethod { get; }
 
         /// <summary>
         ///     The name of the property.
         /// </summary>
-        public string PropertyName { get; private set; }
+        public string PropertyName { get; }
     }
 }

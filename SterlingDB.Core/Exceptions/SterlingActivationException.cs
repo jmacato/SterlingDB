@@ -1,12 +1,9 @@
-﻿using System;
-
-namespace SterlingDB.Exceptions
+﻿namespace SterlingDB.Exceptions
 {
-    public class SterlingActivationException : SterlingException 
+    public class SterlingActivationException : SterlingException
     {
         public SterlingActivationException(string operation) : base(operation)
         {
-            
         }
     }
 }

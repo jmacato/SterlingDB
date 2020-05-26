@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SterlingDB.Test.Helpers
+﻿namespace SterlingDB.Test.Helpers
 {
     public class TestChangingTypeSecondVersionClass
     {

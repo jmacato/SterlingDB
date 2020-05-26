@@ -1,7 +1,6 @@
-using SterlingDB;
+using System.Collections.Generic;
 using SterlingDB.Database;
 using Xunit;
-using System.Collections.Generic;
 
 namespace SterlingDB.Test.Database
 {
@@ -20,38 +19,39 @@ namespace SterlingDB.Test.Database
         protected override List<ITableDefinition> RegisterTables()
         {
             return new List<ITableDefinition>
-                           {
-                               CreateTableDefinition<NullableClass, int>(n => n.Id)
-                           };
+            {
+                CreateTableDefinition<NullableClass, int>(n => n.Id)
+            };
         }
     }
- 
-    public class TestNullable : TestBase
-    {                
-        private readonly SterlingEngine _engine;
-        private ISterlingDatabaseInstance _databaseInstance;
 
+    public class TestNullable : TestBase
+    {
         public TestNullable()
-        {            
+        {
             _engine = Factory.NewEngine();
             _engine.Activate();
-            _databaseInstance = _engine.SterlingDatabase.RegisterDatabase<NullableDatabase>( TestContext.TestName, GetDriver() );
+            _databaseInstance =
+                _engine.SterlingDatabase.RegisterDatabase<NullableDatabase>(TestContext.TestName, GetDriver());
             _databaseInstance.PurgeAsync().Wait();
         }
+
+        private readonly SterlingEngine _engine;
+        private ISterlingDatabaseInstance _databaseInstance;
 
         public override void Cleanup()
         {
             _databaseInstance.PurgeAsync().Wait();
             _engine.Dispose();
-            _databaseInstance = null;            
+            _databaseInstance = null;
         }
 
         [Fact]
         public void TestNotNull()
         {
             var test = new NullableClass {Id = 1, Value = 1};
-            _databaseInstance.SaveAsync( test ).Wait();
-            var actual = _databaseInstance.LoadAsync<NullableClass>( 1 ).Result;
+            _databaseInstance.SaveAsync(test).Wait();
+            var actual = _databaseInstance.LoadAsync<NullableClass>(1).Result;
             Assert.Equal(test.Id, actual.Id); //Failed to load nullable with nullable set: key mismatch.");
             Assert.Equal(test.Value, actual.Value); //Failed to load nullable with nullable set: value mismatch.");
         }
@@ -59,9 +59,9 @@ namespace SterlingDB.Test.Database
         [Fact]
         public void TestNull()
         {
-            var test = new NullableClass { Id = 1, Value = null };
-            _databaseInstance.SaveAsync( test ).Wait();
-            var actual = _databaseInstance.LoadAsync<NullableClass>( 1 ).Result;
+            var test = new NullableClass {Id = 1, Value = null};
+            _databaseInstance.SaveAsync(test).Wait();
+            var actual = _databaseInstance.LoadAsync<NullableClass>(1).Result;
             Assert.Equal(test.Id, actual.Id); //Failed to load nullable with nullable set: key mismatch.");
             Assert.Null(actual.Value); //Failed to load nullable with nullable set: value mismatch.");
         }

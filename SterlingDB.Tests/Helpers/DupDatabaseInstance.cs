@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
-using SterlingDB;
 using SterlingDB.Database;
 
 namespace SterlingDB.Test.Helpers
 {
-    public class DupDatabaseInstance : BaseDatabaseInstance 
+    public class DupDatabaseInstance : BaseDatabaseInstance
     {
         /// <summary>
         ///     Method called from the constructor to register tables
@@ -13,10 +12,10 @@ namespace SterlingDB.Test.Helpers
         protected override List<ITableDefinition> RegisterTables()
         {
             return new List<ITableDefinition>
-                       {
-                           CreateTableDefinition<TestModel, int>(testModel => testModel.Key),
-                           CreateTableDefinition<TestModel, string>(testModel => testModel.Data)
-                       };
+            {
+                CreateTableDefinition<TestModel, int>(testModel => testModel.Key),
+                CreateTableDefinition<TestModel, string>(testModel => testModel.Data)
+            };
         }
     }
 }

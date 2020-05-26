@@ -6,7 +6,6 @@ namespace SterlingDB.Exceptions
     {
         public SterlingIsolatedStorageException(Exception ex) : base(ex.Message)
         {
-            
         }
     }
 }

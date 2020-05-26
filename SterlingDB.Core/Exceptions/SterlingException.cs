@@ -9,17 +9,14 @@ namespace SterlingDB.Exceptions
     {
         public SterlingException()
         {
-            
         }
 
         public SterlingException(string message) : base(message)
         {
-            
         }
 
         public SterlingException(string message, Exception innerException) : base(message, innerException)
         {
-            
         }
     }
 }

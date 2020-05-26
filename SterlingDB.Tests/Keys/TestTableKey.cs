@@ -1,12 +1,11 @@
-﻿using SterlingDB.Test.Helpers;
-using Xunit;
-using System;
+﻿using System;
 using System.Linq;
 using SterlingDB.Keys;
+using SterlingDB.Test.Helpers;
+using Xunit;
 
 namespace SterlingDB.Test.Keys
 {
-
     public class TestTableKey
     {
         [Fact]
@@ -21,13 +20,12 @@ namespace SterlingDB.Test.Keys
 
             Assert.Equal(key1.Key, list[0].Key); //Key mismatch.");
             Assert.Equal(key2.Key, list[1].Key); //Key mismatch.");
-            
+
             Assert.False(key1.LazyValue.IsValueCreated); //Lazy model already created.");
             var testModel1 = key1.LazyValue.Value;
             Assert.True(key1.LazyValue.IsValueCreated); //Lazy value created was not set.");
             Assert.Same(list[0], testModel1); //First key returned invalid instance.");
             Assert.Same(list[1], key2.LazyValue.Value); //Second key return invalid instance.");
         }
-
     }
 }

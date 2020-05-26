@@ -1,22 +1,22 @@
-﻿using SterlingDB;
+﻿using System;
+using System.Linq;
 using SterlingDB.Test.Helpers;
 using Xunit;
-using System;
-using System.Linq;
 
 namespace SterlingDB.Test.Database
 {
     public class TestDelete : TestBase
     {
-        private readonly SterlingEngine _engine;
-        private ISterlingDatabaseInstance _databaseInstance;
-
         public TestDelete()
         {
             _engine = Factory.NewEngine();
             _engine.Activate();
-            _databaseInstance = _engine.SterlingDatabase.RegisterDatabase<TestDatabaseInstance>(TestContext.TestName, GetDriver());
+            _databaseInstance =
+                _engine.SterlingDatabase.RegisterDatabase<TestDatabaseInstance>(TestContext.TestName, GetDriver());
         }
+
+        private readonly SterlingEngine _engine;
+        private ISterlingDatabaseInstance _databaseInstance;
 
         public override void Cleanup()
         {

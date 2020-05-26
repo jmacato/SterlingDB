@@ -17,10 +17,7 @@ namespace SterlingDB.Database
         /// <param name="key">The key</param>
         public void Add(Type type, object instance, object key)
         {
-            if (instance == null || key == null)
-            {
-                return; 
-            }
+            if (instance == null || key == null) return;
 
             Add(new CycleItem {ClassType = type, Instance = instance, Key = key});
         }
@@ -33,14 +30,11 @@ namespace SterlingDB.Database
         /// <returns>The cached instance, if it exists</returns>
         public object CheckKey(Type type, object key)
         {
-            if (key == null)
-            {
-                return null;
-            }
+            if (key == null) return null;
 
             return (from o in this
-                    where o.ClassType.Equals(type) && key.Equals(o.Key)
-                    select o.Instance).FirstOrDefault();
+                where o.ClassType.Equals(type) && key.Equals(o.Key)
+                select o.Instance).FirstOrDefault();
         }
 
         /// <summary>
@@ -50,14 +44,11 @@ namespace SterlingDB.Database
         /// <returns>True if it does</returns>
         public bool Check(object instance)
         {
-            if (instance == null)
-            {
-                return false;
-            }
+            if (instance == null) return false;
 
             return (from o in this
-                    where ReferenceEquals(instance, o.Instance)
-                    select o).Any();
+                where ReferenceEquals(instance, o.Instance)
+                select o).Any();
         }
     }
 }
