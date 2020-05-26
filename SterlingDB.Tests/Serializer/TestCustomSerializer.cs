@@ -9,6 +9,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using SterlingDB.Exceptions;
 using SterlingDB.Indexes;
+using System.Collections;
+using SterlingDB.Database;
+using SterlingDB.Serialization;
+using System.IO;
 
 namespace SterlingDB.Test.Serializer
 {
@@ -45,6 +49,7 @@ namespace SterlingDB.Test.Serializer
         {
             return GetEnumerator();
         }
+ 
     }
 
     /// <summary>
@@ -124,46 +129,18 @@ namespace SterlingDB.Test.Serializer
             return new NotSupportedList {list};
         }
     }
-
-#if SILVERLIGHT
-    [Tag("Custom")]
-    [Tag("Serializer")]
-#endif
-    
-    public class TestCustomSerializerAltDriver : TestCustomSerializer
-    {
-        protected override ISterlingDriver GetDriver()
-        {
-#if NETFX_CORE
-            return new WindowsStorageDriver();
-#elif SILVERLIGHT
-            return new IsolatedStorageDriver();
-#else
-            return new FileSystemDriver();
-#endif
-        }
-    }
-
-#if SILVERLIGHT
-    /// <summary>
-    ///     Test for custom serialization
-    /// </summary>
-    [Tag("Custom")]
-    [Tag("Serializer")]
-#endif
+ 
     
     public class TestCustomSerializer : TestBase
     {
         private readonly SterlingEngine _engine;
         public static ISterlingDatabaseInstance DatabaseInstance;
 
-        
-
         /// <summary>
         ///    Initialize the test
         /// </summary>
         
-        public void TestInit()
+        public TestCustomSerializer()
         {
             _engine = Factory.NewEngine();
             _engine.SterlingDatabase.RegisterSerializer<SupportSerializer>();            
@@ -199,21 +176,21 @@ namespace SterlingDB.Test.Serializer
             // confirm the test models were saved as "foreign keys" 
             var count = DatabaseInstance.Query<TestModel, int>().Count();
 
-            Assert.Equal(expectedList.Length, count, "Load failed: test models were not saved independently.");
+            Assert.Equal(expectedList.Length, count); //Load failed: test models were not saved independently.");
 
             var actual = DatabaseInstance.LoadAsync<NotSupportedClass>( key ).Result;
-            Assert.NotNull(actual, "Load failed: instance is null.");
-            Assert.Equal(expected.Id, actual.Id, "Load failed: key mismatch.");
+            Assert.NotNull(actual); //Load failed: instance is null.");
+            Assert.Equal(expected.Id, actual.Id); //Load failed: key mismatch.");
 
             // cast to list
             var actualList = new List<TestModel>(actual.InnerList);
 
-            Assert.Equal(expectedList.Length, actualList.Count, "Load failed: mismatch in list.");
+            Assert.Equal(expectedList.Length, actualList.Count); //Load failed: mismatch in list.");
 
             foreach (var matchingItem in
                 expectedList.Select(item => (from i in actualList where i.Key.Equals(item.Key) select i.Key).FirstOrDefault()).Where(matchingItem => matchingItem < 1))
             {
-                Assert.Fail("Test failed: matching models not loaded.");
+                Assert.True(false, "Test failed: matching models not loaded.");
             }
         }        
     }

@@ -1,4 +1,4 @@
-namespace SterlingDB.Test.Database
+namespace SterlingDB.Test
 {
     public static class TestContext
     {

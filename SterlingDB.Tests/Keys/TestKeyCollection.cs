@@ -1,42 +1,11 @@
-﻿using SterlingDB;
-using SterlingDB.Server.FileSystem;
-using SterlingDB.Test.Helpers;
+﻿using SterlingDB.Test.Helpers;
 using Xunit;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
-using SterlingDB.Exceptions;
-using SterlingDB.Indexes;
+using SterlingDB.Keys;
+
 namespace SterlingDB.Test.Keys
 {
-#if SILVERLIGHT
-    [Tag("KeyCollection")]
-#endif
-    [Ignore]
-    
-    public class TestKeyCollectionAltDriver : TestKeyCollection
-    {
-        protected override ISterlingDriver GetDriver()
-        {
-#if NETFX_CORE
-            return new WindowsStorageDriver() { DatabaseInstanceName = TestContext.TestName };
-#elif SILVERLIGHT
-            return new IsolatedStorageDriver() { DatabaseInstanceName = TestContext.TestName };
-#elif AZURE_DRIVER
-            return new SterlingDB.Server.Azure.TableStorage.Driver() { DatabaseInstanceName = TestContext.TestName };
-#else
-            return new FileSystemDriver() { DatabaseInstanceName = TestContext.TestName };
-#endif
-        }
-    }
 
-#if SILVERLIGHT
-    [Tag("KeyCollection")]
-#endif
-    [Ignore]
-    
     public class TestKeyCollection : TestBase
     {
         private readonly TestModel[] _models = new[]
@@ -46,7 +15,7 @@ namespace SterlingDB.Test.Keys
                                           };
 
         private ISterlingDriver _driver;
-        private KeyCollection<TestModel, int> _target;
+        private readonly KeyCollection<TestModel, int> _target;
         protected readonly ISterlingDatabaseInstance _testDatabase = new TestDatabaseInterfaceInstance();
         private int _testAccessCount;
 
@@ -57,23 +26,23 @@ namespace SterlingDB.Test.Keys
         /// </summary>
         /// <param name="key">The key</param>
         /// <returns>The model</returns>
-        private TestModel _GetTestModelByKey(int key)
+        private TestModel GetTestModelByKey(int key)
         {
             _testAccessCount++;
             return (from t in _models where t.Key.Equals(key) select t).FirstOrDefault();
         }
 
         
-        public void TestInit()
+        public TestKeyCollection()
         {
             _driver = GetDriver();
             _testAccessCount = 0;            
             _target = new KeyCollection<TestModel, int>(_driver,
-                                                        _GetTestModelByKey);
+                                                        GetTestModelByKey);
         }
 
         
-        public void Cleanup()
+        public override void Cleanup()
         {
             _driver.PurgeAsync().Wait();
             _driver = null;
@@ -82,36 +51,36 @@ namespace SterlingDB.Test.Keys
         [Fact]
         public void TestAddKey()
         {
-            Assert.False(_target.IsDirty, "Dirty flag set prematurely");
-            Assert.Equal(0,_target.NextKey, "Next key is incorrect.");
+            Assert.False(_target.IsDirty); //Dirty flag set prematurely");
+            Assert.Equal(0,_target.NextKey); //Next key is incorrect.");
             _target.AddKeyAsync(_models[0].Key).Wait();
-            Assert.True(_target.IsDirty, "Dirty flag not set on add.");
-            Assert.Equal(1, _target.NextKey, "Next key not advanced.");
+            Assert.True(_target.IsDirty); //Dirty flag not set on add.");
+            Assert.Equal(1, _target.NextKey); //Next key not advanced.");
         }
 
         [Fact]
         public void TestAddDuplicateKey()
         {
-            Assert.False(_target.IsDirty, "Dirty flag set prematurely");
-            Assert.Equal(0,_target.NextKey, "Next key is incorrect initialized.");
+            Assert.False(_target.IsDirty); //Dirty flag set prematurely");
+            Assert.Equal(0,_target.NextKey); //Next key is incorrect initialized.");
             _target.AddKeyAsync(_models[0].Key).Wait();
-            Assert.True(_target.IsDirty, "Dirty flag not set on add.");
-            Assert.Equal(1, _target.NextKey, "Next key not advanced.");
+            Assert.True(_target.IsDirty); //Dirty flag not set on add.");
+            Assert.Equal(1, _target.NextKey); //Next key not advanced.");
             _target.AddKeyAsync(_models[0].Key).Wait();
-            Assert.Equal(1, _target.NextKey, "Next key advanced on duplicate add."); 
-            Assert.Equal(1, _target.Query.Count(), "Key list count is incorrect.");
+            Assert.Equal(1, _target.NextKey); //Next key advanced on duplicate add."); 
+            Assert.Single(_target.Query); //Key list count is incorrect.");
         }
         
         [Fact]
         public void TestRemoveKey()
         {
-            Assert.False(_target.IsDirty, "Dirty flag set prematurely");
-            Assert.Equal(0, _target.NextKey, "Next key is incorrect.");
+            Assert.False(_target.IsDirty); //Dirty flag set prematurely");
+            Assert.Equal(0, _target.NextKey); //Next key is incorrect.");
             _target.AddKeyAsync(_models[0].Key).Wait();
-            Assert.True(_target.IsDirty, "Dirty flag not set on add.");
-            Assert.Equal(1, _target.NextKey, "Next key not advanced.");       
+            Assert.True(_target.IsDirty); //Dirty flag not set on add.");
+            Assert.Equal(1, _target.NextKey); //Next key not advanced.");       
             _target.RemoveKeyAsync(_models[0].Key).Wait();
-            Assert.Equal(0, _target.Query.Count(), "Key was not removed.");
+            Assert.Empty(_target.Query); //Key was not removed.");
         }
 
         [Fact]
@@ -120,15 +89,15 @@ namespace SterlingDB.Test.Keys
             _target.AddKeyAsync(_models[0].Key).Wait();
             _target.AddKeyAsync(_models[1].Key).Wait();
             _target.AddKeyAsync(_models[2].Key).Wait();
-            Assert.Equal(3, _target.Query.Count(), "Key count is incorrect.");
-            Assert.Equal(0, _testAccessCount, "Lazy loader was accessed prematurely.");
+            Assert.Equal(3, _target.Query.Count()); //Key count is incorrect.");
+            Assert.Equal(0, _testAccessCount); //Lazy loader was accessed prematurely.");
             var testKey = (from k in _target.Query where k.Key.Equals(_models[1].Key) select k).FirstOrDefault();
-            Assert.NotNull(testKey, "Test key not retrieved.");
-            Assert.Equal(_models[1].Key, testKey.Key, "Key mismatch.");
-            Assert.Equal(0, _testAccessCount, "Lazy loader was accessed prematurely.");
+            Assert.NotNull(testKey); //Test key not retrieved.");
+            Assert.Equal(_models[1].Key, testKey.Key); //Key mismatch.");
+            Assert.Equal(0, _testAccessCount); //Lazy loader was accessed prematurely.");
             var testModel = testKey.LazyValue.Value; 
-            Assert.Same(_models[1], testModel, "Model does not match.");
-            Assert.Equal(1, _testAccessCount, "Lazy loader access count is incorrect.");
+            Assert.Same(_models[1], testModel); //Model does not match.");
+            Assert.Equal(1, _testAccessCount); //Lazy loader access count is incorrect.");
             
         }
          
@@ -137,31 +106,31 @@ namespace SterlingDB.Test.Keys
         {
             _target.AddKeyAsync(_models[0].Key).Wait();
             _target.AddKeyAsync(_models[1].Key).Wait();
-            Assert.True(_target.IsDirty, "Dirty flag not set.");
+            Assert.True(_target.IsDirty); //Dirty flag not set.");
             _target.FlushAsync().Wait();
-            Assert.False(_target.IsDirty, "Dirty flag not reset on flush.");
+            Assert.False(_target.IsDirty); //Dirty flag not reset on flush.");
 
             var secondTarget = new KeyCollection<TestModel, int>(_driver,
-                                                                 _GetTestModelByKey);
+                                                                 GetTestModelByKey);
 
             // are we able to grab things?
-            Assert.Equal(2, secondTarget.Query.Count(), "Key count is incorrect.");
-            Assert.Equal(0, _testAccessCount, "Lazy loader was accessed prematurely.");
+            Assert.Equal(2, secondTarget.Query.Count()); //Key count is incorrect.");
+            Assert.Equal(0, _testAccessCount); //Lazy loader was accessed prematurely.");
             var testKey = (from k in secondTarget.Query where k.Key.Equals(_models[1].Key) select k).FirstOrDefault();
-            Assert.NotNull(testKey, "Test key not retrieved.");
-            Assert.Equal(_models[1].Key, testKey.Key, "Key mismatch.");
-            Assert.Equal(0, _testAccessCount, "Lazy loader was accessed prematurely.");
+            Assert.NotNull(testKey); //Test key not retrieved.");
+            Assert.Equal(_models[1].Key, testKey.Key); //Key mismatch.");
+            Assert.Equal(0, _testAccessCount); //Lazy loader was accessed prematurely.");
             var testModel = testKey.LazyValue.Value;
-            Assert.Same(_models[1], testModel, "Model does not match.");
-            Assert.Equal(1, _testAccessCount, "Lazy loader access count is incorrect.");
+            Assert.Same(_models[1], testModel); //Model does not match.");
+            Assert.Equal(1, _testAccessCount); //Lazy loader access count is incorrect.");
 
             // now let's test refresh
             secondTarget.AddKeyAsync(_models[2].Key).Wait();
             secondTarget.FlushAsync().Wait();
 
-            Assert.Equal(2, _target.Query.Count(), "Unexpected key count in original collection.");
+            Assert.Equal(2, _target.Query.Count()); //Unexpected key count in original collection.");
             _target.RefreshAsync().Wait();
-            Assert.Equal(3, _target.Query.Count(), "Refresh failed.");
+            Assert.Equal(3, _target.Query.Count()); //Refresh failed.");
             
         }
     }

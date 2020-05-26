@@ -9,17 +9,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using SterlingDB.Exceptions;
 using SterlingDB.Indexes;
+using Xunit;
+using SterlingDB.Serialization;
+using System.IO;
+using System.Text;
+using SterlingDB.Server;
 
 namespace SterlingDB.Test.Serializer
 {
     /// <summary>
     ///     Default serializer test
-    /// </summary>
-#if SILVERLIGHT    
-    [Tag("Serializer")]
-#endif
-    
-    public class TestExtendedSerializer
+    /// </summary> 
+    public class TestExtendedSerializer : TestBase
     {
         /// <summary>
         ///     The target default serializer
@@ -34,10 +35,10 @@ namespace SterlingDB.Test.Serializer
         private readonly Guid _guid = Guid.NewGuid();
         private readonly TimeSpan _timeSpan = TimeSpan.FromSeconds(2);
 
-        
-        public void Init()
+
+        public TestExtendedSerializer()
         {
-            _target = new ExtendedSerializer( new PlatformAdapter() );
+            _target = new ExtendedSerializer(new PlatformAdapter());
         }
 
         /// <summary>
@@ -46,12 +47,12 @@ namespace SterlingDB.Test.Serializer
         [Fact]
         public void TestSerializationChecks()
         {
-            Assert.True(_target.CanSerialize<decimal>(), "Failed to recognize decimal.");          
-            Assert.True(_target.CanSerialize<DateTime>(), "Failed to recognize date time.");
-            Assert.True(_target.CanSerialize<Uri>(), "Failed to recognize uri.");
-            Assert.True(_target.CanSerialize<Guid>(), "Failed to recognize guid.");
-            Assert.True(_target.CanSerialize<TimeSpan>(), "Failed to recognize timespan.");
-        }        
+            Assert.True(_target.CanSerialize<decimal>()); //Failed to recognize decimal.");          
+            Assert.True(_target.CanSerialize<DateTime>()); //Failed to recognize date time.");
+            Assert.True(_target.CanSerialize<Uri>()); //Failed to recognize uri.");
+            Assert.True(_target.CanSerialize<Guid>()); //Failed to recognize guid.");
+            Assert.True(_target.CanSerialize<TimeSpan>()); //Failed to recognize timespan.");
+        }
 
         /// <summary>
         ///     Test the serialization and deserialization
@@ -59,7 +60,7 @@ namespace SterlingDB.Test.Serializer
         [Fact]
         public void TestSerialization()
         {
-            
+
             decimal decimalTest;
             DateTime dateTest, date2Test;
             Uri uriTest;
@@ -67,7 +68,7 @@ namespace SterlingDB.Test.Serializer
             TimeSpan timeSpanTest;
 
             using (var mem = new MemoryStream())
-            using ( var bw = new BinaryWriter(mem) )
+            using (var bw = new BinaryWriter(mem))
             {
                 _target.Serialize(DECIMAL, bw);
                 _target.Serialize(_date, bw);
@@ -89,12 +90,14 @@ namespace SterlingDB.Test.Serializer
                 }
             }
 
-            Assert.Equal(DECIMAL, decimalTest, "Decimal did not deserialize correctly.");
-            Assert.Equal(_date, dateTest, "DateTime did not deserialize correctly.");
-            Assert.Equal(_secondDate, date2Test, "Second DateTime did not deserialize correctly.");
-            Assert.Equal(_uri, uriTest, "Uri did not deserialize correctly.");            
-            Assert.Equal(_guid, guidTest, "Guid did not de-serialized correctly.");
-            Assert.Equal(_timeSpan, timeSpanTest, "Time span did not deserialize correctly.");
+            Assert.Equal(DECIMAL, decimalTest); //Decimal did not deserialize correctly.");
+            Assert.Equal(_date, dateTest); //DateTime did not deserialize correctly.");
+            Assert.Equal(_secondDate, date2Test); //Second DateTime did not deserialize correctly.");
+            Assert.Equal(_uri, uriTest); //Uri did not deserialize correctly.");            
+            Assert.Equal(_guid, guidTest); //Guid did not de-serialized correctly.");
+            Assert.Equal(_timeSpan, timeSpanTest); //Time span did not deserialize correctly.");
         }
+
+        public override void Cleanup() { }
     }
 }

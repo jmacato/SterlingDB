@@ -1,21 +1,12 @@
-﻿using SterlingDB;
-using SterlingDB.Server.FileSystem;
-using SterlingDB.Test.Helpers;
+﻿using SterlingDB.Test.Helpers;
 using Xunit;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
-using SterlingDB.Exceptions;
-using SterlingDB.Indexes;
+using SterlingDB.Keys;
 
 namespace SterlingDB.Test.Keys
 {
-#if SILVERLIGHT
-    [Tag("TableKey")]
-#endif
-    
+
     public class TestTableKey
     {
         [Fact]
@@ -28,14 +19,14 @@ namespace SterlingDB.Test.Keys
             var key1 = new TableKey<TestModel, int>(list[0].Key, getter);
             var key2 = new TableKey<TestModel, int>(list[1].Key, getter);
 
-            Assert.Equal(key1.Key, list[0].Key, "Key mismatch.");
-            Assert.Equal(key2.Key, list[1].Key, "Key mismatch.");
+            Assert.Equal(key1.Key, list[0].Key); //Key mismatch.");
+            Assert.Equal(key2.Key, list[1].Key); //Key mismatch.");
             
-            Assert.False(key1.LazyValue.IsValueCreated, "Lazy model already created.");
+            Assert.False(key1.LazyValue.IsValueCreated); //Lazy model already created.");
             var testModel1 = key1.LazyValue.Value;
-            Assert.True(key1.LazyValue.IsValueCreated, "Lazy value created was not set.");
-            Assert.Same(list[0], testModel1, "First key returned invalid instance.");
-            Assert.Same(list[1], key2.LazyValue.Value, "Second key return invalid instance.");
+            Assert.True(key1.LazyValue.IsValueCreated); //Lazy value created was not set.");
+            Assert.Same(list[0], testModel1); //First key returned invalid instance.");
+            Assert.Same(list[1], key2.LazyValue.Value); //Second key return invalid instance.");
         }
 
     }
