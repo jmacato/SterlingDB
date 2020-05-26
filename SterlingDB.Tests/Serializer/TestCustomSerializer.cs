@@ -141,7 +141,7 @@ namespace SterlingDB.Test.Serializer
     [Tag("Custom")]
     [Tag("Serializer")]
 #endif
-    [TestClass]
+    
     public class TestCustomSerializerAltDriver : TestCustomSerializer
     {
         protected override ISterlingDriver GetDriver()
@@ -163,13 +163,13 @@ namespace SterlingDB.Test.Serializer
     [Tag("Custom")]
     [Tag("Serializer")]
 #endif
-    [TestClass]
+    
     public class TestCustomSerializer : TestBase
     {
         private SterlingEngine _engine;
         public static ISterlingDatabaseInstance DatabaseInstance;
 
-        public TestContext TestContext { get; set; }
+        
 
         /// <summary>
         ///    Initialize the test

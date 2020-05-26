@@ -116,7 +116,7 @@ namespace SterlingDB.Test.Database
     [Tag("Trigger")]
     [Tag("Database")]
 #endif
-    [TestClass]
+    
     public class TestTriggersAltDriver : TestTriggers
     {
         protected override ISterlingDriver GetDriver()
@@ -137,13 +137,13 @@ namespace SterlingDB.Test.Database
     [Tag("Trigger")]
     [Tag("Database")]
 #endif
-    [TestClass]
+    
     public class TestTriggers : TestBase
     {
         private SterlingEngine _engine;
         private ISterlingDatabaseInstance _databaseInstance;
 
-        public TestContext TestContext { get; set; }
+        
 
         
         public void TestInit()

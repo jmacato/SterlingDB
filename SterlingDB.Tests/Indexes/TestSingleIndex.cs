@@ -22,7 +22,7 @@ using SterlingDB.Test.Helpers;
 namespace SterlingDB.Test.Indexes
 {
     [Ignore]
-    [TestClass]
+    
     public class TestSingleIndexAltDriver : TestSingleIndex
     {
         protected override ISterlingDriver GetDriver()
@@ -40,7 +40,7 @@ namespace SterlingDB.Test.Indexes
     }
 
     [Ignore]
-    [TestClass]
+    
     public class TestSingleIndex : TestBase
     {
         private IndexCollection<TestModel, string, int> _target;
@@ -60,7 +60,7 @@ namespace SterlingDB.Test.Indexes
             return (from t in _testModels where t.Key.Equals(key) select t).FirstOrDefault();
         }
 
-        public TestContext TestContext { get; set; }
+        
 
         
         public void Init()

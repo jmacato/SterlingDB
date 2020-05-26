@@ -19,7 +19,7 @@ namespace SterlingDB.Test.Database
         private SterlingEngine _engine;
         private ISterlingDatabaseInstance _databaseInstance;
 
-        public void TestInit()
+        public TestAggregateList()
         {
             _engine = Factory.NewEngine();
             _engine.Activate();

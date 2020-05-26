@@ -41,7 +41,7 @@
 
 //    [Tag("Image")]
 //    [Tag("Database")]
-//    [TestClass]
+//    
 //    public class TestWriteableBitmap : SilverlightTest
 //    {
 //        private SterlingEngine _engine;

@@ -5,20 +5,12 @@ using Xunit;
 
 namespace SterlingDB.Test.Database
 {
-    public class TestArraysAltDriver : TestArrays
-    {
-        protected override ISterlingDriver GetDriver()
-        {
-            return new FileSystemDriver();
-        }
-    }
-
     public class TestArrays : TestBase
     {
         private SterlingEngine _engine;
         private ISterlingDatabaseInstance _databaseInstance;
 
-        public void TestInit()
+        public TestArrays()
         {
             _engine = Factory.NewEngine();
             _engine.Activate();

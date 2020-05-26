@@ -21,7 +21,7 @@ namespace SterlingDB.Test.Database
 #if SILVERLIGHT
     [Tag("Truncate")]
 #endif
-    [TestClass]
+    
     public class TestTruncateAltDriver : TestTruncate
     {
         protected override ISterlingDriver GetDriver()
@@ -41,13 +41,13 @@ namespace SterlingDB.Test.Database
 #if SILVERLIGHT
     [Tag("Truncate")]
 #endif
-    [TestClass]
+    
     public class TestTruncate : TestBase
     {
         private SterlingEngine _engine;
         private ISterlingDatabaseInstance _databaseInstance;
 
-        public TestContext TestContext { get; set; }
+        
 
         
         public void TestInit()

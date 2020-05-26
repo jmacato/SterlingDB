@@ -28,7 +28,7 @@ namespace SterlingDB.Test.Database
 #if SILVERLIGHT
     [Tag("TableDefinition")]
 #endif
-    [TestClass]
+    
     public class TestTableDefinitionAltDriver : TestTableDefinition
     {
         protected override ISterlingDriver GetDriver()
@@ -61,7 +61,7 @@ namespace SterlingDB.Test.Database
 #if SILVERLIGHT
     [Tag("TableDefinition")]
 #endif
-    [TestClass]
+    
     public class TestTableDefinition : TestBase
     {
         protected virtual ISterlingDriver GetDriver( string test, ISterlingSerializer serializer )
@@ -79,7 +79,7 @@ namespace SterlingDB.Test.Database
         private readonly ISterlingDatabaseInstance _testDatabase = new TestDatabaseInterfaceInstance();
         private int _testAccessCount;
 
-        public TestContext TestContext { get; set; }
+        
 
         /// <summary>
         ///     Fetcher - also flag the fetch

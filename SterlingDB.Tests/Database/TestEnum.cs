@@ -1,15 +1,8 @@
-
-#if NETFX_CORE
-using SterlingDB.WinRT.WindowsStorage;
-using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-#elif SILVERLIGHT
-using Microsoft.Phone.Testing;
-using SterlingDB.WP8.IsolatedStorage;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-#else
+using SterlingDB.Core;
+using SterlingDB.Core.Database;
 using SterlingDB.Server.FileSystem;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-#endif
+using SterlingDB.Test.Helpers;
+using Xunit;
 
 using System.Collections.Generic;
 
@@ -57,7 +50,7 @@ namespace SterlingDB.Test.Database
     [Tag("Enum")]
     [Tag("Database")]
 #endif
-    [TestClass]
+    
     public class TestEnumAltDriver : TestEnum
     {
         protected override ISterlingDriver GetDriver()
@@ -78,13 +71,13 @@ namespace SterlingDB.Test.Database
     [Tag("Enum")]
     [Tag("Database")]
 #endif
-    [TestClass]
+    
     public class TestEnum : TestBase
     {
         private SterlingEngine _engine;
         private ISterlingDatabaseInstance _databaseInstance;
 
-        public TestContext TestContext { get; set; }
+        
 
         
         public void TestInit()

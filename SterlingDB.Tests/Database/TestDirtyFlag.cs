@@ -1,16 +1,8 @@
-
-#if NETFX_CORE
-using SterlingDB.WinRT.WindowsStorage;
-using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-#elif SILVERLIGHT
-using Microsoft.Phone.Testing;
-using SterlingDB.WP8.IsolatedStorage;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-#else
+using SterlingDB.Core;
+using SterlingDB.Core.Database;
 using SterlingDB.Server.FileSystem;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-#endif
-
+using SterlingDB.Test.Helpers;
+using Xunit;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,7 +36,7 @@ namespace SterlingDB.Test.Database
     [Tag("Dirty")]
     [Tag("Database")]
 #endif
-    [TestClass]
+    
     public class TestDirtyFlagAltDriver : TestDirtyFlag
     {
         protected override ISterlingDriver GetDriver()
@@ -65,13 +57,13 @@ namespace SterlingDB.Test.Database
     [Tag("Dirty")]
     [Tag("Database")]
 #endif
-    [TestClass]
+    
     public class TestDirtyFlag : TestBase
     {
         private SterlingEngine _engine;
         private ISterlingDatabaseInstance _databaseInstance;
 
-        public TestContext TestContext { get; set; }
+        
 
         public TestDirtyFlag()
         {

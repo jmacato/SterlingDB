@@ -19,7 +19,7 @@ namespace SterlingDB.Test.Database
 
         private const int MODELS = 500;
 
-        public void TestInit()
+        public TestAsync()
         {
             //_startTime = DateTime.Now;
             _engine = Factory.NewEngine();

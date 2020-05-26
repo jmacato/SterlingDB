@@ -19,7 +19,7 @@ namespace SterlingDB.Test.Database
 #if SILVERLIGHT
     [Tag("Serializers")]
 #endif
-    [TestClass]
+    
     public class TestSerializersAltDriver : TestSerializers
     {
         protected override ISterlingDriver GetDriver()
@@ -39,13 +39,13 @@ namespace SterlingDB.Test.Database
 #if SILVERLIGHT
     [Tag("Serializers")]
 #endif 
-    [TestClass]
+    
     public class TestSerializers : TestBase
     {
         private SterlingEngine _engine;
         private ISterlingDatabaseInstance _databaseInstance;
 
-        public TestContext TestContext { get; set; }
+        
 
         
         public void TestInit()

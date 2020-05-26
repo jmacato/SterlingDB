@@ -27,7 +27,7 @@ namespace SterlingDB.Test.Database
 #if SILVERLIGHT
     [Tag("SaveAndLoad")]
 #endif
-    [TestClass]
+    
     public class TestSaveAndLoadAltDriver : TestSaveAndLoad
     {
         protected override ISterlingDriver GetDriver()
@@ -47,13 +47,13 @@ namespace SterlingDB.Test.Database
 #if SILVERLIGHT
     [Tag("SaveAndLoad")]
 #endif
-    [TestClass]
+    
     public class TestSaveAndLoad : TestBase
     {
         private SterlingEngine _engine;
         private ISterlingDatabaseInstance _databaseInstance;
 
-        public TestContext TestContext { get; set; }
+        
 
         public class TestLateBoundTable
         {

@@ -26,7 +26,7 @@ namespace SterlingDB.Test.Keys
     [Tag("KeyCollection")]
 #endif
     [Ignore]
-    [TestClass]
+    
     public class TestKeyCollectionAltDriver : TestKeyCollection
     {
         protected override ISterlingDriver GetDriver()
@@ -47,7 +47,7 @@ namespace SterlingDB.Test.Keys
     [Tag("KeyCollection")]
 #endif
     [Ignore]
-    [TestClass]
+    
     public class TestKeyCollection : TestBase
     {
         private readonly TestModel[] _models = new[]
@@ -61,7 +61,7 @@ namespace SterlingDB.Test.Keys
         protected readonly ISterlingDatabaseInstance _testDatabase = new TestDatabaseInterfaceInstance();
         private int _testAccessCount;
 
-        public TestContext TestContext { get; set; }
+        
 
         /// <summary>
         ///     Fetcher - also flag the fetch

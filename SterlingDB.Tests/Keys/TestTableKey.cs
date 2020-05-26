@@ -23,7 +23,7 @@ namespace SterlingDB.Test.Keys
 #if SILVERLIGHT
     [Tag("TableKey")]
 #endif
-    [TestClass]
+    
     public class TestTableKey
     {
         [Fact]

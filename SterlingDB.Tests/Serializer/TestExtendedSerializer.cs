@@ -23,7 +23,7 @@ namespace SterlingDB.Test.Serializer
 #if SILVERLIGHT    
     [Tag("Serializer")]
 #endif
-    [TestClass]
+    
     public class TestExtendedSerializer
     {
         /// <summary>

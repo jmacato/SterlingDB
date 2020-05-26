@@ -21,7 +21,7 @@ namespace SterlingDB.Test.Keys
 #if SILVERLIGHT
     [Tag("CompositeKey")]
 #endif
-    [TestClass]
+    
     public class TestCompositeKeyAltDriver : TestCompositeKey
     {
         protected override ISterlingDriver GetDriver()
@@ -41,13 +41,13 @@ namespace SterlingDB.Test.Keys
 #if SILVERLIGHT
     [Tag("CompositeKey")]
 #endif
-    [TestClass]
+    
     public class TestCompositeKey : TestBase
     {
         private SterlingEngine _engine;
         private ISterlingDatabaseInstance _databaseInstance;
 
-        public TestContext TestContext { get; set; }
+        
 
         
         public void TestInit()

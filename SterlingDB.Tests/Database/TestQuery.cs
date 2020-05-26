@@ -22,7 +22,7 @@ namespace SterlingDB.Test.Database
 #if SILVERLIGHT
     [Tag("Query")]
 #endif
-    [TestClass]
+    
     public class TestQueryAltDriver : TestQuery
     {
         protected override ISterlingDriver GetDriver()
@@ -42,14 +42,14 @@ namespace SterlingDB.Test.Database
 #if SILVERLIGHT
     [Tag("Query")]
 #endif
-    [TestClass]
+    
     public class TestQuery : TestBase
     {
         private SterlingEngine _engine;
         private ISterlingDatabaseInstance _databaseInstance;
         private List<TestModel> _modelList;
 
-        public TestContext TestContext { get; set; }
+        
 
         
         public void TestInit()

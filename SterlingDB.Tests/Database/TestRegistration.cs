@@ -15,7 +15,7 @@ namespace SterlingDB.Test.Database
 #if SILVERLIGHT
     [Tag("DatabaseRegistration")]
 #endif
-    [TestClass]
+    
     public class TestRegistration
     {        
         [Fact]

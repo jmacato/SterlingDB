@@ -1,22 +1,11 @@
-﻿
-#if NETFX_CORE
-using SterlingDB.WinRT.WindowsStorage;
-using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-#elif SILVERLIGHT
-using Microsoft.Phone.Testing;
-using SterlingDB.WP8.IsolatedStorage;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-#else
-using SterlingDB.Server.FileSystem;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-#endif
-
-using SterlingDB.Core;
+﻿using SterlingDB.Core;
 using SterlingDB.Core.Database;
+using SterlingDB.Server.FileSystem;
+using SterlingDB.Test.Helpers;
+using Xunit;
 
 namespace SterlingDB.Test.Database
 {
-
     public class ByteStreamData
     {
         public string Id { get; set; }
@@ -25,7 +14,7 @@ namespace SterlingDB.Test.Database
     }
 
     public class TestByteStreamInterceptorDatabase : BaseDatabaseInstance
-    {        
+    {
         protected override System.Collections.Generic.List<ITableDefinition> RegisterTables()
         {
             return new System.Collections.Generic.List<ITableDefinition>
@@ -81,41 +70,12 @@ namespace SterlingDB.Test.Database
         }
     }
 
-#if SILVERLIGHT
-    [Tag("Byte")]
-    [Tag("Database")]
-#endif
-    [TestClass]
-    public class TestByteStreamInterceptorAltDriver : TestByteStreamInterceptor
-    {
-        protected override ISterlingDriver GetDriver()
-        {
-#if NETFX_CORE
-            return new WindowsStorageDriver();
-#elif SILVERLIGHT
-            return new IsolatedStorageDriver();
-#elif AZURE_DRIVER
-            return new SterlingDB.Server.Azure.TableStorage.Driver();
-#else
-            return new FileSystemDriver();
-#endif
-        }
-    }
-
-#if SILVERLIGHT 
-    [Tag("Byte")]
-    [Tag("Database")]
-#endif
-    [TestClass]
     public class TestByteStreamInterceptor : TestBase
     {
         private SterlingEngine _engine;
         private ISterlingDatabaseInstance _databaseInstance;
 
-        public TestContext TestContext { get; set; }
-
-        
-        public void TestInit()
+        public TestByteStreamInterceptor()
         {
             _engine = Factory.NewEngine();
             _engine.Activate();
@@ -128,45 +88,43 @@ namespace SterlingDB.Test.Database
         {
             const string DATA = "Data to be intercepted";
 
-            var byteStreamData = new ByteStreamData {Id = "data", Data = DATA};
+            var byteStreamData = new ByteStreamData { Id = "data", Data = DATA };
 
             _databaseInstance.RegisterInterceptor<ByteInterceptor>();
             _databaseInstance.RegisterInterceptor<ByteInterceptor2>();
 
-            _databaseInstance.SaveAsync( byteStreamData ).Wait();
+            _databaseInstance.SaveAsync(byteStreamData).Wait();
 
-            var loadedByteStreamData = _databaseInstance.LoadAsync<ByteStreamData>( "data" ).Result;
+            var loadedByteStreamData = _databaseInstance.LoadAsync<ByteStreamData>("data").Result;
 
-            Assert.Equal(DATA, loadedByteStreamData.Data, "Byte interceptor test failed: data does not match");
+            Assert.Equal(DATA, loadedByteStreamData.Data);//, "Byte interceptor test failed: data does not match");
 
             _databaseInstance.UnRegisterInterceptor<ByteInterceptor2>();
 
             try
             {
-                loadedByteStreamData = _databaseInstance.LoadAsync<ByteStreamData>( "data" ).Result;
+                loadedByteStreamData = _databaseInstance.LoadAsync<ByteStreamData>("data").Result;
             }
             catch
             {
                 loadedByteStreamData = null;
             }
 
-            Assert.True(loadedByteStreamData == null || !(DATA.Equals(loadedByteStreamData.Data)), 
+            Assert.True(loadedByteStreamData == null || !(DATA.Equals(loadedByteStreamData.Data)),
                 "Byte interceptor test failed: Sterling deserialized intercepted data without interceptor.");
 
             _databaseInstance.RegisterInterceptor<ByteInterceptor2>();
 
-            loadedByteStreamData = _databaseInstance.LoadAsync<ByteStreamData>( "data" ).Result;
+            loadedByteStreamData = _databaseInstance.LoadAsync<ByteStreamData>("data").Result;
 
-            Assert.Equal(DATA, loadedByteStreamData.Data, "Byte interceptor test failed: data does not match");
+            Assert.Equal(DATA, loadedByteStreamData.Data);//, "Byte interceptor test failed: data does not match");
         }
 
-        
         public override void Cleanup()
         {
             _databaseInstance.PurgeAsync().Wait();
             _engine.Dispose();
-            _databaseInstance = null;            
+            _databaseInstance = null;
         }
-
     }
 }

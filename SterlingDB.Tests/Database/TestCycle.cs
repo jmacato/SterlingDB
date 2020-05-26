@@ -1,20 +1,7 @@
-
-#if NETFX_CORE
-using SterlingDB.WinRT.WindowsStorage;
-using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-#elif SILVERLIGHT
-using Microsoft.Phone.Testing;
-using SterlingDB.WP8.IsolatedStorage;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-#else
-using SterlingDB.Server.FileSystem;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-#endif
-
-using System.Collections.Generic;
-
 using SterlingDB.Core;
 using SterlingDB.Core.Database;
+using Xunit;
+using System.Collections.Generic;
 
 namespace SterlingDB.Test.Database
 {
@@ -40,77 +27,47 @@ namespace SterlingDB.Test.Database
         }
     }
 
-#if SILVERLIGHT
-    [Tag("Cycle")]
-    [Tag("Database")]
-#endif
-    [TestClass]
-    public class TestCycleAltDriver : TestCycle
-    {
-        protected override ISterlingDriver GetDriver()
-        {
-#if NETFX_CORE
-            return new WindowsStorageDriver();
-#elif SILVERLIGHT
-            return new IsolatedStorageDriver();
-#elif AZURE_DRIVER
-            return new SterlingDB.Server.Azure.TableStorage.Driver();
-#else
-            return new FileSystemDriver();
-#endif
-        }
-    }
-
-#if SILVERLIGHT
-    [Tag("Cycle")]
-    [Tag("Database")]
-#endif
-    [TestClass]
     public class TestCycle : TestBase
     {
         private SterlingEngine _engine;
         private ISterlingDatabaseInstance _databaseInstance;
 
-        public TestContext TestContext { get; set; }
-
-        
-        public void TestInit()
+        public TestCycle()
         {
             _engine = Factory.NewEngine();
             _engine.Activate();
-            _databaseInstance = _engine.SterlingDatabase.RegisterDatabase<CycleDatabase>( TestContext.TestName, GetDriver() );
+            _databaseInstance = _engine.SterlingDatabase.RegisterDatabase<CycleDatabase>(TestContext.TestName, GetDriver());
             _databaseInstance.PurgeAsync().Wait();
         }
 
-        
         public override void Cleanup()
         {
             _databaseInstance.PurgeAsync().Wait();
             _engine.Dispose();
-            _databaseInstance = null;            
+            _databaseInstance = null;
         }
 
         [Fact]
         public void TestCycleNegativeCase()
         {
             var test = new CycleClass { Id = 1, Value = 1 };
-            var child = new CycleClass {Id = 2, Value = 5 };            
+            var child = new CycleClass { Id = 2, Value = 5 };
             test.ChildCycle = child;
 
-            _databaseInstance.SaveAsync( test ).Wait();
-            var actual = _databaseInstance.LoadAsync<CycleClass>( 1 ).Result;
-            Assert.Equal(test.Id, actual.Id, "Failed to load cycle with non-null child: key mismatch.");
-            Assert.Equal(test.Value, actual.Value, "Failed to load cycle with non-null child: value mismatch.");
-            Assert.NotNull(test.ChildCycle, "Failed to load cycle with non-null child: child is null.");
-            Assert.Equal(child.Id, actual.ChildCycle.Id, "Failed to load cycle with non-null child: child key mismatch.");
-            Assert.Equal(child.Value, actual.ChildCycle.Value, "Failed to load cycle with non-null child: value mismatch.");
+            _databaseInstance.SaveAsync(test).Wait();
+            var actual = _databaseInstance.LoadAsync<CycleClass>(1).Result;
+            Assert.Equal(test.Id, actual.Id); //Failed to load cycle with non-null child: key mismatch.");
+            Assert.Equal(test.Value, actual.Value); //Failed to load cycle with non-null child: value mismatch.");
+            Assert.NotNull(test.ChildCycle); //Failed to load cycle with non-null child: child is null.");
+            Assert.Equal(child.Id, actual.ChildCycle.Id); //Failed to load cycle with non-null child: child key mismatch.");
+            Assert.Equal(child.Value, actual.ChildCycle.Value); //Failed to load cycle with non-null child: value mismatch.");
 
-            actual = _databaseInstance.LoadAsync<CycleClass>( 2 ).Result;
-            Assert.Equal(child.Id, actual.Id, "Failed to load cycle with non-null child: key mismatch on direct child load.");
-            Assert.Equal(child.Value, actual.Value, "Failed to load cycle with non-null child: value mismatch on direct child load.");            
+            actual = _databaseInstance.LoadAsync<CycleClass>(2).Result;
+            Assert.Equal(child.Id, actual.Id); //Failed to load cycle with non-null child: key mismatch on direct child load.");
+            Assert.Equal(child.Value, actual.Value); //Failed to load cycle with non-null child: value mismatch on direct child load.");
         }
 
-        [Fact] 
+        [Fact]
         public void TestCyclePositiveCase()
         {
             var test = new CycleClass { Id = 1, Value = 1 };
@@ -118,18 +75,18 @@ namespace SterlingDB.Test.Database
             test.ChildCycle = child;
             child.ChildCycle = test; // this creates our cycle condition
 
-            _databaseInstance.SaveAsync( test ).Wait();
-            var actual = _databaseInstance.LoadAsync<CycleClass>( 1 ).Result;
-            Assert.Equal(test.Id, actual.Id, "Failed to load cycle with non-null child: key mismatch.");
-            Assert.Equal(test.Value, actual.Value, "Failed to load cycle with non-null child: value mismatch.");
-            Assert.NotNull(test.ChildCycle, "Failed to load cycle with non-null child: child is null.");
-            Assert.Equal(child.Id, actual.ChildCycle.Id, "Failed to load cycle with non-null child: child key mismatch.");
-            Assert.Equal(child.Value, actual.ChildCycle.Value, "Failed to load cycle with non-null child: value mismatch.");
+            _databaseInstance.SaveAsync(test).Wait();
+            var actual = _databaseInstance.LoadAsync<CycleClass>(1).Result;
+            Assert.Equal(test.Id, actual.Id); //Failed to load cycle with non-null child: key mismatch.");
+            Assert.Equal(test.Value, actual.Value); //Failed to load cycle with non-null child: value mismatch.");
+            Assert.NotNull(test.ChildCycle); //Failed to load cycle with non-null child: child is null.");
+            Assert.Equal(child.Id, actual.ChildCycle.Id); //Failed to load cycle with non-null child: child key mismatch.");
+            Assert.Equal(child.Value, actual.ChildCycle.Value); //Failed to load cycle with non-null child: value mismatch.");
 
-            actual = _databaseInstance.LoadAsync<CycleClass>( 2 ).Result;
-            Assert.Equal(child.Id, actual.Id, "Failed to load cycle with non-null child: key mismatch on direct child load.");
-            Assert.Equal(child.Value, actual.Value, "Failed to load cycle with non-null child: value mismatch on direct child load.");
-        }        
+            actual = _databaseInstance.LoadAsync<CycleClass>(2).Result;
+            Assert.Equal(child.Id, actual.Id); //Failed to load cycle with non-null child: key mismatch on direct child load.");
+            Assert.Equal(child.Value, actual.Value); //Failed to load cycle with non-null child: value mismatch on direct child load.");
+        }
 
     }
 }
