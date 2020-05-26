@@ -1,6 +1,6 @@
 using System;
 
-namespace SterlingDB.Core.Serialization
+namespace SterlingDB.Serialization
 {
     /// <summary>
     ///     Attribute to tag a property, class, etc. that should not be serialized

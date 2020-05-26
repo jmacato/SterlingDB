@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using SterlingDB.Core.Exceptions;
+using SterlingDB.Exceptions;
 
-namespace SterlingDB.Core.Serialization
+namespace SterlingDB.Serialization
 {
     /// <summary>
     ///     Default serializer handles the instances the writer is overloaded for by default

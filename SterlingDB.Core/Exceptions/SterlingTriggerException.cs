@@ -1,14 +1,14 @@
 using System;
 
-namespace SterlingDB.Core.Exceptions
+namespace SterlingDB.Exceptions
 {
-    public class SterlingTriggerException : SterlingException 
+    public class SterlingTriggerException : SterlingException
     {
         public SterlingTriggerException(string message, Type triggerType) :
-            base(string.Format(Exceptions.SterlingTriggerException_SterlingTriggerException_Sterling_trigger_exception, triggerType.FullName,
-                               message))
+                            base($"{triggerType.FullName} {message}")
+
         {
-            
+
         }
     }
 }

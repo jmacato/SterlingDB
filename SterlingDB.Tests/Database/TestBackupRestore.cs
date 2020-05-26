@@ -1,5 +1,5 @@
 using System.IO;
-using SterlingDB.Core;
+using SterlingDB;
 using SterlingDB.Server.FileSystem;
 using SterlingDB.Test.Helpers;
 using Xunit;
@@ -8,7 +8,7 @@ namespace SterlingDB.Test.Database
 {  
     public class TestBackupRestore : TestBase
     {
-        private readonly SterlingEngine _engine;
+        private SterlingEngine _engine;
         private ISterlingDatabaseInstance _databaseInstance;
 
         public override void Cleanup()

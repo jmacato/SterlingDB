@@ -2,11 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using SterlingDB.Core.Exceptions;
-using SterlingDB.Core.Indexes;
-using SterlingDB.Core.Keys;
+using SterlingDB.Exceptions;
+using SterlingDB.Indexes;
+using SterlingDB.Keys;
 
-namespace SterlingDB.Core.Database
+namespace SterlingDB.Database
 {
     /// <summary>
     ///     The definition of a table

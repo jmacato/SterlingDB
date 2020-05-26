@@ -1,15 +1,14 @@
-﻿using System.IO;
-using System.Text;
-#if SILVERLIGHT
-using Microsoft.Phone.Testing;
-#endif
-#if NETFX_CORE
-using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-#else
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-#endif
-using SterlingDB.Core;
-using SterlingDB.Core.Serialization;
+﻿using SterlingDB;
+using SterlingDB.Server.FileSystem;
+using SterlingDB.Test.Helpers;
+using Xunit;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
+using SterlingDB.Exceptions;
+using SterlingDB.Indexes;
 
 namespace SterlingDB.Test.Serializer
 {

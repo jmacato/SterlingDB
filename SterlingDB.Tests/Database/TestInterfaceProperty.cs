@@ -1,12 +1,12 @@
-using SterlingDB.Core;
-using SterlingDB.Core.Database;
+using SterlingDB;
+using SterlingDB.Database;
 using SterlingDB.Server.FileSystem;
 using SterlingDB.Test.Helpers;
 using Xunit;
 using System.Collections.Generic;
 
-using SterlingDB.Core;
-using SterlingDB.Core.Database;
+using SterlingDB;
+using SterlingDB.Database;
 
 namespace SterlingDB.Test.Database
 {
@@ -43,48 +43,19 @@ namespace SterlingDB.Test.Database
         }
     }
 
-#if SILVERLIGHT
-    [Tag("Interface")]
-    [Tag("Database")]
-#endif
-    
-    public class TestInterfacePropertyAltDriver : TestInterfaceProperty
-    {
-        protected override ISterlingDriver GetDriver()
-        {
-#if NETFX_CORE
-            return new WindowsStorageDriver();
-#elif SILVERLIGHT
-            return new IsolatedStorageDriver();
-#elif AZURE_DRIVER
-            return new SterlingDB.Server.Azure.TableStorage.Driver();
-#else
-            return new FileSystemDriver();
-#endif
-        }
-    }
-
-#if SILVERLIGHT
-    [Tag("Interface")]
-    [Tag("Database")]
-#endif
     
     public class TestInterfaceProperty : TestBase
     {
         private readonly SterlingEngine _engine;
         private ISterlingDatabaseInstance _databaseInstance;
 
-        
-
-        
-        public void TestInit()
+        public TestInterfaceProperty()
         {            
             _engine = Factory.NewEngine();
             _engine.Activate();
             _databaseInstance = _engine.SterlingDatabase.RegisterDatabase<InterfaceDatabase>( TestContext.TestName, GetDriver() );
             _databaseInstance.PurgeAsync().Wait();
         }
-
         
         public override void Cleanup()
         {
@@ -102,10 +73,10 @@ namespace SterlingDB.Test.Database
 
             var actual = _databaseInstance.LoadAsync<TargetClass>( 1 ).Result;
             
-            Assert.Equal(test.Id, actual.Id, "Failed to load class with interface property: key mismatch.");
-            Assert.NotNull(test.SubInterface, "Failed to load class with interface property: interface property is null.");
-            Assert.Equal(test.SubInterface.Id, actual.SubInterface.Id, "Failed to load class with interface property: interface id mismatch.");
-            Assert.Equal(test.SubInterface.Value, actual.SubInterface.Value, "Failed to load class with interface property: value mismatch.");            
+            Assert.Equal(test.Id, actual.Id); //Failed to load class with interface property: key mismatch.");
+            Assert.NotNull(test.SubInterface); //Failed to load class with interface property: interface property is null.");
+            Assert.Equal(test.SubInterface.Id, actual.SubInterface.Id); //Failed to load class with interface property: interface id mismatch.");
+            Assert.Equal(test.SubInterface.Value, actual.SubInterface.Value); //Failed to load class with interface property: value mismatch.");            
         }       
     }
 }

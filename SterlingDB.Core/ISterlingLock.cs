@@ -1,4 +1,4 @@
-﻿namespace SterlingDB.Core
+﻿namespace SterlingDB
 {
     /// <summary>
     ///     Lock mechanism

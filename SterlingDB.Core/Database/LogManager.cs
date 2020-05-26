@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using SterlingDB.Core.Exceptions;
+using SterlingDB.Exceptions;
 
-namespace SterlingDB.Core.Database
+namespace SterlingDB.Database
 {
     /// <summary>
     ///     Manages the loggers

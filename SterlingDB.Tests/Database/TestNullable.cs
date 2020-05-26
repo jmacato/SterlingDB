@@ -1,12 +1,7 @@
-using SterlingDB.Core;
-using SterlingDB.Core.Database;
-using SterlingDB.Server.FileSystem;
-using SterlingDB.Test.Helpers;
+using SterlingDB;
+using SterlingDB.Database;
 using Xunit;
 using System.Collections.Generic;
-
-using SterlingDB.Core;
-using SterlingDB.Core.Database;
 
 namespace SterlingDB.Test.Database
 {
@@ -36,7 +31,7 @@ namespace SterlingDB.Test.Database
         private readonly SterlingEngine _engine;
         private ISterlingDatabaseInstance _databaseInstance;
 
-        public void TestInit()
+        public TestNullable()
         {            
             _engine = Factory.NewEngine();
             _engine.Activate();
@@ -44,7 +39,6 @@ namespace SterlingDB.Test.Database
             _databaseInstance.PurgeAsync().Wait();
         }
 
-        
         public override void Cleanup()
         {
             _databaseInstance.PurgeAsync().Wait();
@@ -58,8 +52,8 @@ namespace SterlingDB.Test.Database
             var test = new NullableClass {Id = 1, Value = 1};
             _databaseInstance.SaveAsync( test ).Wait();
             var actual = _databaseInstance.LoadAsync<NullableClass>( 1 ).Result;
-            Assert.Equal(test.Id, actual.Id, "Failed to load nullable with nullable set: key mismatch.");
-            Assert.Equal(test.Value, actual.Value, "Failed to load nullable with nullable set: value mismatch.");
+            Assert.Equal(test.Id, actual.Id); //Failed to load nullable with nullable set: key mismatch.");
+            Assert.Equal(test.Value, actual.Value); //Failed to load nullable with nullable set: value mismatch.");
         }
 
         [Fact]
@@ -68,8 +62,8 @@ namespace SterlingDB.Test.Database
             var test = new NullableClass { Id = 1, Value = null };
             _databaseInstance.SaveAsync( test ).Wait();
             var actual = _databaseInstance.LoadAsync<NullableClass>( 1 ).Result;
-            Assert.Equal(test.Id, actual.Id, "Failed to load nullable with nullable set: key mismatch.");
-            Assert.Null(actual.Value, "Failed to load nullable with nullable set: value mismatch.");
+            Assert.Equal(test.Id, actual.Id); //Failed to load nullable with nullable set: key mismatch.");
+            Assert.Null(actual.Value); //Failed to load nullable with nullable set: value mismatch.");
         }
     }
 }

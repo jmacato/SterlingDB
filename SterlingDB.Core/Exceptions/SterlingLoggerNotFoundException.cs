@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace SterlingDB.Core.Exceptions
+namespace SterlingDB.Exceptions
 {
     public class SterlingLoggerNotFoundException : SterlingException 
     {
-        public SterlingLoggerNotFoundException(Guid guid) : base(string.Format(Exceptions.SterlingLoggerNotFoundException, guid))
+        public SterlingLoggerNotFoundException(Guid guid) : base(guid.ToString())
         {
             
         }

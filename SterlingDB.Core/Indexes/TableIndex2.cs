@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SterlingDB.Core.Indexes
+namespace SterlingDB.Indexes
 {
     /// <summary>
     ///     An individual table key

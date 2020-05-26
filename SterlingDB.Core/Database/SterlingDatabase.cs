@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using SterlingDB.Core.Exceptions;
-using SterlingDB.Core.Serialization;
+using SterlingDB.Exceptions;
+using SterlingDB.Serialization;
 
-namespace SterlingDB.Core.Database
+namespace SterlingDB.Database
 {
     /// <summary>
     ///     The sterling database manager

@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace SterlingDB.Core.Exceptions
+namespace SterlingDB.Exceptions
 {
     public class SterlingIndexNotFoundException : SterlingException 
     {
         public SterlingIndexNotFoundException(string indexName, Type type) : 
-            base(string.Format(Exceptions.SterlingIndexNotFoundException, indexName, type.FullName))
+            base($"{indexName} {type.FullName}")
         {
             
         }

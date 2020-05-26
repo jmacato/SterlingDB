@@ -1,6 +1,6 @@
 using System;
 
-namespace SterlingDB.Core.Database
+namespace SterlingDB.Database
 {
     /// <summary>
     ///     Base for triggers

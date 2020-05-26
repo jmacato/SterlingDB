@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SterlingDB.Core.Indexes
+namespace SterlingDB.Indexes
 {
     /// <summary>
     ///     Collection of keys for a given entity

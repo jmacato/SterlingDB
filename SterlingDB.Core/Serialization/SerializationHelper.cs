@@ -2,11 +2,11 @@
 using System.Collections;
 using System.IO;
 using System.Linq;
-using SterlingDB.Core.Database;
-using SterlingDB.Core.Exceptions;
+using SterlingDB.Database;
+using SterlingDB.Exceptions;
 using System.Collections.Generic;
 
-namespace SterlingDB.Core.Serialization
+namespace SterlingDB.Serialization
 {
     /// <summary>
     ///     Wraps nodes for passing directly into the Save pass of the Serialization Helper

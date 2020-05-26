@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SterlingDB.Core.Database
+namespace SterlingDB.Database
 {
     public sealed class PendingOperationProgressChangedEventArgs : EventArgs
     {

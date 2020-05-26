@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Text;
 
-namespace SterlingDB.Core
+namespace SterlingDB
 {
     /// <summary>
     ///     Default logger (debug) for Sterling

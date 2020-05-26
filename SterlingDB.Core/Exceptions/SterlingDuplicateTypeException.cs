@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace SterlingDB.Core.Exceptions
+namespace SterlingDB.Exceptions
 {
     public class SterlingDuplicateTypeException : SterlingException 
     {
         public SterlingDuplicateTypeException(Type type, string databaseName) :
-            base(string.Format(Exceptions.SterlingDuplicateTypeException, type.FullName, databaseName))
+            base($"{type.FullName}, {databaseName}")
         {
             
         }

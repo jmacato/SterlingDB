@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SterlingDB.Core.Events
+namespace SterlingDB.Events
 {
     /// <summary>
     ///     Notify arguments when changes happen

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SterlingDB.Core.Database
+namespace SterlingDB.Database
 {
     public abstract class BaseSterlingByteInterceptor : ISterlingByteInterceptor
     {

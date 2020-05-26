@@ -1,5 +1,5 @@
-﻿using SterlingDB.Core;
-using SterlingDB.Core.Database;
+﻿using SterlingDB;
+using SterlingDB.Database;
 using SterlingDB.Server.FileSystem;
 using SterlingDB.Test.Helpers;
 using Xunit;

@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SterlingDB.Core.Exceptions;
+using SterlingDB.Exceptions;
 
-namespace SterlingDB.Core.Serialization
+namespace SterlingDB.Serialization
 {
     /// <summary>
     ///     The aggregate serializer

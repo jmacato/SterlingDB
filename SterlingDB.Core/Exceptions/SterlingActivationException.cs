@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace SterlingDB.Core.Exceptions
+namespace SterlingDB.Exceptions
 {
     public class SterlingActivationException : SterlingException 
     {
-        public SterlingActivationException(string operation) : base(string.Format(Exceptions.SterlingActivationException, operation))
+        public SterlingActivationException(string operation) : base(operation)
         {
             
         }

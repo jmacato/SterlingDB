@@ -2,7 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using SterlingDB.Core;
+using SterlingDB;
 
 namespace SterlingDB.Server.FileSystem
 {

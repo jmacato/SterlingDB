@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
 
-namespace SterlingDB.Core.Serialization
+namespace SterlingDB.Serialization
 {
     /// <summary>
     ///     Abstraction of property or field

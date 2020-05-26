@@ -1,4 +1,4 @@
-﻿using SterlingDB.Core.Exceptions;
+﻿using SterlingDB.Exceptions;
 using SterlingDB.Test.Helpers;
 using Xunit;
 

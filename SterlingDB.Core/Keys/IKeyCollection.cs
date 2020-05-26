@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-namespace SterlingDB.Core.Keys
+namespace SterlingDB.Keys
 {
     /// <summary>
     ///     Key collection interface

@@ -1,17 +1,16 @@
 ﻿using System;
 
-namespace SterlingDB.Core.Exceptions
+namespace SterlingDB.Exceptions
 {
     public class SterlingDuplicateDatabaseException : SterlingException
     {
         public SterlingDuplicateDatabaseException(ISterlingDatabaseInstance instance) : base(
-            string.Format(Exceptions.SterlingDuplicateDatabaseException, instance.GetType().FullName))
+            instance.GetType().FullName)
         {
         }
 
         public SterlingDuplicateDatabaseException(Type type)
-            : base(
-                string.Format(Exceptions.SterlingDuplicateDatabaseException, type.FullName))
+            : base(type.FullName)
         {
         }
     }

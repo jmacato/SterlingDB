@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace SterlingDB.Core.Indexes
+namespace SterlingDB.Indexes
 {
     /// <summary>
     ///     An individual table key

@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using SterlingDB.Core;
-using SterlingDB.Core.Database;
-using SterlingDB.Core.Exceptions;
-using SterlingDB.Core.Serialization;
+using SterlingDB;
+using SterlingDB.Database;
+using SterlingDB.Exceptions;
+using SterlingDB.Serialization;
 
 namespace SterlingDB.Server.FileSystem
 {

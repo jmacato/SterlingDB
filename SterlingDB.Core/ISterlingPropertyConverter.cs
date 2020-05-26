@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SterlingDB.Core
+namespace SterlingDB
 {
     /// <summary>
     /// Implement this interface when you have renamed a property on one of your serialized classes. 

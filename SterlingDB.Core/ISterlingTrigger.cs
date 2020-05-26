@@ -1,6 +1,6 @@
 using System;
 
-namespace SterlingDB.Core
+namespace SterlingDB
 {
     /// <summary>
     ///     Interface for a sterling trigger

@@ -3,10 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using SterlingDB.Core.Database;
-using SterlingDB.Core.Serialization;
+using SterlingDB.Database;
+using SterlingDB.Serialization;
 
-namespace SterlingDB.Core
+namespace SterlingDB
 {
     public interface ISterlingDriver
     {

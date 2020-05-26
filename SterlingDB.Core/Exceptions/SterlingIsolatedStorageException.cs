@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace SterlingDB.Core.Exceptions
+namespace SterlingDB.Exceptions
 {
     public class SterlingIsolatedStorageException : SterlingException
     {
-        public SterlingIsolatedStorageException(Exception ex) : base(string.Format(Exceptions.SterlingIsolatedStorageException,ex.Message), ex)
+        public SterlingIsolatedStorageException(Exception ex) : base(ex.Message)
         {
             
         }

@@ -1,6 +1,6 @@
 using System;
 
-namespace SterlingDB.Core.Exceptions
+namespace SterlingDB.Exceptions
 {
     /// <summary>
     ///     Base from which sterling exceptions derived

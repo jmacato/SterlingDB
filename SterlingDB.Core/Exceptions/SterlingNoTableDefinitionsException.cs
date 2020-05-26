@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace SterlingDB.Core.Exceptions
+namespace SterlingDB.Exceptions
 {
     public class SterlingNoTableDefinitionsException : SterlingException 
     {
-        public SterlingNoTableDefinitionsException() : base(Exceptions.SterlingNoTableDefinitionsException)
+        public SterlingNoTableDefinitionsException() : base()
         {
             
         }

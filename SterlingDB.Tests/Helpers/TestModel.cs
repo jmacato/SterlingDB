@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.ObjectModel;
-using SterlingDB.Core;
-using SterlingDB.Core.Serialization;
+using SterlingDB;
+using SterlingDB.Serialization;
 
 namespace SterlingDB.Test.Helpers
 {    

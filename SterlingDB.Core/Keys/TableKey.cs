@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SterlingDB.Core.Keys
+namespace SterlingDB.Keys
 {
     /// <summary>
     ///     An individual table key

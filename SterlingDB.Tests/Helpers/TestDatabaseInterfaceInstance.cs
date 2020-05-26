@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
-using SterlingDB.Core;
-using SterlingDB.Core.Database;
-using SterlingDB.Core.Events;
-using SterlingDB.Core.Indexes;
-using SterlingDB.Core.Keys;
-using SterlingDB.Core.Serialization;
+using SterlingDB;
+using SterlingDB.Database;
+using SterlingDB.Events;
+using SterlingDB.Indexes;
+using SterlingDB.Keys;
+using SterlingDB.Serialization;
 
 namespace SterlingDB.Test.Helpers
 {

@@ -1,7 +1,7 @@
 ﻿
 using System;
 
-using SterlingDB.Core;
+using SterlingDB;
 
 namespace SterlingDB.Test
 {

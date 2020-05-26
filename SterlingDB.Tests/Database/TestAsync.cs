@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SterlingDB.Core;
+using SterlingDB;
 using SterlingDB.Test.Helpers;
 using Xunit;
 

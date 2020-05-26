@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SterlingDB.Core.Serialization
+namespace SterlingDB.Serialization
 {    
     /// <summary>
     ///     Cache for serialization of properties

@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-namespace SterlingDB.Core.Indexes
+namespace SterlingDB.Indexes
 {
     /// <summary>
     ///     Index collection interface

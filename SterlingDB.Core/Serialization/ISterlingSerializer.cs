@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace SterlingDB.Core.Serialization
+namespace SterlingDB.Serialization
 {
     /// <summary>
     ///     Serializer for sterling

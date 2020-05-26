@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using SterlingDB.Core;
-using SterlingDB.Core.Database;
+using SterlingDB;
+using SterlingDB.Database;
 
 namespace SterlingDB.Test.Helpers
 {

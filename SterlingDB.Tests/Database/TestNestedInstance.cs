@@ -1,14 +1,11 @@
-using SterlingDB.Core;
-using SterlingDB.Core.Database;
+using SterlingDB;
+using SterlingDB.Database;
 using SterlingDB.Server.FileSystem;
-using SterlingDB.Test.Helpers;
 using Xunit;
 using System;
 using System.Linq;
 
 using System.Collections.Generic;
-using SterlingDB.Core;
-using SterlingDB.Core.Database;
 
 namespace SterlingDB.Test.Database
 {
@@ -51,55 +48,24 @@ namespace SterlingDB.Test.Database
         };
         }
     }
-
-#if SILVERLIGHT
-    [Tag("Nested")]
-    [Tag("Database")]
-#endif
-    
-    public class TestNestedInstanceAltDriver : TestNestedInstance
-    {
-        protected override ISterlingDriver GetDriver()
-        {
-#if NETFX_CORE
-            return new WindowsStorageDriver();
-#elif SILVERLIGHT
-            return new IsolatedStorageDriver();
-#elif AZURE_DRIVER
-            return new SterlingDB.Server.Azure.TableStorage.Driver();
-#else
-            return new FileSystemDriver();
-#endif
-        }
-    }
-
-#if SILVERLIGHT
-    [Tag("Nested")]
-    [Tag("Database")]
-#endif
-    
+ 
     public class TestNestedInstance : TestBase
     {
         private readonly SterlingEngine _engine;
         private ISterlingDatabaseInstance _database;
-
         
-
-        
-        public void Init()
+        public TestNestedInstance()
         {
             _engine = Factory.NewEngine();
             _engine.Activate();
             _database = _engine.SterlingDatabase.RegisterDatabase<NestedInstancesDatabase>(TestContext.TestName, GetDriver());
         }
-
         
-        public void Shutdown()
+        public override void Cleanup()
         {
             if (_engine == null) return;
 
             _engine.Dispose();
-            _engine = null;
             _database = null;
         }
 
@@ -174,18 +140,18 @@ namespace SterlingDB.Test.Database
 
             var freshBill = billKeys[0].LazyValue.Value;
 
-            Assert.True(freshBill.Partakers.Count == 3, "Bill should have exactly 3 partakers.");            
+            Assert.True(freshBill.Partakers.Count == 3); //Bill should have exactly 3 partakers.");            
 
             var personKeys = _database.Query<Person, Guid>();
 
-            Assert.True(personKeys.Count == 2, "Failed to save exactly 2 persons.");            
+            Assert.True(personKeys.Count == 2); //Failed to save exactly 2 persons.");            
             
             // Compare loaded instances and verify they are equal 
             var persons = (from p in freshBill.Partakers where p.Person.Id.Equals(person1.Id) select p.Person).ToList();
 
             // should be two of these
-            Assert.Equal(2, persons.Count, "Failed to grab two instances of the same person.");
-            Assert.Equal(persons[0], persons[1], "Instances were not equal.");
+            Assert.Equal(2, persons.Count); //Failed to grab two instances of the same person.");
+            Assert.Equal(persons[0], persons[1]); //Instances were not equal.");
         }
     }
 }

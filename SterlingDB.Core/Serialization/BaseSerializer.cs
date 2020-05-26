@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace SterlingDB.Core.Serialization
+namespace SterlingDB.Serialization
 {
     public abstract class BaseSerializer : ISterlingSerializer 
     {

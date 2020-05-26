@@ -1,20 +1,14 @@
-
-#if NETFX_CORE
-using SterlingDB.WinRT.WindowsStorage;
-using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-#elif SILVERLIGHT
-using Microsoft.Phone.Testing;
-using SterlingDB.WP8.IsolatedStorage;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-#else
+using SterlingDB;
 using SterlingDB.Server.FileSystem;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-#endif
-
+using SterlingDB.Test.Helpers;
+using Xunit;
 using System;
 using System.Collections.Generic;
-
-using SterlingDB.Core;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
+using SterlingDB.Exceptions;
+using SterlingDB.Indexes;
 using SterlingDB.Test.Helpers;
 
 namespace SterlingDB.Test.Keys

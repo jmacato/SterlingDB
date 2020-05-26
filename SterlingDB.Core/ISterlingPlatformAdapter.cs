@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SterlingDB.Core
+namespace SterlingDB
 {
     public interface ISterlingPlatformAdapter
     {

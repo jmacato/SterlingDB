@@ -3,13 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
-using SterlingDB.Core.Database;
-using SterlingDB.Core.Events;
-using SterlingDB.Core.Indexes;
-using SterlingDB.Core.Keys;
-using SterlingDB.Core.Serialization;
+using SterlingDB.Database;
+using SterlingDB.Events;
+using SterlingDB.Indexes;
+using SterlingDB.Keys;
+using SterlingDB.Serialization;
 
-namespace SterlingDB.Core
+namespace SterlingDB
 {
     /// <summary>
     ///     The sterling database instance

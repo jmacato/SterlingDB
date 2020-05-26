@@ -1,11 +1,11 @@
-using SterlingDB.Core;
-using SterlingDB.Core.Database;
+using SterlingDB;
+using SterlingDB.Database;
 using SterlingDB.Server.FileSystem;
 using SterlingDB.Test.Helpers;
 using Xunit;
 using System.Linq;
 
-using SterlingDB.Core;
+using SterlingDB;
 using SterlingDB.Test.Helpers;
 
 namespace SterlingDB.Test.Database
@@ -15,7 +15,7 @@ namespace SterlingDB.Test.Database
         private readonly SterlingEngine _engine;
         private ISterlingDatabaseInstance _databaseInstance;
 
-        public void TestInit()
+        public TestPurge()
         {
             _engine = Factory.NewEngine();
             _engine.Activate();
@@ -42,12 +42,12 @@ namespace SterlingDB.Test.Database
             _databaseInstance.PurgeAsync().Wait();
 
             // query should be empty
-            Assert.False(_databaseInstance.Query<TestModel, int>().Any(), "Purge failed: key list still exists.");
+            Assert.False(_databaseInstance.Query<TestModel, int>().Any()); //Purge failed: key list still exists.");
 
             // load should be empty
             var actual = _databaseInstance.LoadAsync<TestModel>(sample.Key).Result;
 
-            Assert.Null(actual, "Purge failed: was able to load item.");
+            Assert.Null(actual); //Purge failed: was able to load item.");
         }
     }
 }

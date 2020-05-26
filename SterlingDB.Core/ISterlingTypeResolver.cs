@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SterlingDB.Core
+namespace SterlingDB
 {
     /// <summary>
     /// Implement this interface when you're application will be updated. Typenames might have changed and with this interface, you can return the correct

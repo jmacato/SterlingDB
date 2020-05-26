@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using SterlingDB.Core;
+using SterlingDB;
 
 namespace SterlingDB.Server
 {

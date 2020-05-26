@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SterlingDB.Core
+namespace SterlingDB
 {
     // http://blogs.msdn.com/b/pfxteam/archive/2012/02/12/10266983.aspx
     internal class AsyncSemaphore

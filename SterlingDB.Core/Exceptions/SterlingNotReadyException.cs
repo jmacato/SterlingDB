@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace SterlingDB.Core.Exceptions
+namespace SterlingDB.Exceptions
 {
     public class SterlingNotReadyException : SterlingException
     {
-        public SterlingNotReadyException() : base(Exceptions.SterlingNotReadyException)
+        public SterlingNotReadyException() : base()
         {
             
         }

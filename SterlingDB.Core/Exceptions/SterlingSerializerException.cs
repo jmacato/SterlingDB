@@ -1,14 +1,14 @@
 ﻿using System;
-using SterlingDB.Core.Serialization;
+using SterlingDB.Serialization;
 
-namespace SterlingDB.Core.Exceptions
+namespace SterlingDB.Exceptions
 {
-    public class SterlingSerializerException : SterlingException 
+    public class SterlingSerializerException : SterlingException
     {
-        public SterlingSerializerException(ISterlingSerializer serializer, Type targetType) : 
-            base(string.Format(Exceptions.SterlingSerializerException, serializer.GetType().FullName, targetType.FullName))
+        public SterlingSerializerException(ISterlingSerializer serializer, Type targetType) :
+            base($"{ serializer.GetType().FullName} {targetType.FullName}")
         {
-            
+
         }
     }
 }

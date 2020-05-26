@@ -1,4 +1,4 @@
-﻿using SterlingDB.Core;
+﻿using SterlingDB;
 using SterlingDB.Server.FileSystem;
 using SterlingDB.Test.Helpers;
 using Xunit;

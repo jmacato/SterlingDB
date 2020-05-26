@@ -1,5 +1,5 @@
 using System;
-using SterlingDB.Core.Exceptions;
+using SterlingDB.Exceptions;
 
 namespace SterlingDB.Server.FileSystem
 {

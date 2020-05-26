@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SterlingDB.Core
+namespace SterlingDB
 {
     /// <summary>
     /// Byte Interceptor interface

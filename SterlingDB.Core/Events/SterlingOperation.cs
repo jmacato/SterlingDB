@@ -1,4 +1,4 @@
-﻿namespace SterlingDB.Core.Events
+﻿namespace SterlingDB.Events
 {
     /// <summary>
     ///     Operation in STerling

@@ -1,8 +1,8 @@
 ﻿
 using System;
-using SterlingDB.Core.Database;
+using SterlingDB.Database;
 
-namespace SterlingDB.Core
+namespace SterlingDB
 {
     /// <summary>
     ///     Wrapper for the sterling database engine

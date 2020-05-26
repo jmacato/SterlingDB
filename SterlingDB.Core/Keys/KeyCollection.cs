@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SterlingDB.Core.Keys
+namespace SterlingDB.Keys
 {
     /// <summary>
     ///     Collection of keys for a given entity

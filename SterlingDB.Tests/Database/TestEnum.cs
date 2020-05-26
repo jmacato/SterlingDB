@@ -1,5 +1,5 @@
-using SterlingDB.Core;
-using SterlingDB.Core.Database;
+using SterlingDB;
+using SterlingDB.Database;
 using Xunit;
 using System.Collections.Generic;
 
