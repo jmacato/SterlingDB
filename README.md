@@ -8,4 +8,4 @@ The goal behind Sterling is to keep it:
   - Flexible. While the core is light, Sterling is designed to handle any serialization task and make it ultra-easy to query databases using LINQ-to-Objects.
   - Portable. Sterling runs well on platforms that support .NET Core 3.1.
 
-
+[![Build Status](https://travis-ci.org/jmacato/SterlingDB.svg?branch=master)](https://travis-ci.org/jmacato/SterlingDB)
